@@ -26,4 +26,4 @@ Dataset Link: [INSERT DATASET LINK HERE]
 - Guest: Hanya bisa melihat Produk, Detail Produk, Artikel dan Forum (tidak bisa reply)
 
 ## Tautan Deployment
-[INSERT DEPLOYMENT LINK HERE]
+Link Deployment bisa diakses di [sini](baket.vercel.app).
