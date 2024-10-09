@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block meta %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+{% endblock meta %}
+
+{% block content %}
+    <header>
+        <h1>Baket</h1>
+    </header>
+    <p>Now is {{ current_time }}.</p>
+    <img src="{% static 'images/pbp.png' %}" alt="pbp">
+{% endblock content %}

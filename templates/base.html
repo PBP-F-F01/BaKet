@@ -1,13 +1,13 @@
-<!-- BoilerPlate html:5 -->
-<!-- Change it as you need -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="{% static 'images/pbp.png' %}" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaKet</title>
+    {% block meta %} {% endblock meta %}
 </head>
 <body>
-
+    {% block content %} {% endblock content %}
 </body>
 </html>
