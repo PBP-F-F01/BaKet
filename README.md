@@ -18,7 +18,7 @@ Lebih dari sekadar e-commerce, BaKet adalah komunitas yang mendukung pertumbuhan
 - Forum/Affiliate
 
 ## Initial Dataset
-Dataset Link: [INSERT DATASET LINK HERE]
+Dataset dapat diakses di [sini](https://drive.google.com/drive/folders/1u2PMUezdhaP96hYOXRJazYORDYzfU8ez?usp=sharing).
 
 ## Role
 - Admin: Bisa Mengakses seluruh page termasuk admin page
