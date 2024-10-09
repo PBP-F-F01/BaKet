@@ -14,56 +14,56 @@ Bergabunglah dengan kami di BaKet dan rasakan kemudahan belanja elektronik yang 
 - Valentino Kim Fernando (2306275771)
 
 
-## 📝 Daftar Modul
-- **Authentication** 
-    
-    Dikerjakan oleh: **Kukuh Cikal Yuntama**
+## 📑 Daftar Modul
 
-    Modul ini akan memiliki fitur:
-    - Halaman Registrasi
-    - Halaman Login
-    - Tombol Logout
+### 🔐 Authentication 
+Dikerjakan oleh: **Kukuh Cikal Yuntama**
+
+Modul ini akan memiliki fitur:
+- Halaman Registrasi
+- Halaman Login
+- Tombol Logout
 
     
-- **Product Catalogue** 
+### 📱 Product Catalogue
     
-    Dikerjakan oleh: **Valentino Kim Fernando, Nayla Farah Nida**
+Dikerjakan oleh: **Valentino Kim Fernando, Nayla Farah Nida**
 
-    Modul ini akan memiliki fitur:
-    - Daftar Semua Produk
-    - Halaman Request Produk Baru
-    - Opsi Filter/Sort Product
-    - Search Product
+Modul ini akan memiliki fitur:
+- Daftar Semua Produk
+- Halaman Request Produk Baru
+- Opsi Filter/Sort Product
+- Search Product
     
-- **Cart & Checkout** 
+### 🛒 Cart & Checkout
     
-    Dikerjakan oleh: **Valentino Kim Fernando, Nayla Farah Nida**
+Dikerjakan oleh: **Valentino Kim Fernando, Nayla Farah Nida**
 
-    Modul ini akan memiliki fitur:
-    - Pemesanan produk
-    - Pemrosesan pesanan (*checkout*, status pemesanan, dll)
-    - Melihat keranjang (*cart*)
+Modul ini akan memiliki fitur:
+- Pemesanan produk
+- Pemrosesan pesanan (*checkout*, status pemesanan, dll)
+- Melihat keranjang (*cart*)
     
-- **Wishlist** 
+### 📝 Wishlist
     
-    Dikerjakan oleh: **Kukuh Cikal Yuntama**
+Dikerjakan oleh: **Kukuh Cikal Yuntama**
 
-    Modul ini akan memiliki fitur:
-    - Menambahkan produk ke *wishlist*
-    - Menghapus produk dari *wishlist*
-    - Melihat daftar *wishlist*
+Modul ini akan memiliki fitur:
+- Menambahkan produk ke *wishlist*
+- Menghapus produk dari *wishlist*
+- Melihat daftar *wishlist*
 
-- **Artikel/blog** 
+### ✍️ Artikel/Blog
     
-    Dikerjakan oleh: **Raden Ahmad Yasin Mahendra**
+Dikerjakan oleh: **Raden Ahmad Yasin Mahendra**
 
-    Halaman artikel atau blog akan memuat berbagai informasi seputar dunia teknologi informasi, rekomendasi tempat wisata sekitar, dan hal-hal lainnya yang berhubungan dengan Kota Batam.
+Halaman artikel atau blog akan memuat berbagai informasi seputar dunia teknologi informasi, rekomendasi tempat wisata sekitar, dan hal-hal lainnya yang berhubungan dengan Kota Batam.
 
-- **Forum/Affiliate** 
+### 💬 Forum/Affiliate
     
-    Dikerjakan oleh: **Daniel Liman**
+Dikerjakan oleh: **Daniel Liman**
 
-    Halaman Forum akan berisi tempat diskusi sekaligus promosi produk *gadget* yang berhubungan dengan produk yang ada di BaKet maupun tidak. Forum ini bersifat bebas dan bisa memiliki topik apapun, asalkan berhubungan dengan Kota Batam ataupun teknologi.
+Halaman Forum akan berisi tempat diskusi sekaligus promosi produk *gadget* yang berhubungan dengan produk yang ada di BaKet maupun tidak. Forum ini bersifat bebas dan bisa memiliki topik apapun, asalkan berhubungan dengan Kota Batam ataupun teknologi.
 
 
 
