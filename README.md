@@ -23,8 +23,7 @@ Bergabunglah dengan kami di BaKet dan rasakan kemudahan belanja elektronik yang 
     - Halaman Registrasi
     - Halaman Login
     - Tombol Logout
-    
-    <br>
+
     
 - **Product Catalogue** 
     
@@ -35,8 +34,6 @@ Bergabunglah dengan kami di BaKet dan rasakan kemudahan belanja elektronik yang 
     - Halaman Request Produk Baru
     - Opsi Filter/Sort Product
     - Search Product
-
-    <br>
     
 - **Cart & Checkout** 
     
@@ -46,8 +43,6 @@ Bergabunglah dengan kami di BaKet dan rasakan kemudahan belanja elektronik yang 
     - Pemesanan produk
     - Pemrosesan pesanan (*checkout*, status pemesanan, dll)
     - Melihat keranjang (*cart*)
-
-    <br>
     
 - **Wishlist** 
     
@@ -58,15 +53,11 @@ Bergabunglah dengan kami di BaKet dan rasakan kemudahan belanja elektronik yang 
     - Menghapus produk dari *wishlist*
     - Melihat daftar *wishlist*
 
-    <br>
-
 - **Artikel/blog** 
     
     Dikerjakan oleh: **Raden Ahmad Yasin Mahendra**
 
     Halaman artikel atau blog akan memuat berbagai informasi seputar dunia teknologi informasi, rekomendasi tempat wisata sekitar, dan hal-hal lainnya yang berhubungan dengan Kota Batam.
-
-    <br>
 
 - **Forum/Affiliate** 
     
@@ -89,4 +80,7 @@ Initial Dataset yang akan dipakai nantinya dapat diakses di [sini](https://drive
 
 
 ## 🔗 Tautan Deployment
-Deployment Project ini dilakukan di [Vercel](https://vercel.com). Tautan Deployment bisa diakses di [sini](https://baket.vercel.app).
+Deployment Project ini dilakukan di [Vercel](https://vercel.com). Tautan Deployment bisa diakses di bawah ini:
+
+| Vercel | https://baket.vercel.app/ |
+| ------ | ------------------------- |
