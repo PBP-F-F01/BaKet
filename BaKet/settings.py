@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv() # Load .env file (if exists)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +32,7 @@ DEBUG = PRODUCTION == 'False'
 # DEBUG = True
 
 # TODO: Add URL Deployment
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", '.vercel.app']
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".vercel.app"]
 
 
 # Application definition

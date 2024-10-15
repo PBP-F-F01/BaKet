@@ -2,9 +2,11 @@
     "builds": [{
         "src": "BaKet/wsgi.py",
         "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
+        "config": { 
+            "maxLambdaSize": "15mb", 
+            "runtime": "python3.12.4"
+        }
     }],
-    "buildCommand": "pip install -r requirements.txt && python manage.py migrate",
     "routes": [
         {
             "src": "/(.*)",
