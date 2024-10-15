@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv() # Load .env file (if exists)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +29,7 @@ SECRET_KEY = 'django-insecure-bl)+ea9&i9lp1$%n$2!tj-1dvktpkx73q2&apek-=609dmdry=
 # SECURITY WARNING: don't run with debug turned on in production!
 PRODUCTION = os.getenv("PRODUCTION", 'False')
 DEBUG = PRODUCTION == 'False'
-DEBUG = True
+# DEBUG = True
 
 # TODO: Add URL Deployment
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".vercel.app"]
@@ -82,14 +85,14 @@ WSGI_APPLICATION = 'BaKet.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': f'django.db.backends.{"sqlite3" if os.getenv("PRODUCTION", 'False') == "False" else "postgresql"}',
-        'NAME': BASE_DIR / 'db.sqlite3' if os.getenv("PRODUCTION", 'False') == "False" else 'postgres',
+        'ENGINE': f'django.db.backends.{"sqlite3" if DEBUG else "postgresql"}',
+        'NAME': BASE_DIR / 'db.sqlite3' if DEBUG else 'postgres',
         **({
             'USER': os.getenv('PSQL_USER'),
             'PASSWORD': os.getenv('PSQL_PW'),
             'HOST': os.getenv('PSQL_HOST'),
             'PORT': os.getenv('PSQL_PORT'),
-        } if not os.getenv("PRODUCTION", 'False') == "False" else {}),
+        } if not DEBUG else {}),
     }
 }
 
