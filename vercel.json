@@ -1,5 +1,4 @@
 {
-    "prebuild": "pip install -r requirements.txt",
     "builds": [{
         "src": "BaKet/wsgi.py",
         "use": "@vercel/python",
