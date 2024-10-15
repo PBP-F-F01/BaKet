@@ -24,8 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-bl)+ea9&i9lp1$%n$2!tj-1dvktpkx73q2&apek-=609dmdry='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-PRODUCTION = os.getenv("PRODUCTION", False)
-DEBUG = not PRODUCTION
+PRODUCTION = os.getenv("PRODUCTION", 'False')
+DEBUG = PRODUCTION == 'False'
 # DEBUG = True
 
 # TODO: Add URL Deployment
@@ -82,8 +82,14 @@ WSGI_APPLICATION = 'BaKet.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': f'django.db.backends.{"sqlite3" if DEBUG else "postgresql"}',
+        'NAME': BASE_DIR / 'db.sqlite3' if DEBUG else 'postgres',
+        **({
+            'USER': os.getenv('PSQL_USER'),
+            'PASSWORD': os.getenv('PSQL_PW'),
+            'HOST': os.getenv('PSQL_HOST'),
+            'PORT': os.getenv('PSQL_PORT'),
+        } if not DEBUG else {}),
     }
 }
 
@@ -134,3 +140,9 @@ else:
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Media files configuration
+# NOTE: Sebisa mungkin jangan upload image ke sini (mis. buat foto profil atau foto artikel) kecuali buat katalog. 
+#       Ga bagus buat server klo makin banyak.
+MEDIA_URL = '/assets/'
+MEDIA_ROOT = BASE_DIR / 'assets'
