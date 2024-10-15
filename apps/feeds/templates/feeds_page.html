@@ -7,49 +7,47 @@
 {% endblock meta %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
-            <div class="card">
-                <div class="card-header px-16 py-4">
-                    <h2 class="font-medium text-gray-700 use-poppins">Add Post</h3>
-                </div>
-                <div class="card-body px-16">
-                    <form id="addPost">
-                        <div class="mb-4">
-                            <label for="content" class="block text-sm font-medium text-gray-700 use-poppins">Isi Post</label>
-                            <textarea type="text" id="content" name="content" rows="2" class="mt-1 block w-full h-52 resize-none border border-gray-300 rounded-md p-2 hover:border-[#171e2a] text-black"  required></textarea>
-                        </div>
-                    </form>
-                    <button type="submit" id="submitPost" form="addPost" class="bg-indigo-700 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg use-poppins">Save</button>
-                </div>
+<div class="container mx-auto bg-[#fafafa] min-h-screen">
+    <div class="px-16 py-10">
+        <div class="rounded-[16px] overflow-hidden shadow-lg bg-white px-12 py-8">
+            <div class="mb-6">
+                <p class="font-semibold text-lg text-gray-700 use-poppins">Add Post</p>
+            </div>
+            <div class="">
+                <form id="addPost">
+                    <div class="mb-4">
+                        <label for="content" class="block text-sm font-medium text-gray-700 use-poppins">Isi Post</label>
+                        <textarea type="text" id="content" name="content" rows="2" class="mt-2 block w-full h-52 resize-none border border-gray-300 rounded-md p-2 hover:border-[#171e2a] text-black"  required></textarea>
+                    </div>
+                </form>
+                <button type="submit" id="submitPost" form="addPost" class="mt-8 mb-2 bg-indigo-700 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg use-poppins">Save</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-        function addPost() {
-            fetch("{% url 'feeds:create_post' %}", {
-                method: "POST",
-                body: new FormData(document.querySelector('#addPost')),
-            }).then(response => {
-                if (response.status === 400) {
-                    showErrorToast("Failed to add post.");
-                } else {
-                    document.getElementById("addPost").reset(); 
-                }
-            }).catch(error => {
-                alert("An error occurred while adding the post. Please try again.");
-            });
-
-            return false;
-        }
-
-        document.getElementById("addPost").addEventListener("submit", (e) => {
-            e.preventDefault();
-            addPost();
+    function addPost() {
+        fetch("{% url 'feeds:create_post' %}", {
+            method: "POST",
+            body: new FormData(document.querySelector('#addPost')),
+        }).then(response => {
+            if (response.status === 400) {
+                alert("Failed to add post.");
+            } else {
+                document.getElementById("addPost").reset();
+            }
+        }).catch(error => {
+            alert("An error occurred while adding the post. Please try again.");
         });
+
+        return false;
+    }
+
+    document.getElementById("addPost").addEventListener("submit", (e) => {
+        e.preventDefault();
+        addPost();
+    });
 </script>
 
 {% endblock content %}
