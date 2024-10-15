@@ -1,8 +1,12 @@
 {
     "builds": [{
-            "src": "BaKet/wsgi.py",
-            "use": "@vercel/python",
-            "config": { "maxLambdaSize": "15mb", "runtime": "python3.12.4" }
+        "src": "BaKet/wsgi.py",
+        "use": "@vercel/python",
+        "config": { 
+            "maxLambdaSize": "15mb", 
+            "runtime": "python3.12.4",
+            "buildCommand": "pip install -r requirements.txt"
+        }
     }],
     "routes": [
         {
