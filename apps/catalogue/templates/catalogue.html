@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+    <link rel="stylesheet" href="{% static 'css/articles/catalogue.css' %}">
+    <title>BaKet</title>
+{% endblock meta %}
+
+{% block content %}
+    <div class="w-full h-[418px] flex-col justify-start items-start gap-5 inline-flex">
+        <div class="h-[38px] pl-24 pt-14 pr-20 pb-4 justify-center items-center gap-2.5 inline-flex">
+            <div class="grow shrink basis-0 text-[#01aae8] text-[32px] font-bold font-['Raleway']">Catalogue</div>
+        </div>
+        <div class="self-stretch h-[360px] flex-col justify-start items-start gap-10 flex">
+
+            <!-- Head -->
+            <div class="self-stretch pl-24 pr-20 justify-start items-center gap-3 inline-flex">
+
+                <!-- Search Bar-->
+                <div class="grow shrink basis-0 self-stretch justify-start items-center flex">
+                    <div class="grow shrink basis-0 flex-col justify-start items-center gap-[15px] inline-flex">
+                    <div class="self-stretch h-12 pl-3 pr-14 py-2 bg-white rounded-tl-[10px] rounded-bl-[10px] border-l border-t border-b border-[#cccbcb] justify-start items-center gap-5 inline-flex">
+                        <div class="w-6 h-6 relative"></div>
+                        <div class="text-[#9f9c9c] text-sm font-normal font-['Raleway'] leading-[16.80px]">Cari Barang</div>
+                    </div>
+                    </div>
+                    <div class="self-stretch p-3 bg-[#01aae8] rounded-tr-lg rounded-br-lg justify-center items-center gap-3 flex">
+                    <div class="w-5 h-5 relative"></div>
+                    </div>
+                </div>
+
+                <!-- Filter -->
+                <div class="self-stretch p-3 bg-[#01aae8] rounded-lg justify-center items-center gap-3 flex">
+                    <div class="w-5 h-5 relative"></div>
+                    <div class="text-white text-base font-bold font-['Raleway']">Filter</div>
+                </div>
+
+                <!-- Add Item -->
+                <div class="self-stretch p-3 rounded-lg border border-[#01aae8] justify-center items-center gap-3 flex">
+                    <div class="text-[#01aae8] text-base font-bold font-['Raleway']">Tambahkan Barang</div>
+                </div>
+
+            </div>
+
+            <!-- Product List -->
+            {% if not products %}
+            <div class="flex justify-center items-center w-screen pt-20">
+                <img src="{% static 'images/ItemNotFound.svg' %}" class="w-2/4 max-w-md h-auto object-contain">
+            </div>
+            {% else %}
+            <div class="self-stretch pl-24 pr-20 flex-col justify-start items-start gap-5 flex">
+                {% for product in products %}
+                <div class="justify-start items-center gap-[25px] inline-flex">
+                    <div class="h-56 p-3 bg-white rounded-lg shadow border-4 border-[#01aae8] backdrop-blur-[70.36px] flex-col justify-start items-center gap-2.5 inline-flex">
+                        <div class="self-stretch grow shrink basis-0 flex-col justify-center items-center gap-2 flex">
+                        <img class="w-[280px] h-[280px] relative rounded" src="{{ product.image.url }}" alt="{{ product.name }}"/>
+                        <div class="self-stretch grow shrink basis-0 flex-col justify-start items-center gap-1 flex">
+                        <div class="self-stretch grow shrink basis-0 text-black text-xs font-normal font-['Raleway'] leading-[14.40px]">{{ product.name }}</div>
+                        <div class="self-stretch text-[#01aae8] text-base font-bold font-['Raleway'] leading-tight">{{ product.price }}</div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+          </div>
+    </div>
+
+    <script src="{% static 'js/catalogue/catalogue.js' %}"></script>
+
+{% endblock content %}
