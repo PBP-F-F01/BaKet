@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+    <link rel="stylesheet" href="{% static 'css/articles/dummy_article.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <title>Artikel Baket</title>
+{% endblock meta %}
+    
+{% block content %}
+<div class="h-screen flex flex-col justify-start bg-[#fbfbf9] p-5">
+    <div class="hidden md:flex rounded-[16px] shadow-lg bg-white p-10 flex flex-col justify-start">
+        <h2 class="mb-6 font-bold text-3xl text-center" id="title">Dummy Artikel</h2>
+        <p class="text-left mb-4">
+            Posted by: <span id="username">PoRo</span> |
+            Created at: <span id="created_at">12 Oktober 2024, 12:34</span> |
+            Updated at: <span id="updated_at">12 Oktober 2024, 12:34</span>
+        </p>
+        <div class="flex justify-start py-6 mb-4">
+            <div class="flex items-center cursor-default" id="like">
+                <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#000000] material-icons" id="like-button">thumb_up</span>
+                <span class="like-count" id="like-count">5</span>
+            </div>
+            <div class="flex items-center cursor-default ml-6" id="comment">
+                <a><span class="mr-3 align-middle cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons" id="comment-button">comment</span></a>
+                <span id="comment-count">1</span>
+            </div>
+        </div>
+        <p class="text-left text-justify leading-7" onclick="window.scrollTo(0, '#title')" id="content">Child of ours<br />
+            Counting the days 'til the summer come<br />
+            But you don't live forever<br />
+            Your mother will one day bring you home<br />
+            And it feels so stupid, 'cause I wasn't scared of this before<br />
+            But since I have met you, I don't wanna die no more<br />
+            <br />
+            So take a long time<br />
+            'Cause, oh, the world is lucky to be your home<br />
+            I know I need a next life<br />
+            'Cause I'm not satisfied to know you just once<br />
+            So take a long time<br />
+            Oh, the world is lucky to be your home<br />
+            I know I need a next life<br />
+            Not satisfied to know you just once<br />
+            <br />
+            Oh, oh, oh, oh, oh, oh, oh, oh, oh<br />
+            <br />
+            To live, we're dying<br />
+            Why wouldn't we see our world as dark?<br />
+            But I won't spend time<br />
+            Resenting the way things are<br />
+            <br />
+            So take a long time<br />
+            All the world is lucky to be your home<br />
+            I know I need a next life<br />
+            Not satisfied to know you just once<br />
+            <br />
+            Oh, oh, oh, oh, oh, oh, oh, oh, oh<br />
+            Oh, oh, oh, oh, oh, oh, oh, oh, oh<br />
+            <br />
+            So take a long time<br />
+            Oh, the world is lucky to be your home<br />
+            I know I need a next life<br />
+            Not satisfied to know you just once<br />
+            So take a long time<br />
+            Oh, the world is lucky to be your home<br />
+            I know I need a next life<br />
+            Not satisfied to know you just once<br />
+            <br />
+            And I won't spend time<br />
+            Resenting the way things are</p>
+    </div>
+    <div class="md:hidden h-screen flex flex-col justify-start bg-[#fbfbf9] px-12 py-10">
+        <div class="rounded-[16px] shadow-lg bg-white p-5 flex flex-col justify-start">
+            <h2 class="mb-6 font-bold text-3xl text-center" id="title">Dummy Artikel</h2>
+            <p class="text-left mb-4">Posted by: <span id="username">Erm what the sigma</span></p>
+            <p class="text-left">Created at: <span id="created_at">12 Oktober 2024, 12:34</span></p>
+            <p class="text-left mb-4">Updated at: <span id="updated_at">12 Oktober 2024, 12:34</span></p>
+            <div class="flex justify-start py-3">
+                <div class="flex items-center cursor-default" id="like">
+                    <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#000000] material-icons" id="like-button">thumb_up</span>
+                    <span class="like-count" id="like-count">5</span>
+                </div>
+            </div>
+            <div class="flex justify-start py-3 mb-4">
+                <div class="flex items-center cursor-default" id="comment">
+                    <a><span class="mr-3 align-middle cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons" id="comment-button">comment</span></a>
+                    <span id="comment-count">1</span>
+                </div>
+            </div>
+            <p class="text-left text-justify leading-7" onclick="window.scrollTo(0, '#title')" id="content">Child of ours<br />
+                Counting the days 'til the summer come<br />
+                But you don't live forever<br />
+                Your mother will one day bring you home<br />
+                And it feels so stupid, 'cause I wasn't scared of this before<br />
+                But since I have met you, I don't wanna die no more<br />
+                <br />
+                So take a long time<br />
+                'Cause, oh, the world is lucky to be your home<br />
+                I know I need a next life<br />
+                'Cause I'm not satisfied to know you just once<br />
+                So take a long time<br />
+                Oh, the world is lucky to be your home<br />
+                I know I need a next life<br />
+                Not satisfied to know you just once<br />
+                <br />
+                Oh, oh, oh, oh, oh, oh, oh, oh, oh<br />
+                <br />
+                To live, we're dying<br />
+                Why wouldn't we see our world as dark?<br />
+                But I won't spend time<br />
+                Resenting the way things are<br />
+                <br />
+                So take a long time<br />
+                All the world is lucky to be your home<br />
+                I know I need a next life<br />
+                Not satisfied to know you just once<br />
+                <br />
+                Oh, oh, oh, oh, oh, oh, oh, oh, oh<br />
+                Oh, oh, oh, oh, oh, oh, oh, oh, oh<br />
+                <br />
+                So take a long time<br />
+                Oh, the world is lucky to be your home<br />
+                I know I need a next life<br />
+                Not satisfied to know you just once<br />
+                So take a long time<br />
+                Oh, the world is lucky to be your home<br />
+                I know I need a next life<br />
+                Not satisfied to know you just once<br />
+                <br />
+                And I won't spend time<br />
+                Resenting the way things are</p>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/articles/article_main.js' %}"></script>
+<script src="{% static 'js/articles/dummy_article.js' %}"></script>
+{% endblock content %}
+
+
