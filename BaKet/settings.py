@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main',
     'apps.feeds',
+    'apps.articles',
+    'apps.catalogue',
 ]
 
 MIDDLEWARE = [

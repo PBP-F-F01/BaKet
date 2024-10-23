@@ -1,0 +1,7 @@
+html {
+    scroll-behavior: smooth;
+}
+
+#like-button, #comment-button {
+    transition: 0.5s ease;
+}

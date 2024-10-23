@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.core import serializers
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
@@ -9,8 +10,12 @@ from apps.feeds.models import *
 
 
 # Get all the posts
-def show_all(request):
-    return render(request, 'feeds_page.html')
+def show_all(request):    
+    context = {
+        'date': datetime.now().strftime("%A, %d %B %Y")
+    }
+    
+    return render(request, 'feeds_page.html', context)
 
 
 # Create a new post with AJAX
