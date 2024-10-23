@@ -1,43 +1,18 @@
 {% load static %}
-<style>
-  .dropdown-menu {
-    transform: translateY(-200%);
-    transition: transform 0.3s ease-in-out;
-  }
-  .dropdown-menu.open {
-    transform: translateY(0);
-  }
-</style>
-
-<nav class="shadow md:px-20 px-10 py-2 bg-[#f4f4f4] flex justify-between items-center inline-flex w-full z-[1000] sticky top-0">
-  <div class="py-1 md:py-[2px] md:ml-4">
-    <a href="/">
-      <img class="h-[45px] md:h-[60px]" src="{% static 'images/LogoPanjang.svg' %}" draggable="false"
-        oncontextmenu="return false;" />
-    </a>
-  </div>
-
-  <button id="hamburger" class="md:hidden text-white mr-2">
-    <img src="{% static 'images/hamburger.svg' %}" alt="Menu" class="h-5">
-  </button>
-
-  <div class="justify-start items-center gap-10 hidden md:flex" id="navbar">
-    <a href="/" class="text-[#01aae8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Beranda </a>
-    <a class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Catalogue</a>
-    <a href="/feeds" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Forum</a>
-    <a href="/articles" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Article</a>
-    <a class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Wishlist</a>
-  </div>
-</nav>
-
-<div id="dropdown-menu" class="dropdown-menu fixed top-[69px] left-0 w-full bg-stone-50 shadow md:hidden">
-  <div class="p-4">
-    <div class="flex flex-col">
-      <a href="/" class="text-neutral-600 text-sm mb-2 font-semibold font-['Raleway']">Beranda </a>
-      <a class="text-neutral-600 text-sm mb-2 font-semibold font-['Raleway']">Catalogue</a>
-      <a href="/feeds" class="text-neutral-600 text-sm mb-2 font-semibold font-['Raleway']">Forum</a>
-      <a href="/articles" class="text-neutral-600 text-sm mb-2 font-semibold font-['Raleway']">Article</a>
-      <a class="text-neutral-600 text-sm font-semibold font-['Raleway']">Wishlist</a>
+<nav class="bg-white shadow-lg">
+    <div class="w-full h-20 px-20 py-4 bg-[#f4f4f4] shadow justify-between items-center inline-flex">
+        <div class="w-[102px] relative">
+          <div class="w-32 h-[60px] left-0 top-0 flex-col justify-center items-center inline-flex">
+            <img class="w-32 h-[60px]" src="{% static 'images/LogoPanjang.svg' %}" />
+          </div>
+        </div>
+        <div class="justify-start items-center gap-12 flex" id="navbar">
+          <a href="/" class="text-[#01aae8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Beranda </a>
+          <a href="/catalogue" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Catalogue</a>
+          <a href="/feeds" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Forum</a>
+          <a href="/articles" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Article</a>
+          <a class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Wishlist</a>
+        </div>
     </div>
   </div>
 </div>
