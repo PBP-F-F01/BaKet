@@ -7,20 +7,33 @@
 {% endblock meta %}
 
 {% block content %}
-    <form method="POST" enctype="multipart/form-data" class="space-y-4">
-        {% csrf_token %}
-        <div>
-        {{ form.name.label_tag }}
-        <!-- Field label -->
-        {{ form.name }}
+    <div class="max-w-4xl mx-auto p-8 mt-16">
+        <div class="flex flex-col gap-4">
+            <!-- Back Button and Header -->
+            <a href="{% url 'catalogue' %}" class="inline-flex items-center gap-2.5 text-[#01aae8] font-bold font-['Raleway']">
+                <img src="{% static 'images/icon_lchevron.svg' %}" alt="Back" class="w-5 h-5">
+                <span class="text-[#01aae8] text-[16px] font-bold font-['Raleway']">Kembali</span>
+            </a>
+            <h2 class="text-[#01aae8] text-[32px] font-bold font-['Raleway']">Tambahkan Barang</h2>
         </div>
-        <div>{{ form.price.label_tag }} {{ form.price }}</div>
-        <div>{{ form.category.label_tag }} {{ form.category }}</div>
-        <div>{{ form.specs.label_tag }} {{ form.specs }}</div>
-        <div>{{ form.image.label_tag }} {{ form.image }}</div>
-        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded">
-        Create Product
-        </button>
-    </form>
-    
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-4 mt-6">
+            {% csrf_token %}
+            <div class="flex flex-col gap-4 mb-8">
+                <div>
+                {{ form.name.label_tag }}
+                <!-- Field label -->
+                {{ form.name }}
+                </div>
+                <div>{{ form.price.label_tag }} {{ form.price }}</div>
+                <div>{{ form.category.label_tag }} {{ form.category }}</div>
+                <div>{{ form.specs.label_tag }} {{ form.specs }}</div>
+                <div>{{ form.image.label_tag }} {{ form.image }}</div>
+            </div>
+            <button type="submit" class="bg-[#01aae8] text-white py-2 px-4 rounded hover:bg-[#0081b1]">
+            Create Product
+            </button>
+        </form>
+    </div>
+        
 {% endblock content %}
