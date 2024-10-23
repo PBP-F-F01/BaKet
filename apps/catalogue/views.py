@@ -19,5 +19,4 @@ def catalogue_view(request):
     })
 
 def add_product(request):
-    # You can later add the logic for selling item here (like a form view)
     return render(request, 'add-product.html')

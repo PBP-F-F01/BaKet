@@ -20,18 +20,24 @@
                 <div class="grow shrink basis-0 self-stretch justify-start items-center flex">
                     <div class="grow shrink basis-0 flex-col justify-start items-center gap-[15px] inline-flex">
                     <div class="self-stretch h-12 pl-3 pr-14 py-2 bg-white rounded-tl-[10px] rounded-bl-[10px] border-l border-t border-b border-[#cccbcb] justify-start items-center gap-5 inline-flex">
-                        <div class="w-6 h-6 relative"></div>
+                        <div class="w-6 h-6 relative">
+                            <img src="{% static 'images/icon_magnifyingglass.svg' %}">
+                        </div>
                         <div class="text-[#9f9c9c] text-sm font-normal font-['Raleway'] leading-[16.80px]">Cari Barang</div>
                     </div>
                     </div>
                     <div class="self-stretch p-3 bg-[#01aae8] rounded-tr-lg rounded-br-lg justify-center items-center gap-3 flex">
-                    <div class="w-5 h-5 relative"></div>
+                    <div class="w-5 h-5 relative">
+                        <img src="{% static 'images/icon_rchevron.svg' %}">
+                    </div>
                     </div>
                 </div>
 
                 <!-- Filter -->
                 <div class="self-stretch p-3 bg-[#01aae8] rounded-lg justify-center items-center gap-3 flex">
-                    <div class="w-5 h-5 relative"></div>
+                    <div class="w-5 h-5 relative">
+                        <img src="{% static 'images/icon_filter.svg' %}">
+                    </div>
                     <div class="text-white text-base font-bold font-['Raleway']">Filter</div>
                 </div>
 
@@ -63,6 +69,7 @@
                 </div>
                 {% endfor %}
             {% endif %}
+
           </div>
     </div>
 
