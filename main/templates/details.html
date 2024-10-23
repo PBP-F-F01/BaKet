@@ -1,6 +1,5 @@
 {% extends 'base.html' %} {% load static %} {% block content %}
 
-<header>{% include 'navbar.html' %}</header>
 <body>
   <div class="grid grid-cols-2 md:grid-cols-3 gap-8 p-4 mt-8">
     <!-- Product Image -->
@@ -88,7 +87,7 @@
 
       <!-- Back Button -->
       <a
-        href="{% url 'show_product' %}"
+        href="{% url 'main:show_product' %}"
         class="inline-block bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md text-center"
       >
         Back to Products

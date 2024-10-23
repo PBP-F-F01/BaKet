@@ -12,7 +12,7 @@
       <li>
         <strong>{{ product.name }}</strong>
       </li>
-      <a href="{% url 'product_detail' product.id %}">View Details</a>
+      <a href="{% url 'main:product_detail' product.id %}">View Details</a>
       {% empty %}
       <li>No products available.</li>
       {% endfor %}

@@ -18,10 +18,9 @@
     >
       Feeds
     </button>
-    <a href="{% url 'show_product' %}">View Products</a>
     <button
       class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins"
-      onclick="window.location.href='{% url 'create_product' %}'"
+      onclick="window.location.href='{% url 'main:create_product' %}'"
     >
       Form
     </button>
@@ -33,9 +32,10 @@
     </button>
     <button
       class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins m-1"
-      onclick="window.location.href='{% url 'catalogue' %}'"
+      onclick="window.location.href='{% url 'main:show_product' %}'"
     >
       Catalogue
     </button>
   </div>
 </div>
+{% endblock content %}
