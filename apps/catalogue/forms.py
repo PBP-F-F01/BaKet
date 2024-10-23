@@ -1,5 +1,5 @@
 from django import forms
-from main.models import Product, Review
+from apps.catalogue.models import Product, Review
 
 class ProductForm(forms.ModelForm):
     class Meta:

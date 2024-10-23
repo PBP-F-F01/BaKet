@@ -7,45 +7,61 @@
 {% endblock meta %}
 
 {% block content %}
-    <div class="w-full h-[418px] flex-col justify-start items-start gap-5 inline-flex">
+    <div class="w-full flex-col justify-start items-start gap-5 inline-flex h-[100vh]">
         <div class="h-[38px] pl-24 pt-14 pr-20 pb-4 justify-center items-center gap-2.5 inline-flex">
             <div class="grow shrink basis-0 text-[#01aae8] text-[32px] font-bold font-['Raleway']">Catalogue</div>
         </div>
-        <div class="self-stretch h-[360px] flex-col justify-start items-start gap-10 flex">
+        <div class="self-stretch flex-col justify-start items-start gap-10 flex">
 
             <!-- Head -->
             <div class="self-stretch pl-24 pr-20 justify-start items-center gap-3 inline-flex">
 
                 <!-- Search Bar-->
-                <div class="grow shrink basis-0 self-stretch justify-start items-center flex">
-                    <div class="grow shrink basis-0 flex-col justify-start items-center gap-[15px] inline-flex">
-                    <div class="self-stretch h-12 pl-3 pr-14 py-2 bg-white rounded-tl-[10px] rounded-bl-[10px] border-l border-t border-b border-[#cccbcb] justify-start items-center gap-5 inline-flex">
-                        <div class="w-6 h-6 relative">
-                            <img src="{% static 'images/icon_magnifyingglass.svg' %}">
+                <form method="GET" action="{% url 'catalogue' %}" class="grow shrink basis-0 self-stretch justify-start items-center flex">
+                    <div class="grow shrink basis-0 relative flex-col justify-start items-center gap-[15px] inline-flex">
+                        <input type="text" name="q" class="self-stretch h-12 pl-10 pr-14 py-2 bg-white rounded-tl-[10px] rounded-bl-[10px] border-l border-t border-b border-[#cccbcb] justify-start items-center gap-5 inline-flex"
+                               value="{{ request.GET.q }}" placeholder="Cari Barang">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <img src="{% static 'images/icon_magnifyingglass.svg' %}" class="w-5 h-5" alt="Magnifying Glass">
                         </div>
-                        <div class="text-[#9f9c9c] text-sm font-normal font-['Raleway'] leading-[16.80px]">Cari Barang</div>
                     </div>
+                    <div class="self-stretch p-3 bg-[#01aae8] rounded-tr-lg rounded-br-lg justify-center items-center gap-3 flex cursor-pointer hover:bg-[#0081b1]">
+                        <button type="submit" class="w-5 h-5 relative">
+                            <img src="{% static 'images/icon_rchevron.svg' %}" alt="Search">
+                        </button>
                     </div>
-                    <div class="self-stretch p-3 bg-[#01aae8] rounded-tr-lg rounded-br-lg justify-center items-center gap-3 flex">
-                    <div class="w-5 h-5 relative">
-                        <img src="{% static 'images/icon_rchevron.svg' %}">
-                    </div>
-                    </div>
-                </div>
+                </form>
+                
 
-                <!-- Filter -->
-                <div class="self-stretch p-3 bg-[#01aae8] rounded-lg justify-center items-center gap-3 flex">
+                <!-- Filter Button -->
+                <div id="filterButton" class="self-stretch p-3 bg-[#01aae8] rounded-lg justify-center items-center gap-3 flex hover:bg-[#0081b1]" onclick="toggleFilter()">
                     <div class="w-5 h-5 relative">
-                        <img src="{% static 'images/icon_filter.svg' %}">
+                        <img src="{% static 'images/icon_filter.svg' %}" alt="Filter Icon">
                     </div>
                     <div class="text-white text-base font-bold font-['Raleway']">Filter</div>
                 </div>
 
-                <!-- Add Item -->
-                <div class="self-stretch p-3 rounded-lg border border-[#01aae8] justify-center items-center gap-3 flex">
-                    <div class="text-[#01aae8] text-base font-bold font-['Raleway']">Tambahkan Barang</div>
+                <!-- Filter Options -->
+                <div id="filterOptions" class="hidden mt-4">
+                    <form method="GET">
+                        <select name="category" class="border p-2">
+                            <option value="">All Categories</option>
+                            {% for category, label in categories %}
+                                <option value="{{ category }}" {% if request.GET.category == category %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Apply Filter</button>
+                    </form>
                 </div>
 
+                <!-- Add Item -->
+                <a href="{% url 'add_product' %}">
+                    <div class="self-stretch p-3 rounded-lg border border-[#01aae8] justify-center items-center gap-3 flex hover:bg-[#caecf8]">
+                        <div class="text-[#01aae8] text-base font-bold font-['Raleway']">Tambahkan Barang</div>
+                    </div>
+                </a>
             </div>
 
             <!-- Product List -->
@@ -54,10 +70,11 @@
                 <img src="{% static 'images/ItemNotFound.svg' %}" class="w-2/4 max-w-md h-auto object-contain">
             </div>
             {% else %}
-            <div class="self-stretch pl-24 pr-20 flex-col justify-start items-start gap-5 flex">
+            <div class="self-stretch pl-24 pr-20 flex-wrap justify-start items-start gap-5 flex">
                 {% for product in products %}
+                <a href="{% url 'product_detail' product.id %}">
                 <div class="justify-start items-center gap-[25px] inline-flex">
-                    <div class="h-56 p-3 bg-white rounded-lg shadow border-4 border-[#01aae8] backdrop-blur-[70.36px] flex-col justify-start items-center gap-2.5 inline-flex">
+                    <div class="h-auto p-3 bg-white rounded-lg shadow border-4 border-[#01aae8] backdrop-blur-[70.36px] flex-col justify-start items-center gap-2.5 inline-flex">
                         <div class="self-stretch grow shrink basis-0 flex-col justify-center items-center gap-2 flex">
                         <img class="w-[280px] h-[280px] relative rounded" src="{{ product.image.url }}" alt="{{ product.name }}"/>
                         <div class="self-stretch grow shrink basis-0 flex-col justify-start items-center gap-1 flex">
@@ -67,6 +84,7 @@
                     </div>
                     </div>
                 </div>
+                </a>
                 {% endfor %}
             {% endif %}
 
@@ -74,5 +92,16 @@
     </div>
 
     <script src="{% static 'js/catalogue/catalogue.js' %}"></script>
+
+    <script>
+        function toggleFilter() {
+            const filterOptions = document.getElementById('filterOptions');
+            if (filterOptions.classList.contains('hidden')) {
+                filterOptions.classList.remove('hidden');
+            } else {
+                filterOptions.classList.add('hidden');
+            }
+        }
+    </script>
 
 {% endblock content %}
