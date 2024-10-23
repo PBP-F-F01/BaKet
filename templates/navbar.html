@@ -1,17 +1,33 @@
 {% load static %}
 <nav class="bg-white shadow-lg">
-    <div class="w-full h-24 px-20 py-4 bg-[#f4f4f4] shadow justify-between items-center inline-flex">
+    <div class="w-full h-20 px-20 py-4 bg-[#f4f4f4] shadow justify-between items-center inline-flex">
         <div class="w-[102px] relative">
-          <div class="w-36 h-[72px] left-0 top-0 flex-col justify-center items-center inline-flex">
-            <img class="w-36 h-[72px]" src="{% static 'images/LogoPanjang.svg' %}" />
+          <div class="w-32 h-[60px] left-0 top-0 flex-col justify-center items-center inline-flex">
+            <img class="w-32 h-[60px]" src="{% static 'images/LogoPanjang.svg' %}" />
           </div>
         </div>
         <div class="justify-start items-center gap-12 flex" id="navbar">
-          <a href="/" class="text-[#01aae8] text-lg font-bold font-['Raleway'] hover:text-[#01aae8]">Beranda </a>
-          <a href="/catalogue" class="text-[#c8c8c8] text-lg font-bold font-['Raleway'] hover:text-[#01aae8]">Catalogue</a>
-          <a href="/feeds" class="text-[#c8c8c8] text-lg font-bold font-['Raleway'] hover:text-[#01aae8]">Forum</a>
-          <a href="/articles" class="text-[#c8c8c8] text-lg font-bold font-['Raleway'] hover:text-[#01aae8]">Article</a>
-          <a class="text-[#c8c8c8] text-lg font-bold font-['Raleway'] hover:text-[#01aae8]">Wishlist</a>
+          <a href="/" class="text-[#01aae8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Beranda </a>
+          <a href="/catalogue" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Catalogue</a>
+          <a href="/feeds" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Forum</a>
+          <a href="/articles" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Article</a>
+          <a class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Wishlist</a>
         </div>
     </div>
-</nav>
+  </div>
+</div>
+
+<script>
+  const hamburger = document.getElementById('hamburger');
+  const dropdownMenu = document.getElementById('dropdown-menu');
+
+  hamburger.addEventListener('click', () => {
+    dropdownMenu.classList.toggle('open');
+  });
+  
+  document.addEventListener('click', (event) => {
+    if (!hamburger.contains(event.target) && !dropdownMenu.contains(event.target)) {
+      dropdownMenu.classList.remove('open');
+    }
+  });
+</script>
