@@ -2,27 +2,16 @@
 {% load static %}
 
 {% block meta %}
-<title>Add Post</title>
+<title>Forum</title>
 <link rel="stylesheet" href="{% static 'css/feeds/feeds_page.css' %}">
 {% endblock meta %}
 
 {% block content %}
-<div class="container mx-auto bg-[#fafafa] min-h-screen">
-    <div class="px-16 py-10">
-        <div class="rounded-[16px] overflow-hidden shadow-lg bg-white px-12 py-8">
-            <div class="mb-6">
-                <p class="font-semibold text-lg text-gray-700 use-poppins">Add Post</p>
-            </div>
-            <div class="">
-                <form id="addPost">
-                    <div class="mb-4">
-                        <label for="content" class="block text-sm font-medium text-gray-700 use-poppins">Isi Post</label>
-                        <textarea type="text" id="content" name="content" rows="2" class="mt-2 block w-full h-52 resize-none border border-gray-300 rounded-md p-2 hover:border-[#171e2a] text-black"  required></textarea>
-                    </div>
-                </form>
-                <button type="submit" id="submitPost" form="addPost" class="mt-8 mb-2 bg-indigo-700 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg use-poppins">Save</button>
-            </div>
-        </div>
+<div class="mx-auto bg-[#fafafa] min-h-screen flex flex-col text-center">
+    <h1 class="text-3xl font-bold pt-8 font-['Raleway']">What's on Batam Today?</h1>
+    <h1 class="text-lg font-semibold pt-4 pb-10 font-['Raleway']">{{ date }}</h1>
+    <div class="bg-white mx-64 min-h-screen rounded-t-[16px] px-6 py-2 break-words border">
+        <p>lmaoe</p>
     </div>
 </div>
 
