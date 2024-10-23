@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+    <link rel="stylesheet" href="{% static 'css/articles/catalogue.css' %}">
+    <title>BaKet</title>
+{% endblock meta %}
+
+{% block content %}
+    <form method="POST" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        <div>
+        {{ form.name.label_tag }}
+        <!-- Field label -->
+        {{ form.name }}
+        </div>
+        <div>{{ form.price.label_tag }} {{ form.price }}</div>
+        <div>{{ form.category.label_tag }} {{ form.category }}</div>
+        <div>{{ form.specs.label_tag }} {{ form.specs }}</div>
+        <div>{{ form.image.label_tag }} {{ form.image }}</div>
+        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded">
+        Create Product
+        </button>
+    </form>
+    
+{% endblock content %}
