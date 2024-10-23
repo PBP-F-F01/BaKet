@@ -9,24 +9,24 @@
     
     {% block content %}
 <div class="h-screen flex flex-col justify-start bg-[#fbfbf9] p-5">
-    <div class="hidden md:flex rounded-[16px] shadow-lg bg-white p-10 flex flex-col justify-start">
-        <h2 class="mb-6 font-bold text-3xl text-center" id="title">Dummy Artikel</h2>
+    <div class="hidden md:flex rounded-[16px] shadow-lg bg-white p-10 flex flex-col justify-start desktop">
+        <h2 class="mb-6 font-bold text-3xl text-center title">Dummy Artikel</h2>
         <p class="text-left mb-4">
-            Posted by: <span id="username">PoRo</span> |
-            Created at: <span id="created_at">12 Oktober 2024, 12:34</span> |
-            Updated at: <span id="updated_at">12 Oktober 2024, 12:34</span>
+            Posted by: <span class="username">PoRo</span> |
+            Created at: <span class="created_at">12 Oktober 2024, 12:34</span> |
+            Updated at: <span class="updated_at">12 Oktober 2024, 12:34</span>
         </p>
         <div class="flex justify-start py-6 mb-4">
-            <div class="flex items-center cursor-default" id="like-desktop">
-                <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons" id="like-button-desktop">thumb_up</span>
-                <span class="like-count" id="like-count-desktop">5</span>
+            <div class="flex items-center cursor-default like">
+                <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
+                <span class="like-count">5</span>
             </div>
-            <div class="flex items-center cursor-default ml-6" id="comment-desktop">
-                <a><span class="mr-3 align-middle cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons" id="comment-button-desktop">comment</span></a>
-                <span id="comment-count-desktop">1</span>
+            <div class="flex items-center cursor-default ml-6">
+                <span class="mr-3 align-middle cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons comment-button" onclick="window.scrollTo(0, document.body.querySelector('.comment').getBoundingClientRect().top);">comment</span>
+                <span class="comment-count">1</span>
             </div>
         </div>
-        <p class="text-left text-justify leading-7" onclick="window.scrollTo(0, '#title')" id="content">Child of ours<br />
+        <p class="text-left text-justify leading-7 content" onclick="window.scrollTo(0, document.body.querySelector('.title').getBoundingClientRect().top)">Child of ours<br />
             Counting the days 'til the summer come<br />
             But you don't live forever<br />
             Your mother will one day bring you home<br />
@@ -67,27 +67,44 @@
             Not satisfied to know you just once<br />
             <br />
             And I won't spend time<br />
-            Resenting the way things are</p>
+            Resenting the way things are
+        </p>
+        <div class="flex items-center cursor-default mt-6 comment">
+            <input type="text" placeholder="Write a comment..." class="border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">
+            <button class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins m-1">Post Comment</button>
+        </div>
+        <div class="mt-4">
+            <p class="text-left mb-2">
+                <span class="font-bold">PoRo</span> - <span class="text-gray-500">12 Oktober 2024, 12:34</span>
+            </p>
+            <p class="text-left text-justify leading-7">
+                This song is depressing 😭
+            </p>
+            <div class="flex items-center cursor-default like">
+                <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
+                <span class="like-count">5</span>
+            </div>
+        </div>
     </div>
     <div class="md:hidden h-screen flex flex-col justify-start bg-[#fbfbf9] px-12 py-10">
-        <div class="rounded-[16px] shadow-lg bg-white p-5 flex flex-col justify-start">
-            <h2 class="mb-6 font-bold text-3xl text-center" id="title">Dummy Artikel</h2>
-            <p class="text-left mb-4">Posted by: <span id="username">Erm what the sigma</span></p>
-            <p class="text-left">Created at: <span id="created_at">12 Oktober 2024, 12:34</span></p>
-            <p class="text-left mb-4">Updated at: <span id="updated_at">12 Oktober 2024, 12:34</span></p>
+        <div class="rounded-[16px] shadow-lg bg-white p-5 flex flex-col justify-start mobile">
+            <h2 class="mb-6 font-bold text-3xl text-center title">Dummy Artikel</h2>
+            <p class="text-left mb-4">Posted by: <span class="username">Erm what the sigma</span></p>
+            <p class="text-left">Created at: <span class="created_at">12 Oktober 2024, 12:34</span></p>
+            <p class="text-left mb-4">Updated at: <span class="updated_at">12 Oktober 2024, 12:34</span></p>
             <div class="flex justify-start py-3">
-                <div class="flex items-center cursor-default" id="like-mobile">
-                    <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons" id="like-button-mobile">thumb_up</span>
-                    <span class="like-count" id="like-count-mobile">5</span>
+                <div class="flex items-center cursor-default like">
+                    <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
+                    <span class="like-count">5</span>
                 </div>
             </div>
             <div class="flex justify-start py-3 mb-4">
-                <div class="flex items-center cursor-default" id="comment-mobile">
-                    <a><span class="mr-3 align-middle cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons" id="comment-button-mobile">comment</span></a>
-                    <span id="comment-count-mobile">1</span>
+                <div class="flex items-center cursor-default">
+                    <a><span class="mr-3 align-middle cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons comment-button">comment</span></a>
+                    <span class="comment-count">1</span>
                 </div>
             </div>
-            <p class="text-left text-justify leading-7" onclick="window.scrollTo(0, '#title')" id="content">Child of ours<br />
+            <p class="text-left text-justify leading-7" onclick="window.scrollTo(0, document.body.querySelector('.title').getBoundingClientRect().top)" id="content">Child of ours<br />
                 Counting the days 'til the summer come<br />
                 But you don't live forever<br />
                 Your mother will one day bring you home<br />
@@ -135,48 +152,48 @@
 <script src="{% static 'js/articles/article_main.js' %}"></script>
 <!-- <script src="{% static 'js/articles/dummy_article.js' %}"></script> -->
 <script>
-    document.querySelector("#like-button-desktop").addEventListener("click", async (e) => {
-    e.preventDefault();
-    console.log("like button clicked");
-    const button = document.querySelector("#like-button-desktop");
-    const likeCount = document.querySelector("#like-count-desktop");
+    document.querySelector(".desktop").querySelectorAll(".like").forEach((element) => {
+        const button = element.querySelector(".like-button");
+        const likeCount = element.querySelector(".like-count");
+        button.addEventListener("click", async (e) => {
+            e.preventDefault();
+            if (button.classList.contains("selected")) {
+                button.classList.remove("selected");
+                button.classList.remove("text-[#01aae8]");
+                button.classList.add("text-[#c8c8c8]");
+                button.classList.add("hover:text-[#01aae8]");
+                likeCount.innerText = parseInt(likeCount.innerText) - 1;
+            }
+            else {
+                button.classList.add("selected");
+                button.classList.remove("text-[#c8c8c8]");
+                button.classList.add("text-[#01aae8]");
+                button.classList.remove("hover:text-[#01aae8]");
+                likeCount.innerText = parseInt(likeCount.innerText) + 1;
+            }
+        });
+    });
 
-    if (button.classList.contains("selected")) {
-        button.classList.remove("selected");
-        button.classList.remove("text-[#01aae8]");
-        button.classList.add("text-[#c8c8c8]");
-        button.classList.add("hover:text-[#01aae8]");
-        likeCount.innerText = parseInt(likeCount.innerText) - 1;
-    }
-    else {
-        button.classList.add("selected");
-        button.classList.remove("text-[#c8c8c8]");
-        button.classList.add("text-[#01aae8]");
-        button.classList.remove("hover:text-[#01aae8]");
-        likeCount.innerText = parseInt(likeCount.innerText) + 1;
-    }
-});
-
-    document.querySelector("#like-button-mobile").addEventListener("touchend", async (e) => {
-        e.preventDefault();
-        console.log("like button clicked");
-        const button = document.querySelector("#like-button-mobile");
-        const likeCount = document.querySelector("#like-count-mobile");
-
-        if (button.classList.contains("selected")) {
-            button.classList.remove("selected");
-            button.classList.remove("text-[#01aae8]");
-            button.classList.add("text-[#c8c8c8]");
-            button.classList.add("hover:text-[#01aae8]");
-            likeCount.innerText = parseInt(likeCount.innerText) - 1;
-        }
-        else {
-            button.classList.add("selected");
-            button.classList.remove("text-[#c8c8c8]");
-            button.classList.add("text-[#01aae8]");
-            button.classList.remove("hover:text-[#01aae8]");
-            likeCount.innerText = parseInt(likeCount.innerText) + 1;
-        }
+    document.querySelector(".mobile").querySelectorAll(".like").forEach((element) => {
+        const button = element.querySelector(".like-button");
+        const likeCount = element.querySelector(".like-count");
+        button.addEventListener("touchend", async (e) => {
+            e.preventDefault();
+            if (button.classList.contains("selected")) {
+                button.classList.remove("selected");
+                button.classList.remove("text-[#01aae8]");
+                button.classList.add("text-[#c8c8c8]");
+                button.classList.add("hover:text-[#01aae8]");
+                likeCount.innerText = parseInt(likeCount.innerText) - 1;
+            }
+            else {
+                button.classList.add("selected");
+                button.classList.remove("text-[#c8c8c8]");
+                button.classList.add("text-[#01aae8]");
+                button.classList.remove("hover:text-[#01aae8]");
+                likeCount.innerText = parseInt(likeCount.innerText) + 1;
+            }
+        });
     });
 </script>
 {% endblock content %}
