@@ -30,7 +30,7 @@ def create_product(request):
     else:
         form = ProductForm()
 
-    return render(request, 'create_product.html', {'form': form})
+    return render(request, 'add-product.html', {'form': form})
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
