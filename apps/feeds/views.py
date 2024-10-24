@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.urls import reverse
 from django.core import serializers
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
@@ -7,15 +8,30 @@ from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 
 from apps.feeds.models import *
+from pytz import timezone
 
 
 # Get all the posts
-def show_all(request):    
+def show_all(request):
+    is_all = request.COOKIES.get('last_tabs', 'all') == 'all'
+    
+    posts = Post.objects.all() if is_all else Post.objects.filter(like_count__gt=0)
+    
     context = {
-        'date': datetime.now().strftime("%A, %d %B %Y")
+        'date': datetime.now(timezone('Asia/Jakarta')).strftime("%A, %d %B %Y"),
+        'tabs': is_all,
+        'posts': posts,
+        'anonymous': request.user.is_anonymous
     }
     
     return render(request, 'feeds_page.html', context)
+
+
+# Processing tabs changes
+def change_tabs(request, all_tabs='all'):
+    response = HttpResponseRedirect(reverse('feeds:show_all'))
+    response.set_cookie('last_tabs', all_tabs, max_age=3600)
+    return response
 
 
 # Create a new post with AJAX
