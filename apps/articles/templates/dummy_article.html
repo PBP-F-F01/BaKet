@@ -1,12 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
-<head>
+
     {% block meta %}
-        <link rel="stylesheet" href="{% static 'css/articles/dummy_article.css' %}">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <title>Artikel Baket</title>
-        {% endblock meta %}
-    </head>
+    <link rel="stylesheet" href="{% static 'css/articles/dummy_article.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <title>Artikel Baket</title>
+    {% endblock meta %}
     
     {% block content %}
     <div class="h-screen flex flex-col justify-start bg-[#fbfbf9] p-5">
@@ -24,8 +23,8 @@
                     <span class="like-count">5</span>
                 </div>
                 <div class="flex items-center cursor-default ml-6">
-                    <span class="mr-3 align-middle cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons comment-button" onclick="window.scrollTo(0, document.body.querySelector('.comment-input').getBoundingClientRect().top);">comment</span>
-                    <span class="comment-count">0</span>
+                    <span class="mr-3 align-bottom cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons comment-button" onclick="window.scrollTo(0, document.body.querySelector('.comment-input').getBoundingClientRect().top);">comment</span>
+                    <span class="comment-count align-bottom"></span>
                 </div>
             </div>
             <p class="text-left text-justify leading-7 content">Child of ours<br />
@@ -78,30 +77,32 @@
             <div class="comment-section">
                 <div class="mt-4 comment">
                     <p class="text-left mb-2">
-                        <span class="font-bold">PoRo</span> - <span class="text-gray-500">12 Oktober 2024, 12:34</span>
+                        <span class="font-bold">PoRo</span> - <span class="text-gray-500">12 Oktober 2024, 12:34 <span class="hidden">(edited)</span></span>
                     </p>
                     <p class="text-left text-justify leading-7">
                         This song is depressing
                     </p>
-                    <div class="flex items-center cursor-default">
+                    <input type="text" value="This song is depressing" class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">
+                    <div class="flex items-center cursor-default like">
                         <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
                         <span class="like-count">5</span>
                         <span class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
-                        <a class="bg-[#ff0000] hover:bg-[#ff3737] text-white font-semibold py-1 px-2 rounded-[10px] use-poppins m-1" href="#">Delete</a>
+                        <span class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>
                     </div>
                 </div>
                 <div class="mt-4 comment">
                     <p class="text-left mb-2">
-                        <span class="font-bold">Raa</span> - <span class="text-gray-500">18 Oktober 2024, 15:51</span>
+                        <span class="font-bold">Raa</span> - <span class="text-gray-500">18 Oktober 2024, 15:51 <span class="hidden">(edited)</span></span>
                     </p>
                     <p class="text-left text-justify leading-7">
                         Dummy comment
                     </p>
-                    <div class="flex items-center cursor-default">
+                    <input type="text" value="Dummy comment" class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">
+                    <div class="flex items-center cursor-default like">
                         <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
                         <span class="like-count">3</span>
                         <span class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
-                        <a class="bg-[#ff0000] hover:bg-[#ff3737] text-white font-semibold py-1 px-2 rounded-[10px] use-poppins m-1" href="#">Delete</a>
+                        <span class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>
                     </div>
                 </div>
             </div>
@@ -123,7 +124,7 @@
                 <div class="flex justify-start py-3 mb-4">
                     <div class="flex items-center cursor-default">
                         <a><span class="mr-3 align-middle cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons comment-button" onclick="window.scrollTo(0, document.body.querySelector('.mobile').querySelector('.comment-input').getBoundingClientRect().top);">comment</span></a>
-                        <span class="comment-count">0</span>
+                        <span class="comment-count"></span>
                     </div>
                 </div>
                 <p class="text-left text-justify leading-7 content">Child of ours<br />
@@ -176,30 +177,32 @@
                 <div class="comment-section">
                     <div class="mt-4 comment">
                         <p class="text-left mb-2">
-                            <span class="font-bold">PoRo</span> - <span class="text-gray-500">12 Oktober 2024, 12:34</span>
+                            <span class="font-bold">PoRo</span> - <span class="text-gray-500">12 Oktober 2024, 12:34 <span class="hidden">(edited)</span></span>
                         </p>
                         <p class="text-left text-justify leading-7">
                             This song is depressing
                         </p>
-                        <div class="flex items-center cursor-default flex-wrap">
+                        <input type="text" value="This song is depressing" class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">
+                        <div class="flex items-center cursor-default flex-wrap like">
                             <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
                             <span class="like-count">5</span>
-                            <a class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-1 px-2 rounded-[10px] use-poppins ml-5 m-1 mt-2" href="#">Edit</a>
-                            <a class="bg-[#ff0000] hover:bg-[#ff3737] text-white font-semibold py-1 px-2 rounded-[10px] use-poppins m-1 mt-2" href="#">Delete</a>
+                            <span class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
+                            <span class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>
                         </div>
                     </div>
                     <div class="mt-4 comment">
                         <p class="text-left mb-2">
-                            <span class="font-bold">Raa</span> - <span class="text-gray-500">18 Oktober 2024, 15:51</span>
+                            <span class="font-bold">Raa</span> - <span class="text-gray-500">18 Oktober 2024, 15:51 <span class="hidden">(edited)</span></span>
                         </p>
                         <p class="text-left text-justify leading-7">
                             Dummy comment
                         </p>
-                        <div class="flex items-center cursor-default flex-wrap">
+                        <input type="text" value="Dummy comment" class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">
+                        <div class="flex items-center cursor-default flex-wrap like">
                             <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
                             <span class="like-count">3</span>
-                            <a class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-1 px-2 rounded-[10px] use-poppins ml-5 m-1 mt-2" href="#">Edit</a>
-                            <a class="bg-[#ff0000] hover:bg-[#ff3737] text-white font-semibold py-1 px-2 rounded-[10px] use-poppins m-1 mt-2" href="#">Delete</a>
+                            <span class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
+                            <span class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>
                         </div>
                     </div>
                 </div>
