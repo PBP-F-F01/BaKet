@@ -1,7 +1,16 @@
 {% extends 'base.html' %} {% load static %} {% block content %}
 
+<head>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+  />
+
+  <link rel="stylesheet" href="{% static 'css/catalogue/details.css' %}" />
+</head>
+
 <body>
-  <div class="grid grid-cols-2 md:grid-cols-3 gap-8 p-4 mt-8">
+  <div class="grid grid-cols-2 md:grid-cols-2 gap-8 p-4 mt-8">
     <!-- Product Image -->
     <div class="flex justify-center items-center">
       <img
@@ -13,9 +22,7 @@
 
     <!-- Product Details -->
     <div class="flex flex-col justify-center space-y-4">
-      <p
-        class="flex px-3 py-1 text-lg text-gray-700 bg-blue-500 text-white rounded-lg"
-      >
+      <p class="flex px-3 py-1 text-lg text-white bg-blue-500 rounded-lg">
         {{ product.category }}
       </p>
 
@@ -27,64 +34,6 @@
         <strong>Specifications:</strong> {{ product.specs }}
       </p>
 
-      <div class="flex items-center justify-center">
-        <svg
-          class="w-4 h-4 text-yellow-300 ms-1"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 22 20"
-        >
-          <path
-            d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-          />
-        </svg>
-        <svg
-          class="w-4 h-4 text-yellow-300 ms-1"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 22 20"
-        >
-          <path
-            d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-          />
-        </svg>
-        <svg
-          class="w-4 h-4 text-yellow-300 ms-1"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 22 20"
-        >
-          <path
-            d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-          />
-        </svg>
-        <svg
-          class="w-4 h-4 text-yellow-300 ms-1"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 22 20"
-        >
-          <path
-            d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-          />
-        </svg>
-        <svg
-          class="w-4 h-4 ms-1 text-gray-300 dark:text-gray-500"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 22 20"
-        >
-          <path
-            d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-          />
-        </svg>
-      </div>
-
       <!-- Back Button -->
       <a
         href="{% url 'catalogue' %}"
@@ -92,38 +41,52 @@
       >
         Back to Products
       </a>
-
-      <!-- Reviews Section -->
-      <div>
-        <h2 class="text-2xl font-semibold mb-4">Reviews</h2>
-        <ul>
-          {% for review in reviews %}
-          <li class="mb-4 p-4 bg-gray-100 rounded-lg">
-            <p>
-              <strong>{{ review.user.username }}</strong> rated: {{
-              review.rating }}/5
-            </p>
-            <p>{{ review.comment }}</p>
-            <p class="text-sm text-gray-500">{{ review.created_at }}</p>
-          </li>
-          {% empty %}
-          <li>No reviews yet. Be the first to review!</li>
-          {% endfor %}
-        </ul>
-
-        <!-- Review Form -->
-        <h2 class="text-2xl font-semibold mt-8 mb-4">Leave a Review</h2>
-        <form method="POST">
-          {% csrf_token %} {{ form.as_p }}
-          <button
-            type="submit"
-            class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
-          >
-            Submit Review
-          </button>
-        </form>
-      </div>
     </div>
-    {% endblock content %}
   </div>
+  <div class="grid grid-cols-2 md:grid-cols-2 gap-8 p-4 mt-8">
+    <!-- Reviews Section -->
+    <div>
+      <h2 class="text-2xl font-semibold mb-4">Reviews</h2>
+      <ul>
+        {% for review in reviews %}
+        <li class="mb-4 p-4 bg-gray-100 rounded-lg">
+          <p><strong>{{ review.user.username }}</strong></p>
+
+          <!-- Star Rating -->
+          <div>
+            {% for i in "12345"|make_list %}
+            <span
+              class="fa fa-star {% if review.rating >= i|add:'0'|add:0 %}checked{% else %}fa-star-o{% endif %}"
+            ></span>
+            {% endfor %}
+          </div>
+
+          <span class="fa fa-star checked"></span>
+          <span class="fa fa-star fa-star-o"></span>
+
+          <p>{{ review.comment }}</p>
+          <p class="text-sm text-gray-500">{{ review.created_at }}</p>
+        </li>
+        {% empty %}
+        <li>No reviews yet. Be the first to review!</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <!-- Review Form -->
+    <div>
+      <h2 class="text-2xl font-semibold mt-8 mb-4">Leave a Review</h2>
+      <form method="POST">
+        {% csrf_token %} {{ form.as_p }}
+        <button
+          type="submit"
+          class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
+        >
+          Submit Review
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endblock content %}
+
+  <script src="{% static 'js/catalogue/details.js' %}"></script>
 </body>

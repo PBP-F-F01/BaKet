@@ -51,6 +51,7 @@ def create_product(request):
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviews = Review.objects.filter(product=product).order_by('-created_at')  # Fetch all reviews for this product
+    rating = Review.objects.filter(rating=0).order_by("?").first()
     
     if request.method == 'POST':
         form = ReviewForm(request.POST)
@@ -63,5 +64,4 @@ def product_detail(request, product_id):
     else:
         form = ReviewForm()
 
-    return render(request, 'details.html', {'product': product, 'reviews': reviews, 'form': form})
-
+    return render(request, 'details.html', {'product': product, 'reviews': reviews, 'form': form, 'rating': rating})
