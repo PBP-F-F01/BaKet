@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+    {% block meta %}
+    <link rel="stylesheet" href="{% static 'css/articles/dummy_article.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <title>Artikel Baket</title>
+    {% endblock meta %}
+
+    {% block content %}
+
+    <!-- Desktop -->
+    <div class="grid grid-cols-2 gap-4 p-4 main desktop">
+        <!-- No Articles -->
+        <div class="hidden col-span-2 bg-white rounded-lg shadow-lg p-4 text-center">
+            <h2 class="text-2xl font-bold text-gray-800">No Articles Available</h2>
+            <p class="text-gray-600 mt-2">There are no articles to display at the moment. Please check back later.</p>
+        </div>
+        <!-- Has Articles -->
+        <div class="bg-white rounded-lg shadow-lg p-4 article">
+            <h2 class="text-2xl font-bold title">Dummy Artikel 1</h2>
+            <p class="text-gray-600 metadata">This is dummy article 1</p>
+            <div class="flex items-center justify-between mt-4">
+                <div class="flex items-center">
+                    <span class="material-icons mr-2">thumb_up</span>
+                    <span class="text-gray-600 like-count">12</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="material-icons mr-2">comment</span>
+                    <span class="text-gray-600 comment-count">5</span>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-4 article">
+            <h2 class="text-2xl font-bold title">Dummy Artikel 2</h2>
+            <p class="text-gray-600 metadata">This is dummy article 2</p>
+            <div class="flex items-center justify-between mt-4">
+                <div class="flex items-center">
+                    <span class="material-icons mr-2">thumb_up</span>
+                    <span class="text-gray-600 like-count">5</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="material-icons mr-2">comment</span>
+                    <span class="text-gray-600 comment-count">3</span>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-4 article">
+            <h2 class="text-2xl font-bold title">Dummy Artikel 3</h2>
+            <p class="text-gray-600 metadat">This is dummy article 3</p>
+            <div class="flex items-center justify-between mt-4">
+                <div class="flex items-center">
+                    <span class="material-icons mr-2">thumb_up</span>
+                    <span class="text-gray-600 like-count">7</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="material-icons mr-2">comment</span>
+                    <span class="text-gray-600 comment-count">2</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/articles/article_main.js' %}"></script>
+    <!-- <script src="{% static 'js/articles/dummy_article.js' %}"></script> -->
+    <script>
+        document.head.querySelector("title").innerHTML = `Dummy Artikel Main Page`;
+    </script>
+    {% endblock content %}
