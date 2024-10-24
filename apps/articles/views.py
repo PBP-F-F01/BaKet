@@ -11,6 +11,9 @@ def main(request):
 def dummy_article(request):
     return render(request, 'dummy_article.html')
 
+def dummy_main(request):
+    return render(request, 'dummy_main.html')
+
 def json(request):
     data = Article.objects.all()
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
