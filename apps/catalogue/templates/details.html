@@ -1,4 +1,10 @@
-{% extends 'base.html' %} {% load static %} {% block content %}
+{% extends 'base.html' %} {% load static %} 
+
+{% block meta %}
+<title>{% block title %} Product | {% endblock title %}</title>
+{% endblock meta %}
+
+{% block content %}
 
 <body>
   <div class="grid grid-cols-2 md:grid-cols-3 gap-8 p-4 mt-8">
