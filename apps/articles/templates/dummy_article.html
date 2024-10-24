@@ -4,7 +4,7 @@
     {% block meta %}
     <link rel="stylesheet" href="{% static 'css/articles/dummy_article.css' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <title>Artikel Baket</title>
+    <title>{% block title %} Article | {% endblock title %}</title>
     <script src="{% static 'js/articles/dummy_article.js' %}"></script>
     {% endblock meta %}
     

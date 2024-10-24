@@ -3,7 +3,7 @@
 
 {% block meta %}
     <link rel="stylesheet" href="{% static 'css/articles/article_main.css' %}">
-    <title>Artikel Baket</title>
+    <title>{% block title %} Article | {% endblock title %}</title>
     {% endblock meta %}
     
     {% block content %}
