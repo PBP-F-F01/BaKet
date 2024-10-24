@@ -5,21 +5,36 @@ function navbar() {
   <a href="/feeds" class="text-[#01aae8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Forum</a>
   <a href="/articles" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Article</a>
   <a href="#" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Wishlist</a>`;
-navbar.innerHTML = html;
+  navbar.innerHTML = html;
 }
 
 function dropdown() {
-const dropdown = document.getElementById('dropdown-menu');
-const html = `<div class="p-4">
-  <div class="flex flex-col">
-    <a href="/" class="text-neutral-600 text-sm mb-4 font-semibold font-['Raleway']">Beranda </a>
-    <a class="text-neutral-600 text-sm mb-4 font-semibold font-['Raleway']">Catalogue</a>
-    <a href="/feeds" class="text-[#01aae8] text-sm mb-4 font-semibold font-['Raleway']">Forum</a>
-    <a href="/articles" class="text-neutral-600 text-sm mb-4 font-semibold font-['Raleway']">Article</a>
-    <a class="text-neutral-600 text-sm font-semibold font-['Raleway']">Wishlist</a>
-  </div>
-</div>`;
-dropdown.innerHTML = html;
+  const dropdown = document.getElementById('dropdown-menu');
+  const html = `<div class="p-4">
+    <div class="flex flex-col">
+      <a href="/" class="text-neutral-600 text-sm mb-4 font-semibold font-['Raleway']">Beranda </a>
+      <a class="text-neutral-600 text-sm mb-4 font-semibold font-['Raleway']">Catalogue</a>
+      <a href="/feeds" class="text-[#01aae8] text-sm mb-4 font-semibold font-['Raleway']">Forum</a>
+      <a href="/articles" class="text-neutral-600 text-sm mb-4 font-semibold font-['Raleway']">Article</a>
+      <a class="text-neutral-600 text-sm font-semibold font-['Raleway']">Wishlist</a>
+    </div>
+  </div>`;
+  dropdown.innerHTML = html;
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
 }
 
 navbar();
