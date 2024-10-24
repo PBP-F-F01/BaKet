@@ -27,6 +27,8 @@ class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    has_edited = models.BooleanField(default=False)
 
     @property
     def like_count(self):
