@@ -19,6 +19,10 @@
         {{ product.category }}
       </p>
 
+      <button onclick="addToCart({{ product.id }})" class="bg-blue-500 text-white px-4 py-2 rounded">
+        Add to Cart
+      </button>
+
       <h1 class="text-3xl font-bold">{{ product.name }}</h1>
       <p class="text-lg text-gray-700">
         <strong>Price:</strong> Rp{{ product.price }}
@@ -124,6 +128,27 @@
         </form>
       </div>
     </div>
-    {% endblock content %}
   </div>
 </body>
+
+<script>
+  function addToCart(productId) {
+      // Send AJAX request to add the item to the cart
+      fetch(`/cart/add/${productId}/`, {
+          method: 'GET',
+          headers: {
+              'X-Requested-With': 'XMLHttpRequest',  // Required for Django to recognize it as an AJAX request
+          },
+      })
+      .then(response => response.json())
+      .then(data => {
+          // Update the cart count dynamically
+          document.getElementById('cart-count').innerText = data.cart_count;
+          alert("Barang sudah dimasukkan ke keranjang!");
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+  }
+</script>
+{% endblock content %}
