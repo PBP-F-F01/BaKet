@@ -8,12 +8,15 @@
 
 {% block content %}
 <div class="mx-auto bg-[#fafafa] min-h-screen flex flex-col text-center">
+    <!-- Toast -->
+    <div id="toast" class="hidden"></div>
+
     <h1 class="text-2xl md:text-3xl font-bold pt-6 md:pt-8 font-['Raleway'] text-[#01aae8]">What's on Batam Today?</h1>
     <h1 class="text-base md:text-lg font-semibold pt-1 md:pt-3 pb-6 md:pb-8 font-['Raleway']">{{ date }}</h1>
     <div class="bg-white mx-auto w-full md:w-[700px] min-h-screen rounded-t-[16px] break-words border md:shadow-lg">
         <form id="searchForm" class="flex items-center px-6 pt-5">
             <div class="flex flex-grow items-center bg-zinc-50 border rounded-[16px] px-4 py-1">
-                <img src="{% static 'images/icon_magnifyingglass.svg' %}" class="w-5 h-5">
+                <img src="{% static 'icon/icon_magnifyingglass.svg' %}" class="w-5 h-5">
                 <input type="text" id="searchInput" placeholder="Search..."
                     class="flex-grow py-2 pl-4 bg-transparent focus:outline-none text-sm" autocomplete="off">
             </div>
@@ -41,8 +44,8 @@
             </button>
         </div>
         <hr class="border-gray-200">
-        {% if anonymous %}
-        <div class="bg-white py-6 px-8 w-full">
+        {% if anonymous %} <!-- TODO: Ubah jadi not anonymous -->
+        <div class="bg-white py-5 px-6 md:py-6 md:px-8 w-full">
             <div class="flex items-start">
                 <img alt="User Avatar" draggable="false" oncontextmenu="return false;"
                     src="{% static 'images/dummy.gif' %}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
@@ -52,9 +55,9 @@
                             class="w-full p-2 focus:outline-none resize-none"></textarea>
                     </form>
                     <div class="flex justify-between items-center mt-1">
-                        <button class="flex items-center space-x-1 mx-2 rounded-full">
+                        <button class="flex items-center space-x-0.5 mx-2 rounded-full">
                             <p class="font-bold text-[#01aae8]">+</p>
-                            <img src="{% static 'images/icon_image.svg' %}" class="w-5 h-5">
+                            <img src="{% static 'icon/icon_image.svg' %}" class="w-5 h-5">
                         </button>
                         <button id="post-button" type="submit" form="add-post"
                             class="bg-[#01aae8] text-white px-4 py-2 rounded-full font-semibold opacity-50 cursor-not-allowed">Posting</button>
@@ -64,19 +67,74 @@
         </div>
         <hr>
         {% endif %}
+        <div id="posts"></div>
     </div>
 </div>
 
 <script>
+    let liked = {};
+    const likeIcons = document.querySelectorAll(".like-icon");
+
+    function getTime(createdAt) {
+        const now = new Date();
+        const postDate = new Date(createdAt);
+        const diffInMs = now - postDate;
+        const diffInSeconds = Math.floor(diffInMs / 1000);
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        const diffInDays = Math.floor(diffInHours / 24);
+
+        switch (true) {
+            case (diffInSeconds < 60):
+                return `${diffInSeconds}s`;
+            case (diffInMinutes < 60):
+                return `${diffInMinutes}m`;
+            case (diffInHours < 24):
+                return `${diffInHours}h`;
+            default:
+                return postDate.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                });
+        }
+    }
+
+    function showToast(message, color) {
+        const toast = document.getElementById('toast');
+        toast.className = `fixed top-[-100px] left-1/2 transform -translate-x-1/2 bg-${color}-500 text-white p-4 rounded-lg shadow-lg transition-all duration-300 ease-in-out`;
+        toast.innerText = message;
+
+        toast.addEventListener('click', () => {
+            toast.className = 'hidden';
+        });
+
+        setTimeout(() => {
+            toast.className = `fixed top-24 left-1/2 transform -translate-x-1/2 bg-${color}-500 text-white p-4 rounded-lg shadow-lg transition-all duration-300 ease-in-out`;
+        }, 50);
+
+        setTimeout(() => {
+            toast.className = `fixed top-[-100px] left-1/2 transform -translate-x-1/2 bg-${color}-500 text-white p-4 rounded-lg shadow-lg transition-all duration-300 ease-in-out`;
+        }, 2000);
+
+        setTimeout(() => {
+            toast.className = 'hidden';
+        }, 2400);
+    }
+
     function addPost() {
         fetch("{% url 'feeds:create_post' %}", {
             method: "POST",
             body: new FormData(document.querySelector('#add-post')),
         }).then(response => {
             if (response.status === 400) {
-                alert("Failed to add post.");
+                showToast("Failed to add post.", "red");
             } else {
                 document.getElementById("add-post").reset();
+                document.getElementById("post-content").style.height = "auto";
+                document.getElementById("post-content").style.height = document.getElementById("post-content").scrollHeight + "px";
+
+                refreshPosts();
             }
         }).catch(error => {
             alert("An error occurred while adding the post. Please try again.");
@@ -85,12 +143,155 @@
         return false;
     }
 
-    document.getElementById("add-post").addEventListener("submit", (e) => {
+    async function getAllPost() {
+        return fetch("{% url 'feeds:post_json' %}").then(response => response.json());
+    }
+
+    async function getUserPost(user) {
+        // return fetch("/feeds/json/post/user/" + user).then(response => response.json());
+        return [];
+    }
+
+    async function refreshPosts() {
+        document.getElementById("posts").innerHTML = "";
+        document.getElementById("posts").className = "";
+
+        let cookie_tabs;
+
+        try {
+            cookie_tabs = document.cookie.trim().split(";").find(c => c.trim().startsWith("last_tabs")).split("=")[1] ?? "all";
+        } catch (error) {
+            cookie_tabs = "all";
+        }
+
+        const is_all = cookie_tabs === "all";
+
+        const allPosts = is_all ? await getAllPost() : await getUserPost(1); // To be replaced with the actual user id
+
+        let postCards = "";
+        let classNameStr = "";
+
+        if (allPosts.length === 0) {
+            classNameStr = "flex flex-col items-center justify-center my-12";
+            postCards = `
+                <img src="{% static 'images/NoPost.svg' %}" class="w-72 h-72">
+                <p class="text-gray-400 text-lg mt-4">No post found.</p>
+            `;
+        } else {
+            classNameStr = "flex flex-col items-center justify-center";
+            allPosts.forEach((post) => {
+                const content = DOMPurify.sanitize(post.fields.content).replace(/\r?\n/g, '<br>').trim();
+                const dates = getTime(post.fields.created_at);
+
+                postCards += `
+                    <a href="/feeds/post/${post.pk}" class="w-full py-5 px-6 md:py-6 md:px-8 hover:bg-gray-50">
+                        <div class="flex flex-row space-x-2">
+                            <img alt="User Avatar" draggable="false" oncontextmenu="return false;"
+                            src="{% static 'images/dummy.jpeg' %}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
+                            <div class="flex-grow flex-col">
+                                <div class="flex items-center space-x-1.5">
+                                    <p class="font-semibold text-gray-700">Someone</p>
+                                    <p class="text-gray-400"> · </p>
+                                    <p class="text-sm text-gray-400">${dates}</p>
+                                </div>
+                                <p class="text-left content-text mt-1">${content}</p>
+                                <div class="flex flex-row justify-between mt-3 space-x-2">
+                                    <div class="flex space-x-10">
+                                        <button class="like-icon flex space-x-2 items-center z-50" data-post-id="${post.pk}" data-like-count="${post.fields.like_count}" onclick="event.preventDefault(); event.stopPropagation(); clickLikeButton('${post.pk}')">
+                                            <img src="{% static 'icon/icon_heart.svg' %}" class="w-5 h-5">
+                                            <p class="text-gray-500">${post.fields.like_count}</p>
+                                        </button>
+                                        <button class="flex space-x-2 items-center">
+                                            <img src="{% static 'icon/icon_chat.svg' %}" class="w-5 h-5">
+                                            <p class="text-gray-500">${post.fields.reply_count}</p>
+                                        </button>
+                                    </div>
+                                    <button class="copy-link z-50" onclick="event.preventDefault(); event.stopPropagation(); copy_link('${post.pk}');">
+                                        <img src="{% static 'icon/icon_upload.svg' %}" class="w-5 h-5">
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <hr class="border-gray-200 w-full">
+                `;
+            });
+        }
+
+        document.getElementById("posts").className = classNameStr;
+        document.getElementById("posts").innerHTML = postCards;
+
+        likeIcons.forEach((icon) => {
+            const postId = icon.dataset.postId;
+            liked[postId] = false; // Default/Initial value, nanti klo udh ada user bisa pake get dari API
+
+            const heartIcon = icon.getElementsByTagName('img')[0];
+            heartIcon.src = liked[postId]
+                ? "{% static 'icon/icon_heart_fill.svg' %}"
+                : "{% static 'icon/icon_heart.svg' %}";
+        });
+    }
+
+    refreshPosts();
+
+    function getCsrfToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    function copy_link(uuid) {
+        const postLink = window.location.href + `post/${uuid}`;
+        navigator.clipboard.writeText(postLink).then(() => {
+            showToast('Link copied!', 'green');
+        }).catch(() => {
+            showToast('Failed to copy link!', 'red');
+        });
+    }
+
+    function clickLikeButton(postId) {
+        liked[postId] = !liked[postId];
+
+        const icon = document.querySelector(`.like-icon[data-post-id="${postId}"]`);
+
+        const heartIcon = icon.getElementsByTagName('img')[0];
+        const likeCount = icon.getElementsByTagName('p')[0];
+
+        heartIcon.src = liked[postId]
+            ? "{% static 'icon/icon_heart_fill.svg' %}"
+            : "{% static 'icon/icon_heart.svg' %}";
+
+        const currentCount = parseInt(likeCount.textContent);
+        likeCount.textContent = liked[postId] ? currentCount + 1 : currentCount - 1;
+
+        // try {
+        //     const response = await fetch(`/api/posts/${postId}/like`, {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'X-CSRFToken': getCsrfToken(),
+        //         },
+        //         body: JSON.stringify({
+        //             liked: liked[postId]
+        //         })
+        //     });
+
+        //     if (!response.ok) {
+        //         liked[postId] = !liked[postId];
+        //         heartIcon.src = liked[postId]
+        //             ? "{% static 'icon/icon_heart_fill.svg' %}"
+        //             : "{% static 'icon/icon_heart.svg' %}";
+        //         likeCount.textContent = currentCount;
+        //         throw new Error('Failed to update like status');
+        //     }
+        // } catch (error) {
+        //     console.error('Error updating like status:', error);
+        // }
+    }
+
+    document.getElementById("add-post").addEventListener("submit", async (e) => {
         e.preventDefault();
-        addPost();
+        await addPost();
     });
 </script>
 <script src="{% static 'js/feeds/feeds_page.js' %}"></script>
 <script src="{% static 'js/feeds/after_loaded.js' %}" defer></script>
-
 {% endblock content %}

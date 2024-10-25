@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>{% block title %} Forum | {% endblock title %}</title>
+<link rel="stylesheet" href="{% static 'css/feeds/feeds_page.css' %}">
+{% endblock meta %}
+
+{% block content %}
+<div class="mx-auto bg-[#fafafa] min-h-screen flex flex-col text-center">
+    <!-- Toast -->
+    <div id="toast" class="hidden"></div>
+
+    <div
+        class="bg-white mx-auto w-full md:w-[700px] min-h-screen md:mt-12 md:rounded-t-[16px] break-words border md:shadow-lg">
+        <div id="the-post" class="w-full py-4 px-5 md:py-7 md:px-7">
+            <div class="flex flex-row space-x-2">
+                <img alt="User Avatar" draggable="false" oncontextmenu="return false;"
+                    src="{% static 'images/dummy.jpeg' %}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
+                <div class="flex-grow flex-col">
+                    <div class="flex justify-between items-start pt-[3px] pr-[3px]">
+                        <div class="flex flex-col text-left justify-start">
+                            <p class="font-semibold text-gray-700">Anon</p>
+                            <p id="dates" class="text-xs text-gray-400"></p>
+                        </div>
+                        <button>
+                            <img src="{% static 'icon/icons_three_dots.svg' %}" class="w-4 h-4">
+                        </button>
+                    </div>
+                    <p id="content" class="text-left content-text mt-2 mb-3">{{ post.content }}</p>
+                    <div class="flex flex-row justify-between mt-3 space-x-2">
+                        <div class="flex space-x-10">
+                            <button id="like-icon" class="flex space-x-2 items-center">
+                                <img src="{% static 'icon/icon_heart.svg' %}" class="w-5 h-5">
+                                <p class="text-gray-500">{{ post.like_count }}</p>
+                            </button>
+                            <button class="flex space-x-2 items-center">
+                                <img src="{% static 'icon/icon_chat.svg' %}" class="w-5 h-5">
+                                <p class="text-gray-500">{{ post.reply_count }}</p>
+                            </button>
+                        </div>
+                        <button id="copy-link">
+                            <img src="{% static 'icon/icon_upload.svg' %}" class="w-5 h-5">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="border-gray-300 w-full">
+        {% if anonymous %} <!-- TODO: Ubah jadi not anonymous -->
+        <div class="bg-white py-4 px-5 md:py-5 md:px-7 w-full">
+            <div class="flex items-start">
+                <img alt="User Avatar" draggable="false" oncontextmenu="return false;"
+                    src="{% static 'images/dummy.gif' %}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
+                <div class="flex-grow flex-col">
+                    <form id="add-reply">
+                        <textarea type="text" id="reply-content" name="content" rows="1" placeholder="Give a reply!"
+                            class="w-full p-2 focus:outline-none resize-none"></textarea>
+                    </form>
+                    <div class="flex justify-end items-center md:mt-1">
+                        <button id="reply-button" type="submit" form="add-reply"
+                            class="bg-[#01aae8] text-white px-4 py-2 rounded-full font-semibold opacity-50 cursor-not-allowed">
+                            Reply
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        {% endif %}
+        <div id="replies"></div>
+    </div>
+</div>
+
+<script>
+    let liked_map = {};
+    const likeIcons = document.querySelectorAll(".like-icon");
+
+    likeIcons.forEach((icon) => {
+        liked_map[icon.dataset.replyId] = false;
+    });
+
+    function getTime(isoString) {
+        const dateObject = new Date(isoString);
+
+        const hours = dateObject.getHours();
+        const minutes = dateObject.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+        const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+        const timePart = `${formattedHours}.${formattedMinutes} ${ampm}`;
+
+        const day = dateObject.getDate();
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Agu", "Sep", "Oct", "Nov", "Dec"];
+        const month = monthNames[dateObject.getMonth()];
+        const year = dateObject.getFullYear();
+        const datePart = `${day} ${month} ${year}`;
+
+        return `${timePart} · ${datePart}`;
+    }
+
+    function showToast(message, color) {
+        const toast = document.getElementById('toast');
+        toast.className = `fixed top-[-100px] left-1/2 transform -translate-x-1/2 bg-${color}-500 text-white p-4 rounded-lg shadow-lg transition-all duration-300 ease-in-out`;
+        toast.innerText = message;
+
+        toast.addEventListener('click', () => {
+            toast.className = 'hidden';
+        });
+
+        setTimeout(() => {
+            toast.className = `fixed top-24 left-1/2 transform -translate-x-1/2 bg-${color}-500 text-white p-4 rounded-lg shadow-lg transition-all duration-300 ease-in-out`;
+        }, 50);
+
+        setTimeout(() => {
+            toast.className = `fixed top-[-100px] left-1/2 transform -translate-x-1/2 bg-${color}-500 text-white p-4 rounded-lg shadow-lg transition-all duration-300 ease-in-out`;
+        }, 2000);
+
+        setTimeout(() => {
+            toast.className = 'hidden';
+        }, 2400);
+    }
+
+    function addReply() {
+        const formData = new FormData(document.querySelector('#add-reply'));
+        formData.append('post_id', "{{ post.id }}");
+
+        fetch("{% url 'feeds:create_reply' %}", {
+            method: "POST",
+            body: formData,
+        }).then(response => {
+            if (response.status === 400) {
+                showToast("Failed to add reply.", "red");
+            } else {
+                document.getElementById("add-reply").reset();
+                document.getElementById("reply-content").style.height = "auto";
+                document.getElementById("reply-content").style.height = document.getElementById("reply-content").scrollHeight + "px";
+
+                refreshReplies();
+            }
+        }).catch(error => {
+            alert("An error occurred while adding the reply. Please try again.");
+        });
+
+        return false;
+    }
+
+    async function getAllReply() {
+        return fetch("/feeds/json/reply/" + "{{ post.id }}").then(response => response.json());
+    }
+
+    async function refreshReplies() {
+        document.getElementById("replies").innerHTML = "";
+        document.getElementById("replies").className = "";
+
+        const allReplies = await getAllReply();
+
+        let replyCards = "";
+        let classNameStr = "";
+
+        if (allReplies.length === 0) {
+            classNameStr = "flex flex-col items-center justify-center my-12";
+            replyCards = `
+                <img src="{% static 'images/NoPost.svg' %}" class="w-72 h-72">
+                <p class="text-gray-400 text-lg mt-4">No replies yet.</p>
+            `;
+        } else {
+            classNameStr = "flex flex-col items-center justify-center";
+            allReplies.forEach((reply) => {
+                const content = DOMPurify.sanitize(reply.fields.content).replace(/\r?\n/g, '<br>').trim();
+                const dates = getTime(reply.fields.created_at);
+
+                replyCards += `
+                    <div class="w-full py-5 px-6 md:py-6 md:px-8 hover:bg-gray-50">
+                        <div class="flex flex-row space-x-2">
+                            <img alt="User Avatar" draggable="false" oncontextmenu="return false;"
+                            src="{% static 'images/dummy.jpeg' %}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
+                            <div class="flex-grow flex-col">
+                                <div class="flex flex-col items-start space-x-1.5">
+                                    <div class="flex flex-col text-left justify-start">
+                                        <p class="font-semibold text-gray-700">Anon</p>
+                                        <p class="text-xs text-gray-400">${dates}</p>
+                                    </div>
+                                </div>
+                                <p class="text-left content-text my-2">${content}</p>
+                                <div class="flex justify-start">
+                                    <button class="like-icon flex space-x-2 items-center z-50" data-reply-id="${reply.pk}" data-like-count="${reply.fields.like_count}" onclick="event.preventDefault(); event.stopPropagation(); clickLikeButton('${reply.pk}')">
+                                        <img src="{% static 'icon/icon_heart.svg' %}" class="w-5 h-5">
+                                        <p class="text-gray-500">${reply.fields.like_count}</p>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="border-gray-200 w-full">
+                `;
+            });
+        }
+
+        document.getElementById("replies").className = classNameStr;
+        document.getElementById("replies").innerHTML = replyCards;
+
+        likeIcons.forEach((icon) => {
+            const replyId = icon.dataset.replyId;
+            liked[replyId] = false; // Default/Initial value, nanti klo udh ada user bisa pake get dari API
+
+            const heartIcon = icon.getElementsByTagName('img')[0];
+            heartIcon.src = liked[replyId]
+                ? "{% static 'icon/icon_heart_fill.svg' %}"
+                : "{% static 'icon/icon_heart.svg' %}";
+        });
+    }
+
+    refreshReplies();
+
+    function clickLikeButton(replyId) {
+        liked[replyId] = !liked[replyId];
+
+        const icon = document.querySelector(`.like-icon[data-reply-id="${replyId}"]`);
+
+        const heartIcon = icon.getElementsByTagName('img')[0];
+        const likeCount = icon.getElementsByTagName('p')[0];
+
+        heartIcon.src = liked[replyId]
+            ? "{% static 'icon/icon_heart_fill.svg' %}"
+            : "{% static 'icon/icon_heart.svg' %}";
+
+        const currentCount = parseInt(likeCount.textContent);
+        likeCount.textContent = liked[replyId] ? currentCount + 1 : currentCount - 1;
+
+        // try {
+        //     const response = await fetch(`/api/posts/${postId}/like`, {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'X-CSRFToken': getCsrfToken(),
+        //         },
+        //         body: JSON.stringify({
+        //             liked: liked[postId]
+        //         })
+        //     });
+
+        //     if (!response.ok) {
+        //         liked[postId] = !liked[postId];
+        //         heartIcon.src = liked[postId]
+        //             ? "{% static 'icon/icon_heart_fill.svg' %}"
+        //             : "{% static 'icon/icon_heart.svg' %}";
+        //         likeCount.textContent = currentCount;
+        //         throw new Error('Failed to update like status');
+        //     }
+        // } catch (error) {
+        //     console.error('Error updating like status:', error);
+        // }
+    }
+
+    function loadPost() {
+        const datesElement = document.getElementById('dates');
+        const contentElement = document.getElementById('content');
+
+        const content = DOMPurify.sanitize(contentElement.textContent).replace(/\r?\n/g, '<br>').trim();
+
+        let dates;
+
+        const createdAt = "{{ created_at }}";
+        const updatedAt = "{{ updated_at }}";
+
+        if (createdAt === updatedAt) {
+            dates = `${getTime(createdAt)}`;
+        } else {
+            dates = `${getTime(createdAt)} · Updated on ${getTime(updatedAt)}`;
+        }
+
+        datesElement.textContent = dates;
+        contentElement.innerHTML = content;
+    }
+
+    loadPost();
+
+    let liked = false;
+    document.getElementById("like-icon").addEventListener("click", () => {
+        liked = !liked;
+        document.getElementById("like-icon").getElementsByTagName('img')[0].src = liked ? "{% static 'icon/icon_heart_fill.svg' %}" : "{% static 'icon/icon_heart.svg' %}";
+        document.getElementById("like-icon").getElementsByTagName('p')[0].textContent = liked ? parseInt(document.getElementById("like-icon").getElementsByTagName('p')[0].textContent) + 1 : parseInt(document.getElementById("like-icon").getElementsByTagName('p')[0].textContent) - 1;
+
+        // TODO: Send a request to like/unlike the post
+        const postId = "{{ post.id }}";
+    });
+
+    document.getElementById("copy-link").addEventListener("click", () => {
+        const postLink = window.location.href;
+        navigator.clipboard.writeText(postLink).then(() => {
+            showToast('Link copied!', 'green');
+        }).catch(() => {
+            showToast('Failed to copy link!', 'red');
+        });
+    });
+
+    document.getElementById("add-reply").addEventListener("submit", function (event) {
+        event.preventDefault();
+        addReply();
+    });
+</script>
+<script src="{% static 'js/feeds/feeds_page.js' %}"></script>
+<script src="{% static 'js/feeds/detail_post_loaded.js' %}" defer></script>
+{% endblock content %}
