@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto py-10">
+    <h2 class="text-2xl font-bold mb-4">Your Cart</h2>
+
+    <table class="w-full mb-8">
+        <thead>
+            <tr>
+                <th class="text-left py-2">Product</th>
+                <th class="text-left py-2">Quantity</th>
+                <th class="text-left py-2">Price</th>
+                <th class="text-left py-2">Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td class="py-2">{{ item.product.name }}</td>
+                <td class="py-2">{{ item.quantity }}</td>
+                <td class="py-2">Rp{{ item.product.price }}</td>
+                <td class="py-2">Rp{{ item.get_total_price }}</td>
+                <td class="py-2">
+                    <a href="{% url 'remove_from_cart' item.id %}" class="text-red-500">Remove</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="flex justify-between items-center">
+        <h3 class="text-xl">Total: Rp{{ total }}</h3>
+        <a href="{% url 'checkout' %}" class="bg-blue-500 text-white px-4 py-2 rounded">Proceed to Checkout</a>
+    </div>
+</div>
+{% endblock %}
