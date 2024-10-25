@@ -3,6 +3,7 @@ from datetime import datetime
 from django.http import HttpResponse
 from apps.catalogue.models import Product, Review
 from apps.catalogue.forms import ProductForm, ReviewForm
+from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render
 from .models import Product
@@ -65,3 +66,19 @@ def product_detail(request, product_id):
         form = ReviewForm()
 
     return render(request, 'details.html', {'product': product, 'reviews': reviews, 'form': form, 'rating': rating})
+
+@login_required
+def review_rate(request):
+    if request.method == "POST":
+        prod_id = request.POST.get('prod_id')
+        product = Product.objects.get(id=prod_id)
+        comment = request.POST.get('comment')
+        rating = request.POST.get('rate') 
+
+        if request.user.is_authenticated:
+            user = request.user 
+            Review.objects.create(user=user, product=product, comment=comment, rating=rating)
+            return redirect('product_detail', product_id=prod_id)
+        
+        else:
+            return redirect('login')  # Redirect to login if user is not authenticated

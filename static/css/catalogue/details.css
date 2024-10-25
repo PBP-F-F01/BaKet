@@ -1,9 +1,24 @@
-.fa-star,
-.fa-star-o {
-  color: gold;
-  font-size: 1.5rem;
+.rating-wrapper {
+  display: inline-block;
+  direction: ltr;
+  /* Ensure stars are displayed left-to-right by removing direction */
 }
 
-.checked {
-  color: gold;
+.rating-wrapper input[type="radio"] {
+  display: none;
+}
+
+.rating-wrapper label {
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.rating-wrapper input[type="radio"]:checked ~ label {
+  color: #ffcc00;
+}
+
+.rating-wrapper label:hover,
+.rating-wrapper label:hover ~ label {
+  color: #ffcc00; /* Highlight stars on hover */
 }
