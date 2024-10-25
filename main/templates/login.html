@@ -8,10 +8,10 @@
 {% endblock meta %} 
 
 {% block content %}
-<div class="min-h-screen flex items-center justify-center bg-[#fbfbf9] px-12 py-10">
-  <div class="rounded-[16px] overflow-hidden shadow-lg bg-white px-20 py-12 flex flex-col items-center justify-center">
+<div class="min-h-screen flex items-center justify-center bg-[#fbfbf9] px-4 sm:px-8 md:px-12 py-10">
+  <div class="rounded-[16px] overflow-hidden shadow-lg bg-white w-full sm:w-96 md:w-[400px] lg:w-[500px] p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col items-center justify-center">
     <img src="{% static 'images/BaKet_Logo.png' %}" alt="BaKet Logo" class="h-28 w-28 mx-auto">
-    <h2 class="text-2xl md:text-3xl font-bold pt-4 md:pt-6 font-['Raleway'] text-[#01aae8]">Log in to Your Account</h2>
+    <h2 class="text-center text-2xl md:text-3xl font-bold pt-4 md:pt-6 font-['Raleway'] text-[#01aae8]">Log in to Your Account</h2>
 
     <form class="space-y-6 w-full" method="POST">
         {% csrf_token %}
@@ -30,11 +30,21 @@
         </div>
   
         <div>
-          <button type="submit" class="w-full bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins">
-            Login
-          </button>
+            <button type="submit" class="w-full bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins">
+                Login
+            </button>
         </div>
     </form>
+
+    <div class="text-center mt-4">
+        <p class="text-sm use-poppins">
+            Don't have an account yet?  
+            <a href="{% url 'main:register' %}" class="font-medium text-[#01aae8] hover:text-[#15a1d4]">
+                Register Now
+            </a>
+        </p>
+    </div>
+
   </div>
 </div>
 {% endblock content %}
