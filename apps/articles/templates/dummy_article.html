@@ -11,101 +11,143 @@
     {% block content %}
     <div class="h-screen flex flex-col justify-start bg-[#fbfbf9] p-5">
         <!-- desktop-->
-        <div class="hidden md:flex rounded-[16px] shadow-lg bg-white p-10 flex flex-col justify-start desktop">
-            <h2 class="mb-6 font-bold text-3xl text-center title">Dummy Artikel</h2>
-            <p class="text-left mb-4">
-                Posted by: <span class="username">PoRo</span> |
-                Created at: <span class="created_at">12 Oktober 2024, 12:34</span> |
-                Updated at: <span class="updated_at">12 Oktober 2024, 12:34</span>
-            </p>
-            <div class="flex justify-start py-6 mb-4">
-                <div class="flex items-center cursor-default like">
-                    <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
-                    <span class="like-count">5</span>
-                </div>
-                <div class="flex items-center cursor-default ml-6">
-                    <span class="mr-3 align-bottom cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons comment-button" onclick="window.scrollTo(0, document.body.querySelector('.comment-input').getBoundingClientRect().top);">comment</span>
-                    <span class="comment-count align-bottom"></span>
-                </div>
-            </div>
-            <p class="text-left text-justify leading-7 content">Child of ours<br />
-                Counting the days 'til the summer come<br />
-                But you don't live forever<br />
-                Your mother will one day bring you home<br />
-                And it feels so stupid, 'cause I wasn't scared of this before<br />
-                But since I have met you, I don't wanna die no more<br />
-                <br />
-                So take a long time<br />
-                'Cause, oh, the world is lucky to be your home<br />
-                I know I need a next life<br />
-                'Cause I'm not satisfied to know you just once<br />
-                So take a long time<br />
-                Oh, the world is lucky to be your home<br />
-                I know I need a next life<br />
-                Not satisfied to know you just once<br />
-                <br />
-                Oh, oh, oh, oh, oh, oh, oh, oh, oh<br />
-                <br />
-                To live, we're dying<br />
-                Why wouldn't we see our world as dark?<br />
-                But I won't spend time<br />
-                Resenting the way things are<br />
-                <br />
-                So take a long time<br />
-                All the world is lucky to be your home<br />
-                I know I need a next life<br />
-                Not satisfied to know you just once<br />
-                <br />
-                Oh, oh, oh, oh, oh, oh, oh, oh, oh<br />
-                Oh, oh, oh, oh, oh, oh, oh, oh, oh<br />
-                <br />
-                So take a long time<br />
-                Oh, the world is lucky to be your home<br />
-                I know I need a next life<br />
-                Not satisfied to know you just once<br />
-                So take a long time<br />
-                Oh, the world is lucky to be your home<br />
-                I know I need a next life<br />
-                Not satisfied to know you just once<br />
-                <br />
-                And I won't spend time<br />
-                Resenting the way things are
-            </p>
-            <form id="comment-input-desktop">
-                <div class="flex items-center cursor-default mt-6 comment-input">
-                    <textarea placeholder="Write a comment..." class="border border-gray-300 rounded-md p-2 w-full h-20 hover:border-[#171e2a] text-black"></textarea>
-                    <button class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins m-1">Post</button>
-                </div>
-            </form>
-            <div class="comment-section">
-                <div class="mt-4 comment">
-                    <p class="text-left mb-2">
-                        <span class="font-bold">PoRo</span> - <span class="text-gray-500">12 Oktober 2024, 12:34 <span class="hidden">(edited)</span></span>
-                    </p>
-                    <p class="text-left text-justify leading-7">
-                        This song is depressing
-                    </p>
-                    <textarea class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">This song is depressing</textarea>
+        <div class="hidden md:flex md:flex-row rounded-[16px] shadow-lg bg-white p-10 flex flex-col justify-start desktop w-full">
+            <div class="flex flex-col w-3/5 main-article p-8 rounded-lg">
+                <h2 class="mb-6 font-bold text-3xl text-center title text-[#333]">Dummy Artikel</h2>
+                <p class="text-left mb-4 text-[#555]">
+                    Posted by: <span class="username font-semibold">PoRo</span> |
+                    Created at: <span class="created_at">12 Oktober 2024, 12:34</span> |
+                    Updated at: <span class="updated_at">12 Oktober 2024, 12:34</span>
+                </p>
+                <div class="flex justify-start py-6 mb-4">
                     <div class="flex items-center cursor-default like">
                         <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
                         <span class="like-count">5</span>
-                        <span class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
-                        <span class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>
+                    </div>
+                    <div class="flex items-center cursor-default ml-6">
+                        <span class="mr-3 align-bottom cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons comment-button" onclick="window.scrollTo(0, document.body.querySelector('.comment-input').getBoundingClientRect().top);">comment</span>
+                        <span class="comment-count align-bottom"></span>
                     </div>
                 </div>
-                <div class="mt-4 comment">
-                    <p class="text-left mb-2">
-                        <span class="font-bold">Raa</span> - <span class="text-gray-500">18 Oktober 2024, 15:51 <span class="hidden">(edited)</span></span>
-                    </p>
-                    <p class="text-left text-justify leading-7">
-                        Dummy comment
-                    </p>
-                    <textarea class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">Dummy comment</textarea>
-                    <div class="flex items-center cursor-default like">
-                        <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
-                        <span class="like-count">3</span>
-                        <span class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
-                        <span class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>
+                <p class="text-left text-justify leading-7 content text-[#333]">Child of ours<br />
+                    Counting the days 'til the summer come<br />
+                    But you don't live forever<br />
+                    Your mother will one day bring you home<br />
+                    And it feels so stupid, 'cause I wasn't scared of this before<br />
+                    But since I have met you, I don't wanna die no more<br />
+                    <br />
+                    So take a long time<br />
+                    'Cause, oh, the world is lucky to be your home<br />
+                    I know I need a next life<br />
+                    'Cause I'm not satisfied to know you just once<br />
+                    So take a long time<br />
+                    Oh, the world is lucky to be your home<br />
+                    I know I need a next life<br />
+                    Not satisfied to know you just once<br />
+                    <br />
+                    Oh, oh, oh, oh, oh, oh, oh, oh, oh<br />
+                    <br />
+                    To live, we're dying<br />
+                    Why wouldn't we see our world as dark?<br />
+                    But I won't spend time<br />
+                    Resenting the way things are<br />
+                    <br />
+                    So take a long time<br />
+                    All the world is lucky to be your home<br />
+                    I know I need a next life<br />
+                    Not satisfied to know you just once<br />
+                    <br />
+                    Oh, oh, oh, oh, oh, oh, oh, oh, oh<br />
+                    Oh, oh, oh, oh, oh, oh, oh, oh, oh<br />
+                    <br />
+                    So take a long time<br />
+                    Oh, the world is lucky to be your home<br />
+                    I know I need a next life<br />
+                    Not satisfied to know you just once<br />
+                    So take a long time<br />
+                    Oh, the world is lucky to be your home<br />
+                    I know I need a next life<br />
+                    Not satisfied to know you just once<br />
+                    <br />
+                    And I won't spend time<br />
+                    Resenting the way things are
+                </p>
+                <form id="comment-input-desktop">
+                    <div class="flex items-center cursor-default mt-6 comment-input">
+                        <textarea placeholder="Write a comment..." class="border border-gray-300 rounded-md p-2 w-full h-20 hover:border-[#171e2a] text-black"></textarea>
+                        <button class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins m-1">Post</button>
+                    </div>
+                </form>
+                <div class="comment-section">
+                    <div class="mt-4 comment">
+                        <p class="text-left mb-2">
+                            <span class="font-bold">PoRo</span> - <span class="text-gray-500">12 Oktober 2024, 12:34 <span class="hidden">(edited)</span></span>
+                        </p>
+                        <p class="text-left text-justify leading-7">
+                            This song is depressing
+                        </p>
+                        <textarea class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">This song is depressing</textarea>
+                        <div class="flex items-center cursor-default like">
+                            <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
+                            <span class="like-count">5</span>
+                            <span class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
+                            <span class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 comment">
+                        <p class="text-left mb-2">
+                            <span class="font-bold">Raa</span> - <span class="text-gray-500">18 Oktober 2024, 15:51 <span class="hidden">(edited)</span></span>
+                        </p>
+                        <p class="text-left text-justify leading-7">
+                            Dummy comment
+                        </p>
+                        <textarea class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">Dummy comment</textarea>
+                        <div class="flex items-center cursor-default like">
+                            <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
+                            <span class="like-count">3</span>
+                            <span class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
+                            <span class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Other Articles -->
+            <div class="flex flex-col w-2/5 bg-[#e0e0e0] p-6 rounded-lg">
+                <h2 class="text-2xl font-bold mb-4 text-[#555]">Other Articles</h2>
+                <div class="bg-white rounded-lg shadow-lg p-4 other-article mb-4">
+                    <h3 class="text-xl font-bold title overflow-y-auto text-[#333]">Dummy Artikel 1</h3>
+                    <p class="text-gray-600 metadata overflow-y-auto">This is dummy article 1</p>
+                    <div class="flex items-center mt-4">
+                        <div class="flex items-center">
+                            <span class="material-icons mr-2">thumb_up</span>
+                            <span class="text-gray-600 like-count mr-5">12</span>
+                            <span class="material-icons mx-2">comment</span>
+                            <span class="text-gray-600 comment-count">5</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-4 other-article mb-4">
+                    <h3 class="text-xl font-bold title overflow-y-auto text-[#333]">Dummy Artikel 2</h3>
+                    <p class="text-gray-600 metadata overflow-y-auto">This is dummy article 2</p>
+                    <div class="flex items-center mt-4">
+                        <div class="flex items-center">
+                            <span class="material-icons mr-2">thumb_up</span>
+                            <span class="text-gray-600 like-count mr-5">5</span>
+                            <span class="material-icons mx-2">comment</span>
+                            <span class="text-gray-600 comment-count">3</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-4 other-article">
+                    <h3 class="text-xl font-bold title overflow-y-auto text-[#333]">Dummy Artikel 3</h3>
+                    <p class="text-gray-600 metadata overflow-y-auto">This is dummy article 3</p>
+                    <div class="flex items-center mt-4">
+                        <div class="flex items-center">
+                            <span class="material-icons mr-2">thumb_up</span>
+                            <span class="text-gray-600 like-count mr-5">7</span>
+                            <span class="material-icons mx-2">comment</span>
+                            <span class="text-gray-600 comment-count">2</span>
+                        </div>
                     </div>
                 </div>
             </div>
