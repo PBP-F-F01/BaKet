@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+    <link rel="stylesheet" href="{% static 'css/wishlist/wishlist.css' %}">
+    <title>{% block title %} Wishlist | {% endblock title %}</title>
+{% endblock meta %}
+
+{% block content %}
+    <div class="w-full flex-col justify-start items-start gap-5 inline-flex h-[100vh]">
+        <div class="h-[38px] pl-24 pt-14 pr-20 pb-4 justify-center items-center gap-2.5 inline-flex">
+            <div class="grow shrink basis-0 text-[#01aae8] text-[32px] font-bold font-['Raleway']">Wishlists</div>
+        </div>
+        <div class="self-stretch flex-col justify-start items-start gap-10 flex">
+
+            <div class="self-stretch flex flex-col gap-2">
+            <!-- Head -->
+            <div class="self-stretch pl-24 pr-20 justify-start items-center gap-3 inline-flex">
+                    <!-- Search Bar-->
+                    <form method="GET" action="{% url 'wishlist' %}" class="grow shrink basis-0 self-stretch justify-start items-center flex">
+                        <div class="grow shrink basis-0 relative flex-col justify-start items-center gap-[15px] inline-flex">
+                            <input type="text" name="q" class="self-stretch h-14 pl-10 pr-14 py-2 bg-white rounded-tl-[10px] rounded-bl-[10px] border-l border-t border-b border-[#cccbcb] border-2 justify-start items-center gap-5 inline-flex"
+                                value="{{ request.GET.q }}" placeholder="Cari Barang">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <img src="{% static 'images/icon_magnifyingglass.svg' %}" class="w-5 h-5" alt="Magnifying Glass">
+                            </div>
+                        </div>
+                        <div class="self-stretch p-3 bg-[#01aae8] rounded-tr-lg rounded-br-lg justify-center items-center gap-3 flex cursor-pointer hover:bg-[#0081b1]">
+                            <button type="submit" class="w-5 h-5 relative">
+                                <img src="{% static 'images/icon_rchevron.svg' %}" alt="Search">
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Filter Button -->
+                    <div id="filterButton" class="self-stretch p-3 bg-[#01aae8] rounded-lg justify-center items-center gap-3 flex hover:bg-[#0081b1]" onclick="toggleFilter()">
+                        <div class="w-5 h-5 relative">
+                            <img src="{% static 'images/icon_filter.svg' %}" alt="Filter Icon">
+                        </div>
+                        <div class="text-white text-base font-bold font-['Raleway']">Filter</div>
+                    </div>
+
+
+                    <!-- Add Item -->
+                    <!-- <a href="{% url 'add_product' %}">
+                        <div class="self-stretch p-3 rounded-lg border-4 border-[#01aae8] justify-center items-center gap-3 flex hover:bg-[#caecf8]">
+                            <div class="text-[#01aae8] text-base font-bold font-['Raleway']">Tambahkan Barang</div>
+                        </div>
+                    </a> -->
+                </div>
+
+                <!-- Filter Options -->
+                <div id="filterOptions" class="hidden mt-2 ml-24 mr-20 rounded-lg bg-[#01aae8] shadow-xl flex flex-row justify-end">
+                    <form method="GET" class="items-center justify-center flex flex-row pr-4 my-4 gap-12">
+
+                        <!-- Sorting by Price -->
+                        <div class="flex flex-row gap-4 pl-4">
+                            <div class="text-xl text-white font-bold font-['Raleway'] items-center">Urutkan dari:</div>
+                            <label class="flex items-center space-x-2 text-white">
+                                <input type="radio" name="sort" value="price_asc" 
+                                    {% if selected_sort == 'price_asc' %}checked{% endif %}>
+                                <span class="font-bold font-['Raleway']">Harga paling rendah</span>
+                            </label>
+                            <label class="flex items-center space-x-2 text-white">
+                                <input type="radio" name="sort" value="price_desc" 
+                                    {% if selected_sort == 'price_desc' %}checked{% endif %}>
+                                <span class="font-bold font-['Raleway']">Harga paling tinggi</span>
+                            </label>
+                        </div>
+
+                        <!-- Category Checkboxes -->
+                        <div class="flex flex-row gap-8 p-4 items-center">
+                            <div class="text-xl text-white font-bold font-['Raleway'] items-center">Pilih kategori:</div>
+                            {% for category, label in categories %}
+                            <label class="flex items-center space-x-4 text-white font-bold font-['Raleway']"> 
+                                <input type="checkbox" class="w-6 h-6" name="category" value="{{ category }}" 
+                                    {% if category in selected_categories %}checked{% endif %}> 
+                                <span>{{ label }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Submit filter button-->
+                        <button type="submit" class="w-[100px] self-stretch p-3 bg-white rounded-lg justify-center items-center gap-3 flex hover:bg-[#c4c4c4]">
+                            <div class="text-[#01aae8] text-base font-bold font-['Raleway']">Cari</div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Product List -->
+            {% if not wishlists %}
+            <div class="flex justify-center items-center w-screen pt-20">
+                <img src="{% static 'images/ItemNotFound.svg' %}" class="w-2/4 max-w-md h-auto object-contain">
+            </div>
+            {% else %}
+            <div class="self-stretch pl-24 pr-20 flex-wrap justify-start items-start gap-5 flex">
+                {% for product in wishlists %}
+                <a href="{% url 'product_detail' product.id %}">
+                <div class="justify-start items-center gap-[25px] inline-flex shadow-lg">
+                    <div class="h-auto p-3 bg-white rounded-lg shadow border-4 border-[#01aae8] backdrop-blur-[70.36px] flex-col justify-start items-center gap-2.5 inline-flex">
+                        <div class="self-stretch grow shrink basis-0 flex-col justify-center items-center gap-2 flex">
+                        <img class="w-[225px] h-[225px] relative rounded" src="{{ product.image.url }}" alt="{{ product.name }}"/>
+                        <div class="self-stretch grow shrink basis-0 flex-col justify-start items-center gap-1 flex">
+                        <div class="self-stretch grow shrink basis-0 text-black text-xl font-normal font-['Raleway']">{{ product.name }}</div>
+                        <div class="self-stretch text-[#01aae8] text-2xl font-bold font-['Raleway']">Rp{{ product.price }}</div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </a>
+                {% endfor %}
+            {% endif %}
+
+          </div>
+    </div>
+
+    <script src="{% static 'js/wishlist/wishlist.js' %}"></script>
+
+    <script>
+        function toggleFilter() {
+            const filterOptions = document.getElementById('filterOptions');
+            if (filterOptions.classList.contains('hidden')) {
+                filterOptions.classList.remove('hidden');
+            } else {
+                filterOptions.classList.add('hidden');
+            }
+        }
+    </script>
+
+{% endblock content %}

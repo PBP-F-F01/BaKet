@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'apps.feeds',
     'apps.articles',
     'apps.catalogue',
+    'apps.wishlist',
 ]
 
 MIDDLEWARE = [
