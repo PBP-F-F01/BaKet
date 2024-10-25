@@ -4,7 +4,7 @@ function navbar() {
   <a href="/catalogue" class="text-[#01aae8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Catalogue</a>
   <a href="/feeds" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Forum</a>
   <a href="/articles" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Article</a>
-  <a href="#" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Wishlist</a>
+  <a href="/wishlist" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Wishlist</a>
   
   <!-- Cart Icon with Cart Count -->
     <a href="{% url 'view_cart' %}" class="relative text-[#01aae8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">
@@ -24,7 +24,7 @@ const html = `<div class="p-4">
     <a class="text-[#01aae8] text-sm mb-4 font-semibold font-['Raleway']">Catalogue</a>
     <a href="/feeds" class="text-neutral-600 text-sm mb-4 font-semibold font-['Raleway']">Forum</a>
     <a href="/articles" class="text-neutral-600 text-sm mb-4 font-semibold font-['Raleway']">Article</a>
-    <a class="text-neutral-600 text-sm font-semibold font-['Raleway']">Wishlist</a>
+    <a href="/wishlist" class="text-neutral-600 text-sm font-semibold font-['Raleway']">Wishlist</a>
 
     <!-- Cart Icon in Mobile Dropdown -->
       <a href="/cart" class="relative text-[#01aae8] text-sm font-semibold font-['Raleway']">

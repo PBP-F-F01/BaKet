@@ -8,4 +8,5 @@ urlpatterns = [
     path('feeds/', include('apps.feeds.urls')),
     path('articles/', include('apps.articles.urls')),
     path('catalogue/', include('apps.catalogue.urls')),
+    path('wishlist/', include('apps.wishlist.urls'))
 ]
