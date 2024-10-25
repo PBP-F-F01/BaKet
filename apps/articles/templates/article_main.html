@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block meta %}
+    {% block meta %}
     <link rel="stylesheet" href="{% static 'css/articles/article_main.css' %}">
     <title>{% block title %} Article | {% endblock title %}</title>
     {% endblock meta %}
@@ -14,5 +14,6 @@
             <button class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins m-1" onclick="window.location.href='{% url 'articles:dummy_main' %}'">Dummy Main</button>
         </div>
     </div>
+    
     <script src="{% static 'js/articles/article_main.js' %}"></script>
 {% endblock content %}
