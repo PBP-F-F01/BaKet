@@ -71,10 +71,12 @@
                 And I won't spend time<br />
                 Resenting the way things are
             </p>
-            <div class="flex items-center cursor-default mt-6 comment-input">
-                <input type="text" placeholder="Write a comment..." class="border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">
-                <button class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins m-1">Post</button>
-            </div>
+            <form id="comment-input-desktop">
+                <div class="flex items-center cursor-default mt-6 comment-input">
+                    <textarea placeholder="Write a comment..." class="border border-gray-300 rounded-md p-2 w-full h-20 hover:border-[#171e2a] text-black"></textarea>
+                    <button class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins m-1">Post</button>
+                </div>
+            </form>
             <div class="comment-section">
                 <div class="mt-4 comment">
                     <p class="text-left mb-2">
@@ -83,7 +85,7 @@
                     <p class="text-left text-justify leading-7">
                         This song is depressing
                     </p>
-                    <input type="text" value="This song is depressing" class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">
+                    <textarea class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">This song is depressing</textarea>
                     <div class="flex items-center cursor-default like">
                         <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
                         <span class="like-count">5</span>
@@ -98,7 +100,7 @@
                     <p class="text-left text-justify leading-7">
                         Dummy comment
                     </p>
-                    <input type="text" value="Dummy comment" class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">
+                    <textarea class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">Dummy comment</textarea>
                     <div class="flex items-center cursor-default like">
                         <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
                         <span class="like-count">3</span>
@@ -171,10 +173,12 @@
                     And I won't spend time<br />
                     Resenting the way things are
                 </p>
-                <div class="flex flex-col items-start cursor-default mt-6 comment-input">
-                    <input type="text" placeholder="Write a comment..." class="border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">
-                    <button class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins m-1 mt-2 self-end">Post</button>
-                </div>
+                <form id="comment-input-mobile">
+                    <div class="flex flex-col items-start cursor-default mt-6 comment-input">
+                        <textarea placeholder="Write a comment..." class="border border-gray-300 rounded-md p-2 w-full h-20 hover:border-[#171e2a] text-black"></textarea>
+                        <button class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins m-1 mt-2 self-end">Post</button>
+                    </div>
+                </form>
                 <div class="comment-section">
                     <div class="mt-4 comment">
                         <p class="text-left mb-2">
@@ -183,7 +187,7 @@
                         <p class="text-left text-justify leading-7">
                             This song is depressing
                         </p>
-                        <input type="text" value="This song is depressing" class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">
+                        <textarea class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">This song is depressing</textarea>
                         <div class="flex items-center cursor-default flex-wrap like">
                             <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
                             <span class="like-count">5</span>
@@ -198,7 +202,7 @@
                         <p class="text-left text-justify leading-7">
                             Dummy comment
                         </p>
-                        <input type="text" value="Dummy comment" class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">
+                        <textarea class="hidden border border-gray-300 rounded-md p-2 w-full h-10 hover:border-[#171e2a] text-black">Dummy comment</textarea>
                         <div class="flex items-center cursor-default flex-wrap like">
                             <span class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
                             <span class="like-count">3</span>
