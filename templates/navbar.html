@@ -18,7 +18,7 @@
   </div>
 
   <button id="hamburger" class="md:hidden text-white mr-2">
-    <img src="{% static 'images/hamburger.svg' %}" alt="Menu" class="h-5">
+    <img src="{% static 'icon/icon_hamburger.svg' %}" alt="Menu" class="h-5">
   </button>
 
   <div class="justify-start items-center gap-10 hidden md:flex" id="navbar">
@@ -30,7 +30,7 @@
     
     <!-- Cart Icon with Cart Count -->
     <a href="{% url 'view_cart' %}" class="relative text-[#01aae8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">
-      <img src="{% static 'images/cart_icon.svg' %}" alt="Cart" class="h-5 inline-block">
+      <img src="{% static 'icon/cart_icon.svg' %}" alt="Cart" class="h-5 inline-block">
       <span id="cart-count" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
         {{ cart_count }}
       </span>
