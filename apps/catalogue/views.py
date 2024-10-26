@@ -11,9 +11,9 @@ from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 from django.core import serializers
 
+from apps.wishlist.models import Wishlist
 
-from django.shortcuts import render
-from .models import Product
+from .models import *
 
 def catalogue_view(request):
     products = Product.objects.all()
@@ -58,21 +58,21 @@ def create_product(request):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    reviews = Review.objects.filter(product=product).order_by('-created_at')  
-    # rating = Review.objects.filter(rating=0).order_by("?").first()
+    is_in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
+    reviews = Review.objects.filter(product=product).order_by('-created_at')  # Fetch all reviews for this product
     
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
             review = form.save(commit=False)
             review.product = product
-            review.user = request.user  # Assuming you have user authentication set up
+            review.user = request.user  
             review.save()
             return redirect('product_detail', product_id=product_id)  # Refresh the page after review submission
     else:
         form = ReviewForm()
 
-    return render(request, 'details.html', {'product': product, 'form': form, 'reviews': reviews})
+    return render(request, 'details.html', {'product': product, 'form': form, 'reviews': reviews, 'is_in_wishlist': is_in_wishlist,})
         
 @csrf_exempt
 @require_POST
@@ -84,23 +84,21 @@ def add_review_ajax(request):
     rating = request.POST.get("rate")
     user = request.user
 
+    # Ensure the rating is a valid number
     if not rating:
-        return HttpResponse(b"Rating is required", status=400)
+        messages.error(request, "Rating cannot be empty!")
+        return JsonResponse({'status': 'error', 'message': "Rating cannot be empty!"}, status=400)
 
-    new_review = Review(
-        product = product,
-        comment = comment, rating=rating, user = user
-    )
     
     if request.user.is_authenticated:
 
         # Check if the user has already reviewed this product
         existing_review = Review.objects.filter(user=user, product=product).first()
         if existing_review:
-            # Update the existing review
             existing_review.comment = comment
             existing_review.rating = rating
             existing_review.save()
+            messages.success(request, "Review updated successfully.")
 
         else:
             Review.objects.create(user=user, product=product, comment=comment, rating=rating)
@@ -109,21 +107,78 @@ def add_review_ajax(request):
     
     else:
         messages.error(request, "You need to log in to submit a review.")
-        return redirect('login')  # Redirect to login if user is not authenticated
 
 def show_json(request):
     prod_id = request.POST.get('prod_id')
-    data = Review.objects.filter(product=prod_id).select_related('user')  # Optimize query with select_related
+    data = Review.objects.filter(product=prod_id).select_related('user') 
     reviews = []
 
     for review in data:
         reviews.append({
             "id": review.id,
             "fields": {
-                "username": review.user.username,  # Add username here
+                "username": review.user.username, 
                 "rating": review.rating,
                 "comment": review.comment,
                 "created_at": review.created_at,
             }
         })
     return JsonResponse(reviews, safe=False)
+
+# @login_required
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart, created = Cart.objects.get_or_create(user=request.user, defaults={'user': request.user})
+
+    # Check if the product is already in the cart
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+
+    # Increase quantity if it already exists
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+
+    # Return JSON response if it's an AJAX request
+    if request.is_ajax():
+        cart_count = cart.cartitem_set.count()
+        return JsonResponse({'cart_count': cart_count})
+
+    return redirect('view_cart')
+
+# @login_required
+def view_cart(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart_items = cart.cartitem_set.all()
+    total = cart.get_total_price()
+    cart_count = cart.cartitem_set.count()
+
+    return render(request, 'cart/cart.html', {
+        'cart_items': cart_items,
+        'total': total,
+        'cart_count': cart_count
+    })
+
+# @login_required
+def remove_from_cart(request, cart_item_id):
+    cart_item = get_object_or_404(CartItem, id=cart_item_id)
+    cart_item.delete()
+    return redirect('view_cart')
+
+# @login_required
+def checkout(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    if request.method == "POST":
+        # Create an order
+        order = Order.objects.create(user=request.user, cart=cart)
+        return redirect('order_confirmation', order_id=order.id)
+
+    total = cart.get_total_price()
+    return render(request, 'cart/checkout.html', {
+        'total': total,
+        'cart': cart
+    })
+
+# @login_required
+def order_confirmation(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, 'cart/order_confirmation.html', {'order': order})

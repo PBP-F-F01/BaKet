@@ -1,0 +1,50 @@
+{% extends 'base.html' %} {% load static %} 
+
+{% block meta %}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login</title>
+<link rel="stylesheet" href="styles.css" />
+{% endblock meta %} 
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-[#fbfbf9] px-4 sm:px-8 md:px-12 py-10">
+  <div class="rounded-[16px] overflow-hidden shadow-lg bg-white w-full sm:w-96 md:w-[400px] lg:w-[500px] p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col items-center justify-center">
+    <img src="{% static 'images/BaKet_Logo.png' %}" alt="BaKet Logo" class="h-28 w-28 mx-auto">
+    <h2 class="text-center text-2xl md:text-3xl font-bold pt-4 md:pt-6 font-['Raleway'] text-[#01aae8]">Log in to Your Account</h2>
+
+    <form class="space-y-6 w-full" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="remember" value="true">
+        <div class="rounded-md shadow-sm -space-y-px">
+            <div>
+                <label for="username" class="mb-2 font-semibold use-poppins">Username</label>
+                <input id="username" name="username" type="text" required 
+                class="bg-zinc-50 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#01aae8]">
+            </div>
+            <div class="mt-4 pt-2">
+                <label for="password" class="mb-2 font-semibold use-poppins">Password</label>
+                <input id="password" name="password" type="password" required 
+                class="bg-zinc-50 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#01aae8]">
+            </div>    
+        </div>
+  
+        <div>
+            <button type="submit" class="w-full bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins">
+                Login
+            </button>
+        </div>
+    </form>
+
+    <div class="text-center mt-4">
+        <p class="text-sm use-poppins">
+            Don't have an account yet?  
+            <a href="{% url 'main:register' %}" class="font-medium text-[#01aae8] hover:text-[#15a1d4]">
+                Register Now
+            </a>
+        </p>
+    </div>
+
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %} {% load static %} 
+
+{% block meta %}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Register</title>
+<link rel="stylesheet" href="styles.css" />
+{% endblock meta %} 
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-[#fbfbf9] px-4 sm:px-8 md:px-12 py-10">
+  <div class="rounded-[16px] overflow-hidden shadow-lg bg-white w-full sm:w-96 md:w-[400px] lg:w-[500px] p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col items-center justify-center">
+    <img src="{% static 'images/BaKet_Logo.png' %}" alt="BaKet Logo" class="h-28 w-28 mx-auto">
+    <h2 class="text-center text-2xl md:text-3xl font-bold pt-4 md:pt-6 font-['Raleway'] text-[#01aae8]">Create Your Account</h2>
+
+    <form class="space-y-6 w-full" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="remember" value="true">
+        <div class="rounded-md shadow-sm -space-y-px">
+            {% for field in form %}
+            <div class="{% if not forloop.first %}mt-4 pt-2{% endif %} w-full">
+              <label for="{{ field.id_for_label }}" class="mb-2 font-semibold use-poppins">{{ field.label }}</label>
+              <div class="relative">
+                <!-- form rendering with custom input elements -->
+                <input
+                type="{{ field.field.widget.input_type }}" 
+                name="{{ field.name }}" 
+                id="{{ field.id_for_label }}" 
+                class="bg-zinc-50 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#01aae8]" 
+                value="{{ field.value|default_if_none:'' }}"
+                {% if field.field.required %} required {% endif %}
+                />
+
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  {% if field.errors %}
+                    <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                  {% endif %}
+                </div>
+              </div>
+              {% if field.errors %}
+                {% for error in field.errors %}
+                  <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+              {% endif %}
+            </div>
+          {% endfor %}          
+        </div>
+  
+        <div>
+            <button type="submit" class="w-full bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins">
+                Register
+            </button>
+        </div>
+    </form>
+
+    <div class="text-center mt-4">
+        <p class="text-sm use-poppins">
+          Already have an account?
+          <a href="{% url 'main:login' %}" class="font-medium text-[#01aae8] hover:text-[#15a1d4]">
+            Login here
+          </a>
+        </p>
+    </div>
+
+  </div>
+</div>
+{% endblock content %}

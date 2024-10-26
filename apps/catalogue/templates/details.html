@@ -1,4 +1,6 @@
-{% extends 'base.html' %} {% load static %} {% block content %}
+{% extends 'base.html' %} {% load static %} {% block meta %}
+<title>{% block title %} Product | {% endblock title %}</title>
+{% endblock meta %} {% block content %}
 
 <head>
   <link
@@ -41,8 +43,8 @@
       </p>
 
       <div class="flex gap-4">
-        <div
-          id="add-to-cart-button"
+        <button
+          onclick="addToCart({{ product.id }})"
           class="self-stretch p-3 bg-[#01aae8] rounded-lg justify-center items-center gap-3 flex hover:bg-[#0081b1]"
         >
           <div class="w-5 h-5 relative">
@@ -51,15 +53,18 @@
           <div class="text-white text-base font-bold font-['Raleway']">
             Add to Cart
           </div>
-        </div>
+        </button>
 
-        <lord-icon
-          src="https://cdn.lordicon.com/aydxrkfl.json"
-          trigger="click"
-          colors="primary:#01aae8,secondary:#e4e4e4"
-          style="width: 50px; height: 50px"
+        <button
+          onclick="toggleWishlist('{{ product.id }}')"
+          class="text-white px-4 py-2 rounded flex items-center gap-2 {% if is_in_wishlist %} bg-red-400 {% else %} bg-blue-500 {% endif %}"
+          id="wishlist-button"
         >
-        </lord-icon>
+          <span>
+            {% if is_in_wishlist %} Remove from Wishlist {% else %} Add to
+            Wishlist {% endif %}
+          </span>
+        </button>
       </div>
     </div>
   </div>
@@ -167,6 +172,7 @@
         </div>
       </form>
 
+      <div id="message_card"></div>
       <div id="review_card"></div>
     </div>
   </div>
@@ -224,14 +230,14 @@
         }
 
         htmlString += `
-        <div class="bg-white p-4 rounded-lg shadow-md mb-4 mt-4 transition-transform transform hover:scale-105 duration-200">
+        <div class="relative bg-white p-4 rounded-lg shadow-md mb-4 mt-4 transition-transform transform hover:scale-105 duration-200">
           <div class="flex justify-between items-center mb-2">
             <div class="flex items-center">
               <i class="far fa-user mr-2 text-gray-500"></i>
               <span class="font-semibold text-gray-800 text-lg">${
                 item.fields.username
               }</span>
-              <span class="ml-2 text-gray-500 text-sm">
+              <span class="absolute top-4 right-4 text-gray-500 text-sm">
                 <span>${new Date(
                   item.fields.created_at
                 ).toLocaleString()}</span>
@@ -255,11 +261,14 @@
       body: new FormData(document.querySelector("#reviewForm")),
     });
 
+    const result = await response.json();
+
     if (response.ok) {
       await refreshReviewForm();
       document.getElementById("reviewForm").reset();
+      // alert(result.message);
     } else {
-      console.error("Error adding review:", response.statusText);
+      alert(result.message);
     }
   }
 
@@ -267,5 +276,53 @@
     e.preventDefault();
     addReview();
   });
+</script>
+
+<script>
+  function addToCart(productId) {
+    // Send AJAX request to add the item to the cart
+    fetch(`/cart/add/${productId}/`, {
+      method: "GET",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest", // Required for Django to recognize it as an AJAX request
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Update the cart count dynamically
+        document.getElementById("cart-count").innerText = data.cart_count;
+        alert("Barang sudah dimasukkan ke keranjang!");
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
+  function toggleWishlist(productId) {
+    fetch(`/wishlist/toggle/${productId}/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      credentials: "same-origin",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const wishlistButton = document.getElementById("wishlist-button");
+        if (data.status === "added") {
+          wishlistButton.innerText = "Remove from Wishlist";
+          wishlistButton.classList.remove("bg-blue-500");
+          wishlistButton.classList.add("bg-red-400");
+        } else if (data.status === "removed") {
+          wishlistButton.innerText = "Add to Wishlist";
+          wishlistButton.classList.remove("bg-red-400");
+          wishlistButton.classList.add("bg-blue-500");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
 </script>
 {% endblock content %}
