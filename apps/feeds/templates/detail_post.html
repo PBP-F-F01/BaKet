@@ -12,42 +12,51 @@
     <div id="toast" class="hidden"></div>
 
     <div
-        class="bg-white mx-auto w-full md:w-[700px] min-h-screen md:mt-12 md:rounded-t-[16px] break-words border md:shadow-lg">
-        <div id="the-post" class="w-full py-4 px-5 md:py-7 md:px-7">
-            <div class="flex flex-row space-x-2">
+        class="bg-white mx-auto w-full md:w-[700px] min-h-screen mt-[-2px] md:mt-12 md:rounded-t-[16px] break-words border md:shadow-lg">
+        <div id="the-post" class="w-full mt-[3px] pb-4 pt-4 px-5 md:pb-5 md:pt-7 md:px-7">
+            <div class="flex flex-row space-x-2 justify-start">
                 <img alt="User Avatar" draggable="false" oncontextmenu="return false;"
                     src="{% static 'images/dummy.jpeg' %}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
-                <div class="flex-grow flex-col">
-                    <div class="flex justify-between items-start pt-[3px] pr-[3px]">
-                        <div class="flex flex-col text-left justify-start">
-                            <p class="font-semibold text-gray-700">Anon</p>
-                            <p id="dates" class="text-xs text-gray-400"></p>
-                        </div>
-                        <button>
+                <div class="flex w-full justify-between items-start pt-[3px] pr-[3px]">
+                    <div class="flex flex-col text-left justify-start">
+                        <p class="font-semibold text-gray-700 leading-none mb-1">Anon</p>
+                        <p id="dates" class="text-xs text-gray-400"></p>
+                    </div>
+                    <div class="relative inline-block text-left">
+                        <button id="options-button" class="flex items-center justify-center w-4 h-4">
                             <img src="{% static 'icon/icons_three_dots.svg' %}" class="w-4 h-4">
                         </button>
-                    </div>
-                    <p id="content" class="text-left content-text mt-2 mb-3">{{ post.content }}</p>
-                    <div class="flex flex-row justify-between mt-3 space-x-2">
-                        <div class="flex space-x-10">
-                            <button id="like-icon" class="flex space-x-2 items-center">
-                                <img src="{% static 'icon/icon_heart.svg' %}" class="w-5 h-5">
-                                <p class="text-gray-500">{{ post.like_count }}</p>
-                            </button>
-                            <button class="flex space-x-2 items-center">
-                                <img src="{% static 'icon/icon_chat.svg' %}" class="w-5 h-5">
-                                <p class="text-gray-500">{{ post.reply_count }}</p>
-                            </button>
+                        <div id="options-menu" class="hidden absolute right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                            <div class="py-1">
+                                <button id="delete-post-button" class="w-[150px] text-left px-4 py-2 text-sm font-semibold text-red-600 focus:outline-none">
+                                    Delete
+                                </button>
+                            </div>
                         </div>
-                        <button id="copy-link">
-                            <img src="{% static 'icon/icon_upload.svg' %}" class="w-5 h-5">
+                    </div>
+                </div>
+            </div>
+            <div class="flex-grow flex-col pt-2">
+                <p id="content" class="text-left content-text mt-2 mb-4">{{ post.content }}</p>
+                <div class="flex flex-row justify-between mt-3 space-x-2">
+                    <div class="flex space-x-10">
+                        <button id="like-icon" class="flex space-x-2 items-center">
+                            <img src="{% static 'icon/icon_heart.svg' %}" class="w-5 h-5">
+                            <p class="text-gray-500">{{ post.like_count }}</p>
+                        </button>
+                        <button class="flex space-x-2 items-center">
+                            <img src="{% static 'icon/icon_chat.svg' %}" class="w-5 h-5">
+                            <p class="text-gray-500">{{ post.reply_count }}</p>
                         </button>
                     </div>
+                    <button id="copy-link">
+                        <img src="{% static 'icon/icon_upload.svg' %}" class="w-5 h-5">
+                    </button>
                 </div>
             </div>
         </div>
         <hr class="border-gray-300 w-full">
-        {% if anonymous %} <!-- TODO: Ubah jadi not anonymous -->
+        {% if not anonymous %}
         <div class="bg-white py-4 px-5 md:py-5 md:px-7 w-full">
             <div class="flex items-start">
                 <img alt="User Avatar" draggable="false" oncontextmenu="return false;"
@@ -68,7 +77,38 @@
         </div>
         <hr>
         {% endif %}
+        <div id="replies-title" class="flex justify-start pb-2 pt-4 md:pt-5 px-6 md:px-8 hidden">
+            <p class="font-semibold">Replies</p>
+        </div>
         <div id="replies"></div>
+    </div>
+</div>
+
+<!-- Delete Confirmation -->
+<div id="delete-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999] hidden">
+    <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+        <div class="bg-white md:px-2 md:pt-5 md:pb-4 px-8 pt-3 pb-6">
+            <div class="sm:flex sm:items-start">
+                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                        Delete Post
+                    </h3>
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-500">
+                            Are you sure you want to delete this post?
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="px-4 py-3 sm:px-4 sm:flex sm:flex-row-reverse">
+            <button id="confirm-delete-button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                Delete
+            </button>
+            <button id="cancel-delete-button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                Cancel
+            </button>
+        </div>
     </div>
 </div>
 
@@ -153,10 +193,10 @@
         document.getElementById("replies").innerHTML = "";
         document.getElementById("replies").className = "";
 
-        const allReplies = await getAllReply();
-
         let replyCards = "";
         let classNameStr = "";
+
+        const allReplies = await getAllReply();
 
         if (allReplies.length === 0) {
             classNameStr = "flex flex-col items-center justify-center my-12";
@@ -167,26 +207,26 @@
         } else {
             classNameStr = "flex flex-col items-center justify-center";
             allReplies.forEach((reply) => {
-                const content = DOMPurify.sanitize(reply.fields.content).replace(/\r?\n/g, '<br>').trim();
-                const dates = getTime(reply.fields.created_at);
+                const content = DOMPurify.sanitize(reply.content).replace(/\r?\n/g, '<br>').trim();
+                const dates = getTime(reply.created_at);
 
                 replyCards += `
                     <div class="w-full py-5 px-6 md:py-6 md:px-8 hover:bg-gray-50">
-                        <div class="flex flex-row space-x-2">
+                        <div class="flex flex-row space-x-2 justify-start">
                             <img alt="User Avatar" draggable="false" oncontextmenu="return false;"
                             src="{% static 'images/dummy.jpeg' %}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
                             <div class="flex-grow flex-col">
                                 <div class="flex flex-col items-start space-x-1.5">
                                     <div class="flex flex-col text-left justify-start">
-                                        <p class="font-semibold text-gray-700">Anon</p>
+                                        <p class="font-semibold text-gray-700 leading-none my-1">${reply.user.username}</p>
                                         <p class="text-xs text-gray-400">${dates}</p>
                                     </div>
                                 </div>
-                                <p class="text-left content-text my-2">${content}</p>
+                                <p class="text-left content-text mt-2 mb-3">${content}</p>
                                 <div class="flex justify-start">
-                                    <button class="like-icon flex space-x-2 items-center z-50" data-reply-id="${reply.pk}" data-like-count="${reply.fields.like_count}" onclick="event.preventDefault(); event.stopPropagation(); clickLikeButton('${reply.pk}')">
+                                    <button class="like-icon flex space-x-2 items-center z-50" data-reply-id="${reply.id}" data-like-count="${reply.like_count}" onclick="event.preventDefault(); event.stopPropagation(); clickLikeButton('${reply.id}')">
                                         <img src="{% static 'icon/icon_heart.svg' %}" class="w-5 h-5">
-                                        <p class="text-gray-500">${reply.fields.like_count}</p>
+                                        <p class="text-gray-500">${reply.like_count}</p>
                                     </button>
                                 </div>
                             </div>
@@ -194,6 +234,7 @@
                     </div>
                     <hr class="border-gray-200 w-full">
                 `;
+                document.getElementById("replies-title").classList.remove("hidden");
             });
         }
 
@@ -258,17 +299,7 @@
         const contentElement = document.getElementById('content');
 
         const content = DOMPurify.sanitize(contentElement.textContent).replace(/\r?\n/g, '<br>').trim();
-
-        let dates;
-
-        const createdAt = "{{ created_at }}";
-        const updatedAt = "{{ updated_at }}";
-
-        if (createdAt === updatedAt) {
-            dates = `${getTime(createdAt)}`;
-        } else {
-            dates = `${getTime(createdAt)} · Updated on ${getTime(updatedAt)}`;
-        }
+        let dates = `${getTime("{{ created_at }}")}`;
 
         datesElement.textContent = dates;
         contentElement.innerHTML = content;
@@ -295,9 +326,26 @@
         });
     });
 
-    document.getElementById("add-reply").addEventListener("submit", function (event) {
+    if (!(document.getElementById("add-reply") === null)) document.getElementById("add-reply").addEventListener("submit", function (event) {
         event.preventDefault();
         addReply();
+    });
+    
+    document.getElementById("confirm-delete-button").addEventListener("click", () => {
+        fetch(`{% url 'feeds:delete_post' post.pk %}`, {
+            method: "DELETE",
+        }).then(response => {
+            if (response.status === 201) {
+                document.getElementById("delete-modal").classList.add("hidden");
+                window.location.href = "{% url 'feeds:show_all' %}";
+            } else {
+                document.getElementById("delete-modal").classList.add("hidden");
+                showToast("Failed to delete post.", "red");
+            }
+        }).catch(error => {
+            showToast("An error occurred while deleting the post. Please try again.", "red");
+        });
+
     });
 </script>
 <script src="{% static 'js/feeds/feeds_page.js' %}"></script>

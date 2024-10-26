@@ -1,13 +1,13 @@
 import uuid
 from django.db import models
-# from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 
 # TODO: Implementasi User as a Foreign Key --> setelah Auth selesai
 
 # Posts model
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     like_count = models.IntegerField(default=0)
     reply_count = models.IntegerField(default=0)
@@ -22,7 +22,7 @@ class Post(models.Model):
 # Replies model
 class Reply(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     content = models.TextField()
     like_count = models.IntegerField(default=0)
@@ -36,7 +36,7 @@ class Reply(models.Model):
 # Likes (relationship) model
 class Like(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="feeds_like")
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     reply = models.ForeignKey(Reply, on_delete=models.CASCADE, null=True)
     

@@ -120,7 +120,7 @@
   document.addEventListener('click', (event) => {
     const profileContainer = document.getElementById('profile-container');
     const profileDropdown = document.getElementById('profile-dropdown');
-    if (!profileContainer.contains(event.target)) {
+    if (profileContainer !== null && !profileContainer.contains(event.target)) {
       profileDropdown.classList.remove('open');
     }
   });

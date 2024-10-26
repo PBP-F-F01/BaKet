@@ -7,7 +7,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+
 from apps.feeds.models import *
+from apps.feeds.serializer import *
 from pytz import timezone
 
 
@@ -21,7 +25,7 @@ def show_all(request):
         'date': datetime.now(timezone('Asia/Jakarta')).strftime("%A, %d %B %Y"),
         'tabs': is_all,
         'posts': posts,
-        'anonymous': request.user.is_anonymous
+        'anonymous': request.user.is_anonymous,
     }
     
     return render(request, 'feeds_page.html', context)
@@ -74,22 +78,27 @@ def create_post(request):
 
 
 # Show all Posts in JSON format
+@api_view(['GET'])
 def post_json(request):
     data = Post.objects.all()
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+    serializer = PostSerializer(data, many=True)
+    return Response(serializer.data)
 
 
 # Show all Posts by user in JSON format
-def post_json_by_user(request, user=1):
-    # data = Post.objects.filter(user=user)
-    data = {}
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+@api_view(['GET'])
+def post_json_by_user(request, user):
+    data = Post.objects.filter(user=user)
+    serializer = PostSerializer(data, many=True)
+    return Response(serializer.data)
 
 
 # Show a Post filtered based on its ID in JSON
+@api_view(['GET'])
 def post_json_by_id(request, id):
     data = Post.objects.filter(pk=id)
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+    serializer = PostSerializer(data, many=True)
+    return Response(serializer.data)
 
 
 # See if user liked the given post
@@ -128,6 +137,13 @@ def unlike_post(request, id):
     return HttpResponse(b"Successfully Unliked", status=201)
 
 
+# Delete a post
+@csrf_exempt
+def delete_post(request, id):
+    Post.objects.get(pk=id).delete()
+    return HttpResponse(b"Successfully Deleted", status=201)
+
+
 ####################
 # REPLY MANAGEMENT #
 ####################
@@ -156,22 +172,27 @@ def create_reply(request):
 
 
 # Show all Replies in JSON format
+@api_view(['GET'])
 def reply_json(request, post_id):
     data = Reply.objects.filter(post=post_id)
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+    serializer = ReplySerializer(data, many=True)
+    return Response(serializer.data)
 
 
 # Show all Replies by user in JSON format
-def reply_json_by_user(request, user=1, post_id=1):
-    # data = Reply.objects.filter(user=user, post=post_id)
-    data = {}
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+@api_view(['GET'])
+def reply_json_by_user(request, user, post_id):
+    data = Reply.objects.filter(user=user, post=post_id)
+    serializer = ReplySerializer(data, many=True)
+    return Response(serializer.data)
 
 
 # Show a Reply filtered based on its ID in JSON
+@api_view(['GET'])
 def reply_json_by_id(request, id):
     data = Reply.objects.filter(pk=id)
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+    serializer = ReplySerializer(data, many=True)
+    return Response(serializer.data)
 
 
 # See if user liked the given reply
@@ -208,3 +229,9 @@ def unlike_reply(request, id):
     reply.save()
     
     return HttpResponse(b"Successfully Unliked", status=201)
+
+
+# Delete a reply
+def delete_reply(request, id):
+    Reply.objects.get(pk=id).delete()
+    return HttpResponse(b"Successfully Deleted", status=201)

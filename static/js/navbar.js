@@ -76,7 +76,7 @@ function fetchCartCount() {
     }
   })
   .catch(error => {
-    console.error('Error fetching cart count:', error);  // Log any errors to the console
+    // console.error('Error fetching cart count:', error);  // Log any errors to the console
   });
 }
 
