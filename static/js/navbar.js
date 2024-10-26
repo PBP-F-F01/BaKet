@@ -52,5 +52,37 @@ function highlightNavbar() {
   });
 }
 
-// Run the function immediately
-highlightNavbar();
+// Function to fetch and update the cart count asynchronously
+function fetchCartCount() {
+  fetch('/cart/count/', {
+    method: 'GET',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest' // Ensures Django recognizes it as an AJAX request
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Get cart count elements from the navbar (both desktop and mobile)
+    const cartCountElement = document.getElementById('cart-count');
+    const mobileCartCountElement = document.getElementById('cart-count-mobile');
+
+    // Update the cart count in the navbar (desktop)
+    if (cartCountElement) {
+      cartCountElement.innerText = data.cart_count;  // Update the number of items
+    }
+
+    // Update the cart count in the navbar (mobile)
+    if (mobileCartCountElement) {
+      mobileCartCountElement.innerText = data.cart_count;  // Update the number of items
+    }
+  })
+  .catch(error => {
+    console.error('Error fetching cart count:', error);  // Log any errors to the console
+  });
+}
+
+// Run the functions when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+  highlightNavbar();
+  fetchCartCount();  // Fetch cart count on page load
+});

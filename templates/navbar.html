@@ -55,28 +55,24 @@
     <div class="h-8 border-l border-gray-300 mx-0"></div>
 
     <!-- Cart Icon with Cart Count -->
-    <a href="{% url 'view_cart' %}" class="relative text-[#01aae8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">
-      <img src="{% static 'icon/cart_icon.svg' %}" alt="Cart" class="h-5 inline-block">
-      <span id="cart-count" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+    <a href="{% url 'view_cart' %}" class="relative text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8] flex flex-row items-center">
+      <img src="{% static 'images/icon_cart_blue.svg' %}" alt="Cart" class="mr-2 h-5 inline-block">
+      Cart
+      <div id="cart-count" class="ml-2 pb-1 bg-red-500 text-white text-xl rounded-full w-6 h-6 flex items-center justify-center">
         {{ cart_count }}
-      </span>
-    </a>
+      </div>
+    </a>  
 
     <!-- Profile Section -->
     {% if user.is_authenticated %}
     <div id="profile-container" class="relative">
       <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleDropdown()">
-        <img src="{{ user.userprofile.profile_picture.url|default:'/assets/profile_image/default.png' }}" 
-        alt="Profile" 
-        class="w-10 h-10 rounded-full border-t-2">
+        Profile
       </div>
 
       <!-- Profile Dropdown Menu -->
       <div id="profile-dropdown" class="hidden absolute right-0 mt-6 w-48 bg-[#f4f4f4] rounded-lg shadow-lg z-10">
         <div class="flex items-center px-4 py-3">
-          <img src="{{ user.userprofile.profile_picture.url|default:'/assets/profile_image/default.png' }}"
-          alt="Profile Picture" 
-          class="w-10 h-10 rounded-full mr-3 border-t-2">
           <h4 class="text-gray-800 font-semibold font-['Raleway']">{{ user.username }}</h4>
         </div>
 
@@ -103,7 +99,7 @@
       <a href="/wishlist" class="text-neutral-600 text-sm font-semibold font-['Raleway']">Wishlist</a>
       
       <!-- Cart Icon in Mobile Dropdown -->
-      <a href="/cart" class="relative text-[#01aae8] text-sm font-semibold font-['Raleway']">
+      <a href="{% url 'view_cart' %}" class="relative text-[#01aae8] text-sm font-semibold font-['Raleway']">
         <img src="{% static 'images/cart_icon.svg' %}" alt="Cart" class="h-5 inline-block">
         <span id="cart-count-mobile" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
           {{ cart_count }}

@@ -2,13 +2,36 @@
 {% load static %}
 
 {% block content %}
-<div class="container mx-auto py-10">
-    <h2 class="text-2xl font-bold mb-4">Order Confirmation</h2>
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 font-[Raleway]">
+    <div class="max-w-xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="px-8 py-10 text-center">
+                <!-- Success Icon -->
+                <div class="w-16 h-16 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
 
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h3 class="text-xl mb-4">Thank you for your order!</h3>
-        <p>Your order ID is <strong>#{{ order.id }}</strong></p>
-        <p>Total: <strong>Rp{{ order.get_total_price }}</strong></p>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Pesanan Diterima!</h2>
+                <h3 class="text-xl text-gray-600 mb-8">Terimakasih sudah belanja di BaKet!</h3>
+
+                <div class="space-y-4 mb-8">
+                    <div class="py-3 border-t border-b border-gray-100">
+                        <p class="text-gray-600">Order ID: <span class="font-semibold text-gray-900">#{{ order.id }}</span></p>
+                    </div>
+                    <div class="py-3">
+                        <p class="text-gray-600">Total Harga: <span class="font-bold text-[#01aae8]">Rp{{ order.get_total_price }}</span></p>
+                    </div>
+                </div>
+
+                <!-- Back to Shop Button -->
+                <a href="{% url '' %}" 
+                   class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#01aae8] hover:bg-[#0081b1] focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors">
+                    Kembali berbelanja
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
