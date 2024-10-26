@@ -28,6 +28,19 @@
       <button onclick="addToCart({{ product.id }})" class="bg-blue-500 text-white px-4 py-2 rounded">
         Add to Cart
       </button>
+      <button 
+        onclick="toggleWishlist('{{ product.id }}')" 
+        class="text-white px-4 py-2 rounded
+        {% if is_in_wishlist %} bg-red-400 {% else %} bg-blue-500 {% endif %}" 
+        id="wishlist-button"
+      >
+
+        {% if is_in_wishlist %}
+          Remove from Wishlist
+        {% else %}
+          Add to Wishlist
+        {% endif %}
+      </button>
 
       <h1 class="text-3xl font-bold">{{ product.name }}</h1>
       <p class="text-lg text-gray-700">
@@ -151,6 +164,33 @@
           // Update the cart count dynamically
           document.getElementById('cart-count').innerText = data.cart_count;
           alert("Barang sudah dimasukkan ke keranjang!");
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+  }
+
+  function toggleWishlist(productId) {
+      fetch(`/wishlist/toggle/${productId}/`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}'
+          },
+          credentials: 'same-origin'
+      })
+      .then(response => response.json())
+      .then(data => {
+          const wishlistButton = document.getElementById('wishlist-button');
+          if (data.status === 'added') {
+              wishlistButton.innerText = 'Remove from Wishlist';
+              wishlistButton.classList.remove('bg-blue-500');
+              wishlistButton.classList.add('bg-red-400');
+          } else if (data.status === 'removed') {
+              wishlistButton.innerText = 'Add to Wishlist';
+              wishlistButton.classList.remove('bg-red-400');
+              wishlistButton.classList.add('bg-blue-500');
+          }
       })
       .catch(error => {
           console.error('Error:', error);

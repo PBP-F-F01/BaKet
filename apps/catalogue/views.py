@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from apps.catalogue.models import Product, Review
 from apps.catalogue.forms import ProductForm, ReviewForm
 from django.contrib.auth.decorators import login_required
+from apps.wishlist.models import Wishlist
 
 from .models import *
 
@@ -49,6 +50,7 @@ def create_product(request):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+    is_in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
     reviews = Review.objects.filter(product=product).order_by('-created_at')  # Fetch all reviews for this product
     
     if request.method == 'POST':
@@ -62,7 +64,7 @@ def product_detail(request, product_id):
     else:
         form = ReviewForm()
 
-    return render(request, 'details.html', {'product': product, 'reviews': reviews, 'form': form})
+    return render(request, 'details.html', {'product': product, 'reviews': reviews, 'form': form, 'is_in_wishlist':is_in_wishlist})
 
 # @login_required
 def add_to_cart(request, product_id):

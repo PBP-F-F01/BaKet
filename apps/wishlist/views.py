@@ -8,33 +8,49 @@ from apps.wishlist.models import Wishlist
 
 def wishlist_view(request):
     # wishlists = Wishlist.objects.filter(user=request.user)
-    wishlists = Wishlist.objects.all()
+    wishlist_items = Wishlist.objects.all().select_related('product')
     query = request.GET.get('q')
     categories = request.GET.getlist('category')
     sort_option = request.GET.get('sort')
 
     # Handle search
     if query:
-        wishlists = wishlists.filter(name__icontains=query)
+        wishlist_items = wishlist_items.filter(product__name__icontains=query)
 
     # Handle filtering by category
     if categories:
-        wishlists = wishlists.filter(category__in=categories)
+        wishlist_items = wishlist_items.filter(product__category__in=categories)
 
     # Handle sorting
     if sort_option == 'price_asc':
-        wishlists = wishlists.order_by('price')
+        wishlist_items = wishlist_items.order_by('product__price')
     elif sort_option == 'price_desc':
-        wishlists = wishlists.order_by('-price')
+        wishlist_items = wishlist_items.order_by('-product__price')
 
     context = {
-        'products': wishlists,
+        # 'wishlist_items': wishlist_items,
+        'wishlist_items': [item.product for item in wishlist_items],  # List of Product objects
         'categories': Product.CATEGORY_CHOICES,
         'selected_categories': categories,  
         'selected_sort': sort_option,
     }
 
     return render(request, 'wishlist.html', context)
+
+@login_required
+def toggle_wishlist(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    wishlist_item, created = Wishlist.objects.get_or_create(user=request.user, product=product)
+    
+    if created:
+        message = 'Product added to wishlist.'
+        status = 'added'
+    else:
+        wishlist_item.delete()
+        message = 'Product removed from wishlist.'
+        status = 'removed'
+    
+    return JsonResponse({'message': message, 'status': status})
 
 @login_required
 def add_to_wishlist(request, product_id):
@@ -45,10 +61,8 @@ def add_to_wishlist(request, product_id):
     wishlist, created = Wishlist.objects.get_or_create(user=request.user, product=product)
     
     if created:
-        # If the item was newly added, you can show a success message
         return JsonResponse({'message': 'Product added to wishlist.'}, status=201)
     else:
-        # If the product is already in the wishlist, you can show a message
         return JsonResponse({'message': 'Product is already in wishlist.'}, status=200)
 
 @login_required
