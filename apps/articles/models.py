@@ -1,13 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
+import datetime
 
 class Article(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=256)
     posted_by = models.CharField(max_length=256, null=True, blank=True)
     content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=datetime.datetime.now())
     source = models.URLField(null=True, blank=True)
     like_count = models.IntegerField(default=0)
     comment_count = models.IntegerField(default=0)
