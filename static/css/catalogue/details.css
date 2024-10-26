@@ -1,0 +1,24 @@
+.rating-wrapper {
+  display: inline-block;
+  direction: ltr;
+  /* Ensure stars are displayed left-to-right by removing direction */
+}
+
+.rating-wrapper input[type="radio"] {
+  display: none;
+}
+
+.rating-wrapper label {
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.rating-wrapper input[type="radio"]:checked ~ label {
+  color: #ffcc00;
+}
+
+.rating-wrapper label:hover,
+.rating-wrapper label:hover ~ label {
+  color: #ffcc00; /* Highlight stars on hover */
+}

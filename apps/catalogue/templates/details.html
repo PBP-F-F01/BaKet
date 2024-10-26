@@ -1,199 +1,327 @@
-{% extends 'base.html' %} {% load static %} 
-
-{% block meta %}
+{% extends 'base.html' %} {% load static %} {% block meta %}
 <title>{% block title %} Product | {% endblock title %}</title>
-{% endblock meta %}
+{% endblock meta %} {% block content %}
 
-{% block content %}
+<head>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+  />
 
-<body>
-  <div class="grid grid-cols-2 md:grid-cols-3 gap-8 p-4 mt-8">
+  <link rel="stylesheet" href="{% static 'css/catalogue/details.css' %}" />
+</head>
+
+<body class="text-base font-bold font-['Raleway']">
+  <div class="grid grid-cols-3 gap-8 p-4 mt-4 mx-8 shadow-lg rounded-lg">
     <!-- Product Image -->
-    <div class="flex justify-center items-center">
+    <div class="col-span-2 flex justify-center items-center">
       <img
         src="{{ product.image.url }}"
         alt="{{ product.name }}"
-        class="max-w-full h-auto rounded-lg shadow-lg"
+        class="w-full max-h-[60rem] rounded-lg object-cover"
       />
     </div>
 
     <!-- Product Details -->
-    <div class="flex flex-col justify-center space-y-4">
-      <p
-        class="flex px-3 py-1 text-lg text-gray-700 bg-blue-500 text-white rounded-lg"
-      >
-        {{ product.category }}
-      </p>
-
-      <button onclick="addToCart({{ product.id }})" class="bg-blue-500 text-white px-4 py-2 rounded">
-        Add to Cart
-      </button>
-      <button 
-        onclick="toggleWishlist('{{ product.id }}')" 
-        class="text-white px-4 py-2 rounded
-        {% if is_in_wishlist %} bg-red-400 {% else %} bg-blue-500 {% endif %}" 
-        id="wishlist-button"
-      >
-
-        {% if is_in_wishlist %}
-          Remove from Wishlist
-        {% else %}
-          Add to Wishlist
-        {% endif %}
-      </button>
-
+    <div class="col-span-1 flex flex-col justify-center space-y-4">
       <h1 class="text-3xl font-bold">{{ product.name }}</h1>
-      <p class="text-lg text-gray-700">
-        <strong>Price:</strong> Rp{{ product.price }}
-      </p>
-      <p class="text-lg text-gray-700">
-        <strong>Specifications:</strong> {{ product.specs }}
+      <p class="text-[#01aae8] text-2xl font-bold font-['Raleway']3">
+        Rp{{ product.price }}
       </p>
 
-      <div class="flex items-center justify-center">
-        <svg
-          class="w-4 h-4 text-yellow-300 ms-1"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 22 20"
+      <p class="flex items-center">
+        <strong class="mr-2 text-lg">Category:</strong>
+        <span
+          class="px-3 py-1 text-sm text-white bg-[#9ba7ba] rounded-lg inline-flex"
         >
-          <path
-            d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-          />
-        </svg>
-        <svg
-          class="w-4 h-4 text-yellow-300 ms-1"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 22 20"
-        >
-          <path
-            d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-          />
-        </svg>
-        <svg
-          class="w-4 h-4 text-yellow-300 ms-1"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 22 20"
-        >
-          <path
-            d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-          />
-        </svg>
-        <svg
-          class="w-4 h-4 text-yellow-300 ms-1"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 22 20"
-        >
-          <path
-            d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-          />
-        </svg>
-        <svg
-          class="w-4 h-4 ms-1 text-gray-300 dark:text-gray-500"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 22 20"
-        >
-          <path
-            d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-          />
-        </svg>
-      </div>
+          {{ product.category }}
+        </span>
+      </p>
 
-      <!-- Back Button -->
-      <a
-        href="{% url 'catalogue' %}"
-        class="inline-block bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md text-center"
-      >
-        Back to Products
-      </a>
+      <p class="text-gray-700 text-lg">
+        <strong>Specifications:</strong> <br />{{ product.specs }}
+      </p>
 
-      <!-- Reviews Section -->
-      <div>
-        <h2 class="text-2xl font-semibold mb-4">Reviews</h2>
-        <ul>
-          {% for review in reviews %}
-          <li class="mb-4 p-4 bg-gray-100 rounded-lg">
-            <p>
-              <strong>{{ review.user.username }}</strong> rated: {{
-              review.rating }}/5
-            </p>
-            <p>{{ review.comment }}</p>
-            <p class="text-sm text-gray-500">{{ review.created_at }}</p>
-          </li>
-          {% empty %}
-          <li>No reviews yet. Be the first to review!</li>
-          {% endfor %}
-        </ul>
+      <div class="flex gap-4">
+        <button
+          onclick="addToCart({{ product.id }})"
+          class="self-stretch p-3 bg-[#01aae8] rounded-lg justify-center items-center gap-3 flex hover:bg-[#0081b1]"
+        >
+          <div class="w-5 h-5 relative">
+            <img src="{% static 'images/icon_cart.png' %}" alt="Cart Icon" />
+          </div>
+          <div class="text-white text-base font-bold font-['Raleway']">
+            Add to Cart
+          </div>
+        </button>
 
-        <!-- Review Form -->
-        <h2 class="text-2xl font-semibold mt-8 mb-4">Leave a Review</h2>
-        <form method="POST">
-          {% csrf_token %} {{ form.as_p }}
-          <button
-            type="submit"
-            class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
-          >
-            Submit Review
-          </button>
-        </form>
+        <button
+          onclick="toggleWishlist('{{ product.id }}')"
+          class="text-white px-4 py-2 rounded flex items-center gap-2 {% if is_in_wishlist %} bg-red-400 {% else %} bg-blue-500 {% endif %}"
+          id="wishlist-button"
+        >
+          <span>
+            {% if is_in_wishlist %} Remove from Wishlist {% else %} Add to
+            Wishlist {% endif %}
+          </span>
+        </button>
       </div>
     </div>
   </div>
+
+  <div class="gap-8 flex justify-center">
+    <!-- Review Form Section -->
+    <div class="col-sm-5 mt-8">
+      <form
+        id="reviewForm"
+        class="review-form bg-white p-6 rounded-lg shadow-md mr-20 w-full"
+      >
+        {% csrf_token %}
+        <input type="hidden" name="prod_id" value="{{ product.id }}" />
+
+        <div class="form-group mb-4 grid place-items-center">
+          <!-- <label class="block text-lg font-semibold mb-2">Your Rating:</label> -->
+          <div class="input_rating">
+            <div class="rating-wrapper flex">
+              <input
+                type="radio"
+                id="star-5"
+                name="rate"
+                value="5"
+                class="hidden"
+              />
+              <label
+                for="star-5"
+                class="cursor-pointer text-2xl text-gray-400 hover:text-yellow-500 transition-colors duration-200"
+                >★</label
+              >
+
+              <input
+                type="radio"
+                id="star-4"
+                name="rate"
+                value="4"
+                class="hidden"
+              />
+              <label
+                for="star-4"
+                class="cursor-pointer text-2xl text-gray-400 hover:text-yellow-500 transition-colors duration-200"
+                >★</label
+              >
+
+              <input
+                type="radio"
+                id="star-3"
+                name="rate"
+                value="3"
+                class="hidden"
+              />
+              <label
+                for="star-3"
+                class="cursor-pointer text-2xl text-gray-400 hover:text-yellow-500 transition-colors duration-200"
+                >★</label
+              >
+
+              <input
+                type="radio"
+                id="star-2"
+                name="rate"
+                value="2"
+                class="hidden"
+              />
+              <label
+                for="star-2"
+                class="cursor-pointer text-2xl text-gray-400 hover:text-yellow-500 transition-colors duration-200"
+                >★</label
+              >
+
+              <input
+                type="radio"
+                id="star-1"
+                name="rate"
+                value="1"
+                class="hidden"
+              />
+              <label
+                for="star-1"
+                class="cursor-pointer text-2xl text-gray-400 hover:text-yellow-500 transition-colors duration-200"
+                >★</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group mb-4">
+          <textarea
+            class="input w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
+            name="comment"
+            placeholder="Your Review"
+            rows="4
+          "
+          ></textarea>
+        </div>
+
+        <div class="grid place-items-center">
+          <button
+            type="submit"
+            id="submitAjax"
+            class="h-11 px-4 bg-[#01aae8] rounded-lg inline-flex items-center gap-2 hover:bg-[#0081b1] text-white transition-colors duration-200"
+          >
+            submit
+          </button>
+        </div>
+      </form>
+
+      <div id="message_card"></div>
+      <div id="review_card"></div>
+    </div>
+  </div>
 </body>
+<script src="https://cdn.lordicon.com/lordicon.js"></script>
+<script>
+  async function getReviews() {
+    const productId = document.querySelector('input[name="prod_id"]').value;
+    const response = await fetch("{% url 'show_json' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        prod_id: productId, // Send prod_id in the request body
+      }),
+    });
+
+    if (response.ok) {
+      return await response.json();
+    } else {
+      console.error("Failed to fetch reviews:", response.statusText);
+      return [];
+    }
+  }
+
+  async function refreshReviewForm() {
+    document.getElementById("review_card").innerHTML = "";
+    document.getElementById("review_card").className = "";
+    const reviews = await getReviews();
+    let htmlString = "";
+    let classNameString = "";
+
+    // If there is no reviews yet
+    if (reviews.length === 0) {
+      classNameString =
+        "flex flex-col items-center justify-center min-h-[24rem] p-6";
+      htmlString = `
+            <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+                <p class="text-center text-gray-600 mt-4">No reviews yet.</p>
+            </div>
+        `;
+    } else {
+      // Review cards
+      classNameString = "";
+      reviews.forEach((item) => {
+        let starsHtml = "";
+        for (let i = 1; i <= 5; i++) {
+          if (i <= item.fields.rating) {
+            starsHtml += '<i class="fa fa-star text-yellow-500"></i>\n';
+          } else {
+            starsHtml += '<i class="fa fa-star text-gray-400"></i>\n';
+          }
+        }
+
+        htmlString += `
+        <div class="relative bg-white p-4 rounded-lg shadow-md mb-4 mt-4 transition-transform transform hover:scale-105 duration-200">
+          <div class="flex justify-between items-center mb-2">
+            <div class="flex items-center">
+              <i class="far fa-user mr-2 text-gray-500"></i>
+              <span class="font-semibold text-gray-800 text-lg">${
+                item.fields.username
+              }</span>
+              <span class="absolute top-4 right-4 text-gray-500 text-sm">
+                <span>${new Date(
+                  item.fields.created_at
+                ).toLocaleString()}</span>
+              </span>
+            </div>
+          </div>
+          <div class="flex mb-2">${starsHtml}</div>
+          <p class="text-gray-700 mt-2">${item.fields.comment}</p>
+        </div>
+        `;
+      });
+    }
+    document.getElementById("review_card").className = classNameString;
+    document.getElementById("review_card").innerHTML = htmlString;
+  }
+  refreshReviewForm();
+
+  async function addReview() {
+    const response = await fetch("{% url 'add_review_ajax' %}", {
+      method: "POST",
+      body: new FormData(document.querySelector("#reviewForm")),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      await refreshReviewForm();
+      document.getElementById("reviewForm").reset();
+      // alert(result.message);
+    } else {
+      alert(result.message);
+    }
+  }
+
+  document.getElementById("reviewForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    addReview();
+  });
+</script>
 
 <script>
   function addToCart(productId) {
-      // Send AJAX request to add the item to the cart
-      fetch(`/cart/add/${productId}/`, {
-          method: 'GET',
-          headers: {
-              'X-Requested-With': 'XMLHttpRequest',  // Required for Django to recognize it as an AJAX request
-          },
+    // Send AJAX request to add the item to the cart
+    fetch(`/cart/add/${productId}/`, {
+      method: "GET",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest", // Required for Django to recognize it as an AJAX request
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Update the cart count dynamically
+        document.getElementById("cart-count").innerText = data.cart_count;
+        alert("Barang sudah dimasukkan ke keranjang!");
       })
-      .then(response => response.json())
-      .then(data => {
-          // Update the cart count dynamically
-          document.getElementById('cart-count').innerText = data.cart_count;
-          alert("Barang sudah dimasukkan ke keranjang!");
-      })
-      .catch(error => {
-          console.error('Error:', error);
+      .catch((error) => {
+        console.error("Error:", error);
       });
   }
 
   function toggleWishlist(productId) {
-      fetch(`/wishlist/toggle/${productId}/`, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': '{{ csrf_token }}'
-          },
-          credentials: 'same-origin'
+    fetch(`/wishlist/toggle/${productId}/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      credentials: "same-origin",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const wishlistButton = document.getElementById("wishlist-button");
+        if (data.status === "added") {
+          wishlistButton.innerText = "Remove from Wishlist";
+          wishlistButton.classList.remove("bg-blue-500");
+          wishlistButton.classList.add("bg-red-400");
+        } else if (data.status === "removed") {
+          wishlistButton.innerText = "Add to Wishlist";
+          wishlistButton.classList.remove("bg-red-400");
+          wishlistButton.classList.add("bg-blue-500");
+        }
       })
-      .then(response => response.json())
-      .then(data => {
-          const wishlistButton = document.getElementById('wishlist-button');
-          if (data.status === 'added') {
-              wishlistButton.innerText = 'Remove from Wishlist';
-              wishlistButton.classList.remove('bg-blue-500');
-              wishlistButton.classList.add('bg-red-400');
-          } else if (data.status === 'removed') {
-              wishlistButton.innerText = 'Add to Wishlist';
-              wishlistButton.classList.remove('bg-red-400');
-              wishlistButton.classList.add('bg-blue-500');
-          }
-      })
-      .catch(error => {
-          console.error('Error:', error);
+      .catch((error) => {
+        console.error("Error:", error);
       });
   }
 </script>

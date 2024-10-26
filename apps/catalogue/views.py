@@ -1,8 +1,16 @@
+from django.contrib import messages
+
 from django.shortcuts import get_object_or_404, render, redirect
+from datetime import datetime
 from django.http import HttpResponse, JsonResponse
 from apps.catalogue.models import Product, Review
 from apps.catalogue.forms import ProductForm, ReviewForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
+from django.core import serializers
+
 from apps.wishlist.models import Wishlist
 
 from .models import *
@@ -58,13 +66,64 @@ def product_detail(request, product_id):
         if form.is_valid():
             review = form.save(commit=False)
             review.product = product
-            review.user = request.user  # Assuming you have user authentication set up
+            review.user = request.user  
             review.save()
             return redirect('product_detail', product_id=product_id)  # Refresh the page after review submission
     else:
         form = ReviewForm()
 
-    return render(request, 'details.html', {'product': product, 'reviews': reviews, 'form': form, 'is_in_wishlist':is_in_wishlist})
+    return render(request, 'details.html', {'product': product, 'form': form, 'reviews': reviews, 'is_in_wishlist': is_in_wishlist,})
+        
+@csrf_exempt
+@require_POST
+@login_required
+def add_review_ajax(request):
+    prod_id =  request.POST.get('prod_id')
+    product = Product.objects.get(id=prod_id)
+    comment = strip_tags(request.POST.get('comment')) 
+    rating = request.POST.get("rate")
+    user = request.user
+
+    # Ensure the rating is a valid number
+    if not rating:
+        messages.error(request, "Rating cannot be empty!")
+        return JsonResponse({'status': 'error', 'message': "Rating cannot be empty!"}, status=400)
+
+    
+    if request.user.is_authenticated:
+
+        # Check if the user has already reviewed this product
+        existing_review = Review.objects.filter(user=user, product=product).first()
+        if existing_review:
+            existing_review.comment = comment
+            existing_review.rating = rating
+            existing_review.save()
+            messages.success(request, "Review updated successfully.")
+
+        else:
+            Review.objects.create(user=user, product=product, comment=comment, rating=rating)
+            
+        return HttpResponse(b"CREATED", status=201)
+    
+    else:
+        messages.error(request, "You need to log in to submit a review.")
+
+def show_json(request):
+    prod_id = request.POST.get('prod_id')
+    data = Review.objects.filter(product=prod_id).select_related('user') 
+    reviews = []
+
+    for review in data:
+        reviews.append({
+            "id": review.id,
+            "fields": {
+                "username": review.user.username, 
+                "rating": review.rating,
+                "comment": review.comment,
+                "created_at": review.created_at,
+            }
+        })
+    return JsonResponse(reviews, safe=False)
 
 # @login_required
 def add_to_cart(request, product_id):
