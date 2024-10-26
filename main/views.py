@@ -31,7 +31,7 @@ def login_user(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('main:show_main')
+            return redirect('main:index')
 
     else:
         form = AuthenticationForm(request)
@@ -40,6 +40,6 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    response = HttpResponseRedirect(reverse('main:login'))
+    response = HttpResponseRedirect(reverse('main:index'))
     response.delete_cookie('last_login')
     return response
