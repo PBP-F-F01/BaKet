@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect
 from datetime import datetime
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.contrib import messages
+from apps.catalogue.models import Cart
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     context = {
@@ -43,3 +45,14 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('main:index'))
     response.delete_cookie('last_login')
     return response
+
+@login_required
+def get_cart_count(request):
+    if request.user.is_authenticated:
+        cart = Cart.objects.filter(user=request.user).first()
+        if cart:
+            cart_count = cart.cartitem_set.count()  
+    else:
+        cart_count = 0 
+
+    return JsonResponse({'cart_count': cart_count}) 
