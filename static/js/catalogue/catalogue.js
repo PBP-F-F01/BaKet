@@ -21,7 +21,7 @@ const dropdown = document.getElementById('dropdown-menu');
 const html = `<div class="p-4">
   <div class="flex flex-col">
     <a href="/" class="text-neutral-600 text-sm mb-4 font-semibold font-['Raleway']">Beranda </a>
-    <a class="text-[#01aae8] text-sm mb-4 font-semibold font-['Raleway']">Catalogue</a>
+    <a href="/catalogue" class="text-[#01aae8] text-sm mb-4 font-semibold font-['Raleway']">Catalogue</a>
     <a href="/feeds" class="text-neutral-600 text-sm mb-4 font-semibold font-['Raleway']">Forum</a>
     <a href="/articles" class="text-neutral-600 text-sm mb-4 font-semibold font-['Raleway']">Article</a>
     <a href="/wishlist" class="text-neutral-600 text-sm font-semibold font-['Raleway']">Wishlist</a>
