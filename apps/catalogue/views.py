@@ -1,9 +1,16 @@
+from django.contrib import messages
+
 from django.shortcuts import get_object_or_404, render, redirect
 from datetime import datetime
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from apps.catalogue.models import Product, Review
 from apps.catalogue.forms import ProductForm, ReviewForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
+from django.core import serializers
+
 
 from django.shortcuts import render
 from .models import Product
@@ -51,8 +58,8 @@ def create_product(request):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    reviews = Review.objects.filter(product=product).order_by('-created_at')  # Fetch all reviews for this product
-    rating = Review.objects.filter(rating=0).order_by("?").first()
+    reviews = Review.objects.filter(product=product).order_by('-created_at')  
+    # rating = Review.objects.filter(rating=0).order_by("?").first()
     
     if request.method == 'POST':
         form = ReviewForm(request.POST)
@@ -65,20 +72,58 @@ def product_detail(request, product_id):
     else:
         form = ReviewForm()
 
-    return render(request, 'details.html', {'product': product, 'reviews': reviews, 'form': form, 'rating': rating})
-
-@login_required
-def review_rate(request):
-    if request.method == "POST":
-        prod_id = request.POST.get('prod_id')
-        product = Product.objects.get(id=prod_id)
-        comment = request.POST.get('comment')
-        rating = request.POST.get('rate') 
-
-        if request.user.is_authenticated:
-            user = request.user 
-            Review.objects.create(user=user, product=product, comment=comment, rating=rating)
-            return redirect('product_detail', product_id=prod_id)
+    return render(request, 'details.html', {'product': product, 'form': form, 'reviews': reviews})
         
+@csrf_exempt
+@require_POST
+@login_required
+def add_review_ajax(request):
+    prod_id =  request.POST.get('prod_id')
+    product = Product.objects.get(id=prod_id)
+    comment = strip_tags(request.POST.get('comment')) 
+    rating = request.POST.get("rate")
+    user = request.user
+
+    if not rating:
+        return HttpResponse(b"Rating is required", status=400)
+
+    new_review = Review(
+        product = product,
+        comment = comment, rating=rating, user = user
+    )
+    
+    if request.user.is_authenticated:
+
+        # Check if the user has already reviewed this product
+        existing_review = Review.objects.filter(user=user, product=product).first()
+        if existing_review:
+            # Update the existing review
+            existing_review.comment = comment
+            existing_review.rating = rating
+            existing_review.save()
+
         else:
-            return redirect('login')  # Redirect to login if user is not authenticated
+            Review.objects.create(user=user, product=product, comment=comment, rating=rating)
+            
+        return HttpResponse(b"CREATED", status=201)
+    
+    else:
+        messages.error(request, "You need to log in to submit a review.")
+        return redirect('login')  # Redirect to login if user is not authenticated
+
+def show_json(request):
+    prod_id = request.POST.get('prod_id')
+    data = Review.objects.filter(product=prod_id).select_related('user')  # Optimize query with select_related
+    reviews = []
+
+    for review in data:
+        reviews.append({
+            "id": review.id,
+            "fields": {
+                "username": review.user.username,  # Add username here
+                "rating": review.rating,
+                "comment": review.comment,
+                "created_at": review.created_at,
+            }
+        })
+    return JsonResponse(reviews, safe=False)

@@ -46,7 +46,7 @@
           class="self-stretch p-3 bg-[#01aae8] rounded-lg justify-center items-center gap-3 flex hover:bg-[#0081b1]"
         >
           <div class="w-5 h-5 relative">
-            <img src="{% static 'images/icon_cart.svg' %}" alt="Cart Icon" />
+            <img src="{% static 'images/icon_cart.png' %}" alt="Cart Icon" />
           </div>
           <div class="text-white text-base font-bold font-['Raleway']">
             Add to Cart
@@ -68,9 +68,8 @@
     <!-- Review Form Section -->
     <div class="col-sm-5 mt-8">
       <form
+        id="reviewForm"
         class="review-form bg-white p-6 rounded-lg shadow-md mr-20 w-full"
-        method="POST"
-        action="{% url 'review' %}"
       >
         {% csrf_token %}
         <input type="hidden" name="prod_id" value="{{ product.id }}" />
@@ -160,46 +159,113 @@
         <div class="grid place-items-center">
           <button
             type="submit"
+            id="submitAjax"
             class="h-11 px-4 bg-[#01aae8] rounded-lg inline-flex items-center gap-2 hover:bg-[#0081b1] text-white transition-colors duration-200"
           >
-            Submit
+            submit
           </button>
         </div>
       </form>
 
-      <!-- Review List -->
-      <div class="col-sm-7 mt-2">
-        {% if reviews %} {% for review in reviews %}
-        <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-          <div class="flex justify-between items-center mb-2">
-            <div class="flex items-center">
-              <i class="far fa-user mr-2 text-gray-500"></i>
-              <span class="font-semibold text-gray-800 text-lg"
-                >{{ review.user.name }}</span
-              >
-              <span class="ml-2 text-gray-500 text-sm">
-                <i class="far fa-clock mr-1"></i>{{ review.created_at }}
-              </span>
-            </div>
-            <div class="flex text-yellow-500">
-              {% for star in "★★★★★" %}
-              <i
-                class="fa fa-star {% if forloop.counter <= review.rating %}checked{% endif %}"
-              ></i>
-              {% endfor %}
-            </div>
-          </div>
-          <div class="review-body mt-2 text-gray-700">
-            <p class="">{{ review.comment }}</p>
-          </div>
-        </div>
-        {% endfor %} {% else %}
-        <h1 class="text-center text-gray-500">No reviews yet.</h1>
-        {% endif %}
-      </div>
+      <div id="review_card"></div>
     </div>
   </div>
 </body>
 <script src="https://cdn.lordicon.com/lordicon.js"></script>
+<script>
+  async function getReviews() {
+    const productId = document.querySelector('input[name="prod_id"]').value;
+    const response = await fetch("{% url 'show_json' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        prod_id: productId, // Send prod_id in the request body
+      }),
+    });
 
+    if (response.ok) {
+      return await response.json();
+    } else {
+      console.error("Failed to fetch reviews:", response.statusText);
+      return [];
+    }
+  }
+
+  async function refreshReviewForm() {
+    document.getElementById("review_card").innerHTML = "";
+    document.getElementById("review_card").className = "";
+    const reviews = await getReviews();
+    let htmlString = "";
+    let classNameString = "";
+
+    // If there is no reviews yet
+    if (reviews.length === 0) {
+      classNameString =
+        "flex flex-col items-center justify-center min-h-[24rem] p-6";
+      htmlString = `
+            <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+                <p class="text-center text-gray-600 mt-4">No reviews yet.</p>
+            </div>
+        `;
+    } else {
+      // Review cards
+      classNameString = "";
+      reviews.forEach((item) => {
+        let starsHtml = "";
+        for (let i = 1; i <= 5; i++) {
+          if (i <= item.fields.rating) {
+            starsHtml += '<i class="fa fa-star text-yellow-500"></i>\n';
+          } else {
+            starsHtml += '<i class="fa fa-star text-gray-400"></i>\n';
+          }
+        }
+
+        htmlString += `
+        <div class="bg-white p-4 rounded-lg shadow-md mb-4 mt-4 transition-transform transform hover:scale-105 duration-200">
+          <div class="flex justify-between items-center mb-2">
+            <div class="flex items-center">
+              <i class="far fa-user mr-2 text-gray-500"></i>
+              <span class="font-semibold text-gray-800 text-lg">${
+                item.fields.username
+              }</span>
+              <span class="ml-2 text-gray-500 text-sm">
+                <span>${new Date(
+                  item.fields.created_at
+                ).toLocaleString()}</span>
+              </span>
+            </div>
+          </div>
+          <div class="flex mb-2">${starsHtml}</div>
+          <p class="text-gray-700 mt-2">${item.fields.comment}</p>
+        </div>
+        `;
+      });
+    }
+    document.getElementById("review_card").className = classNameString;
+    document.getElementById("review_card").innerHTML = htmlString;
+  }
+  refreshReviewForm();
+
+  async function addReview() {
+    const response = await fetch("{% url 'add_review_ajax' %}", {
+      method: "POST",
+      body: new FormData(document.querySelector("#reviewForm")),
+    });
+
+    if (response.ok) {
+      await refreshReviewForm();
+      document.getElementById("reviewForm").reset();
+    } else {
+      console.error("Error adding review:", response.statusText);
+    }
+  }
+
+  document.getElementById("reviewForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    addReview();
+  });
+</script>
 {% endblock content %}
