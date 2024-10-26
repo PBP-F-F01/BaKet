@@ -9,7 +9,7 @@
 {% block content %}
     <div class="w-full flex-col justify-start items-start gap-5 inline-flex h-[100vh]">
         <div class="h-[38px] pl-24 pt-14 pr-20 pb-4 justify-center items-center gap-2.5 inline-flex">
-            <div class="grow shrink basis-0 text-[#01aae8] text-[32px] font-bold font-['Raleway']">Wishlists</div>
+            <div class="grow shrink basis-0 text-[#01aae8] text-[32px] font-bold font-['Raleway']">Wishlist</div>
         </div>
         <div class="self-stretch flex-col justify-start items-start gap-10 flex">
 
@@ -22,12 +22,12 @@
                             <input type="text" name="q" class="self-stretch h-14 pl-10 pr-14 py-2 bg-white rounded-tl-[10px] rounded-bl-[10px] border-l border-t border-b border-[#cccbcb] border-2 justify-start items-center gap-5 inline-flex"
                                 value="{{ request.GET.q }}" placeholder="Cari Barang">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3">
-                                <img src="{% static 'images/icon_magnifyingglass.svg' %}" class="w-5 h-5" alt="Magnifying Glass">
+                                <img src="{% static 'icon/icon_magnifyingglass.svg' %}" class="w-5 h-5" alt="Magnifying Glass">
                             </div>
                         </div>
                         <div class="self-stretch p-3 bg-[#01aae8] rounded-tr-lg rounded-br-lg justify-center items-center gap-3 flex cursor-pointer hover:bg-[#0081b1]">
                             <button type="submit" class="w-5 h-5 relative">
-                                <img src="{% static 'images/icon_rchevron.svg' %}" alt="Search">
+                                <img src="{% static 'icon/icon_rchevron.svg' %}" alt="Search">
                             </button>
                         </div>
                     </form>
@@ -35,7 +35,7 @@
                     <!-- Filter Button -->
                     <div id="filterButton" class="self-stretch p-3 bg-[#01aae8] rounded-lg justify-center items-center gap-3 flex hover:bg-[#0081b1]" onclick="toggleFilter()">
                         <div class="w-5 h-5 relative">
-                            <img src="{% static 'images/icon_filter.svg' %}" alt="Filter Icon">
+                            <img src="{% static 'icon/icon_filter.svg' %}" alt="Filter Icon">
                         </div>
                         <div class="text-white text-base font-bold font-['Raleway']">Filter</div>
                     </div>
@@ -89,13 +89,13 @@
             </div>
 
             <!-- Product List -->
-            {% if not wishlists %}
+            {% if not wishlist_items %}
             <div class="flex justify-center items-center w-screen pt-20">
                 <img src="{% static 'images/ItemNotFound.svg' %}" class="w-2/4 max-w-md h-auto object-contain">
             </div>
             {% else %}
             <div class="self-stretch pl-24 pr-20 flex-wrap justify-start items-start gap-5 flex">
-                {% for product in wishlists %}
+                {% for product in wishlist_items %}
                 <a href="{% url 'product_detail' product.id %}">
                 <div class="justify-start items-center gap-[25px] inline-flex shadow-lg">
                     <div class="h-auto p-3 bg-white rounded-lg shadow border-4 border-[#01aae8] backdrop-blur-[70.36px] flex-col justify-start items-center gap-2.5 inline-flex">
