@@ -8,20 +8,8 @@ class Article(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     source = models.URLField(null=True, blank=True)
-    like_count = 0
-    comment_count = 0
-
-    def inc_like(self):
-        self.like_count += 1
-
-    def dec_like(self):
-        self.like_count -= 1
-
-    def inc_comment(self):
-        self.comment_count += 1
-
-    def dec_comment(self):
-        self.comment_count -= 1
+    like_count = models.IntegerField(default=0)
+    comment_count = models.IntegerField(default=0)
 
     class Meta:
         ordering = ['-created_at']
@@ -34,13 +22,7 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     has_edited = models.BooleanField(default=False)
-    like_count = 0
-
-    def inc_like(self):
-        self.like_count += 1
-
-    def dec_like(self):
-        self.like_count -= 1
+    like_count = models.IntegerField(default=0)
     
     class Meta:
         ordering = ['-created_at']
