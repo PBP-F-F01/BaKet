@@ -7,14 +7,6 @@
     <title>Artikel Baket</title>
     <script>
         document.head.querySelector("title").innerHTML = `Dummy Artikel Main Page`;
-        
-        function applyFilter() {
-            // Get the selected filter options
-            const sortOption = document.querySelector('input[name="sort"]:checked').value;
-            
-            // TODO: Apply the filter logic here
-            // ...
-        }
 
         function toggleFilter() {
             const filterOptions = document.getElementById('filterOptions');
@@ -31,51 +23,57 @@
 
     <!-- Desktop -->
     <div class="grid grid-cols-2 gap-4 p-4 main desktop">
-        <!-- No Articles -->
-        {% if not page_obj %}
-        <div class="col-span-2 bg-white rounded-lg shadow-lg p-4 text-center">
-            <h2 class="text-2xl font-bold text-gray-800">No Articles Available</h2>
-            <p class="text-gray-600 mt-2">There are no articles to display at the moment. Please check back later.</p>
-        </div>
-        {% else %}
         <!-- Search Bar -->
         <div class="flex items-center justify-center col-span-2 search-bar">
             <div class="w-full bg-white rounded-lg shadow-lg p-4">
                 <h2 class="text-2xl font-bold text-gray-800 title">Article</h2>
-                <form class="mt-2 flex justify-between">
-                    <input type="text" name="search" id="search" placeholder="Search articles" class="w-full border border-gray-300 rounded-md p-2 h-10 hover:border-[#171e2a] text-black">
-                    <div class="flex items-center gap-2">
-                        <button type="submit" class="self-stretch p-3 bg-[#01aae8] h-10 text-white rounded-tr-lg rounded-br-lg justify-center items-center gap-3 flex cursor-pointer hover:bg-[#0081b1] font-bold font-['Raleway']">Search</button>
-                        <!-- Filter Button -->
-                        <div id="filterButton" class="self-stretch p-3 bg-[#01aae8] h-10 rounded-lg justify-center items-center gap-3 flex hover:bg-[#0081b1]" onclick="toggleFilter()">
-                            <div class="w-5 h-5 relative">
-                                <img src="{% static 'icon/icon_filter.svg' %}" alt="Filter Icon">
+                <form method="GET">
+                    <div class="mt-2 flex justify-between">
+                        <input type="text" name="search" id="search" placeholder="Search articles" class="w-full border border-gray-300 rounded-md p-2 h-10 hover:border-[#171e2a] text-black">
+                        <div class="flex items-center gap-2">
+                            <button type="submit" class="self-stretch p-3 bg-[#01aae8] h-10 text-white rounded-tr-lg rounded-br-lg justify-center items-center gap-3 flex cursor-pointer hover:bg-[#0081b1] font-bold font-['Raleway']">Search</button>
+                            <!-- Filter Button -->
+                            <div id="filterButton" class="self-stretch p-3 bg-[#01aae8] h-10 rounded-lg justify-center items-center gap-3 flex hover:bg-[#0081b1]" onclick="toggleFilter()">
+                                <div class="w-5 h-5 relative">
+                                    <img src="{% static 'icon/icon_filter.svg' %}" alt="Filter Icon">
+                                </div>
+                                <div class="text-white text-base font-bold font-['Raleway']">Filter</div>
                             </div>
-                            <div class="text-white text-base font-bold font-['Raleway']">Filter</div>
                         </div>
                     </div>
-                </form>
-                <!-- Filter Options -->
-                <div id="filterOptions" class="hidden mt-2 p-2 rounded-lg bg-[#01aae8] shadow-xl flex flex-row justify-end">
-                    <!-- Sorting by Date -->
-                    <div class="flex flex-row gap-4 pl-4 items-center">
-                        <div class="text-xl text-white font-bold font-['Raleway']">Urutkan dari:</div>
-                        <label class="flex items-center space-x-2 text-white font-bold font-['Raleway']"> 
-                            <input type="radio" name="sort" value="oldest">
-                            <span class="font-bold font-['Raleway']">Terlama</span>
-                        </label>
-                        <label class="flex items-center space-x-2 text-white font-bold font-['Raleway'] mr-5"> 
-                            <input type="radio" name="sort" value="most_recent">
-                            <span class="font-bold font-['Raleway']">Terbaru</span>
-                        </label>
+                    <!-- Filter Options -->
+                    <div id="filterOptions" class="hidden mt-2 p-2 rounded-lg bg-[#01aae8] shadow-xl flex flex-row justify-end">
+                        <!-- Sorting by Date -->
+                        <div class="flex flex-row gap-4 pl-4 items-center">
+                            <div class="text-xl text-white font-bold font-['Raleway']">Urutkan dari:</div>
+                            <label class="flex items-center space-x-2 text-white font-bold font-['Raleway']"> 
+                                <input type="radio" name="sort" value="most_like">
+                                <span class="font-bold font-['Raleway']">Like Terbanyak</span>
+                            </label>
+                            <label class="flex items-center space-x-2 text-white font-bold font-['Raleway']"> 
+                                <input type="radio" name="sort" value="oldest">
+                                <span class="font-bold font-['Raleway']">Terlama</span>
+                            </label>
+                            <label class="flex items-center space-x-2 text-white font-bold font-['Raleway'] mr-5"> 
+                                <input type="radio" name="sort" value="most_recent">
+                                <span class="font-bold font-['Raleway']">Terbaru</span>
+                            </label>
+                        </div>
+                        <!-- Apply filter button-->
+                        <button class="w-[100px] self-stretch p-3 bg-white rounded-lg justify-center items-center gap-3 flex hover:bg-[#c4c4c4]" onclick="applyFilter()">
+                            <div class="text-[#01aae8] text-base font-bold font-['Raleway']">Cari</div>
+                        </button>
                     </div>
-                    <!-- Apply filter button-->
-                    <button class="w-[100px] self-stretch p-3 bg-white rounded-lg justify-center items-center gap-3 flex hover:bg-[#c4c4c4]" onclick="applyFilter()">
-                        <div class="text-[#01aae8] text-base font-bold font-['Raleway']">Cari</div>
-                    </button>
-                </div>
+                </form>
             </div>
         </div>
+        <!-- No Articles -->
+        {% if not page_obj %}
+        <div class="col-span-2 bg-white rounded-lg shadow-lg p-4 text-center">
+            <h2 class="text-2xl font-bold text-gray-800">No Articles</h2>
+            <p class="text-gray-600 mt-2">There are no articles to display at the moment. Please check back later.</p>
+        </div>
+        {% else %}
         <!-- Has Articles -->
         {% for article in page_obj %}
         <div class="bg-white rounded-lg shadow-lg p-4 article">
@@ -118,6 +116,6 @@
     <script src="{% static 'js/navbar.js' %}"></script>
     <!-- <script src="{% static 'js/articles/dummy_article.js' %}"></script> -->
     <script>
-        // toggleFilter();
+        // NOTHING
     </script>
     {% endblock content %}

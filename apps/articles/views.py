@@ -47,19 +47,37 @@ def calculate_article_rank(article):
     normalized_date_score = math.exp(-1 * date_score) # More recent articles get higher score
 
     # Calculate the final rank
-    rank = random.gauss((max_like_score + max_comment_score), (max_like_score + max_comment_score) / 100 + 1) + (max_like_score + max_comment_score) + (like_weight * normalized_like_score +
-                                    comment_weight * normalized_comment_score +
-                                    date_weight * normalized_date_score)
+    rank = (like_weight * normalized_like_score +
+            comment_weight * normalized_comment_score +
+            date_weight * normalized_date_score +
+            random.gauss((max_like_score + max_comment_score), (max_like_score + max_comment_score) / 100 + 1))
 
     return rank
 
+all_articles = Article.objects.all()
+ranked_articles = sorted(all_articles, key=calculate_article_rank, reverse=True)
 def show_main(request):
-    articles = Article.objects.all()
+    global all_articles
+    articles = all_articles
     if articles.count() == 0:
         return render(request, 'ar_main.html', {'page_obj': None})
+    search = request.GET.get("search")
+    sort = request.GET.get("sort")
+    if search:
+        articles = articles.filter(title__icontains=search)
+    if sort:
+        if sort == "most_like":
+            articles = articles.order_by("-like_count")
+        elif sort == "oldest":
+            articles = articles.order_by("created_at")
+        elif sort == "most_recent":
+            articles = articles.order_by("-created_at")
+        elif not search:
+            articles = ranked_articles
+    if not search and not sort:
+        articles = ranked_articles
 
-    ranked_articles = sorted(articles, key=calculate_article_rank, reverse=True)
-    paginator = Paginator(ranked_articles, 10)  # Show 10 articles per page
+    paginator = Paginator(articles, 10)  # Show 10 articles per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
