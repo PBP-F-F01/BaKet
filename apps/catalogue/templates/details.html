@@ -12,253 +12,152 @@
 </head>
 
 <body class="text-base font-bold font-['Raleway']">
-  <div
-    class="flex flex-col sm:flex-row gap-8 p-4 mt-4 mx-8 shadow-lg rounded-lg relative"
-  >
-    <div
-      class="bg-[#01aae8] absolute top-4 right-4 flex rounded-lg hover:bg-[#0081b1]"
-    >
-      <a href="{% url 'catalogue:catalogue' %}">
-        <button class="p-4 rounded-lg">
-          <img src="{% static 'icon/icon_rchevron.svg' %}" alt="Back Icon" />
-        </button>
-      </a>
-    </div>
-    <!-- Product Image -->
-    <div class="flex-[2] flex justify-center items-center">
-      <img
-        src="{{ product.image.url }}"
-        alt="{{ product.name }}"
-        class="w-full max-h-[60rem] rounded-lg object-cover"
-      />
-    </div>
-
-    <!-- Product Details -->
-    <div class="flex-[1] flex flex-col justify-center space-y-4">
-      <h1 class="text-4xl font-bold">{{ product.name }}</h1>
-      <p class="text-[#01aae8] text-3xl font-bold font-['Raleway']">
-        Rp{{ product.price }}
-      </p>
-
-      <div id="average_rating" class="font-bold text-lg"></div>
-
-      <p class="flex items-center">
-        <strong class="mr-2 text-lg text-gray-700">Category:</strong>
-        <span
-          class="px-3 py-1 text-sm text-white bg-[#9ba7ba] rounded-lg inline-flex transition-transform transform hover:scale-105 duration-200"
-        >
-          {{ product.category }}
-        </span>
-      </p>
-
-      <p class="text-gray-700 text-lg">
-        <strong>Descriptions:</strong> <br />{{ product.specs|linebreaks }}
-      </p>
-
-      <div class="flex gap-4">
-        <button
-          onclick="addToCart('{{ product.id }}')"
-          class="self-stretch p-3 bg-[#01aae8] rounded-lg justify-center items-center gap-3 flex hover:bg-[#0081b1]"
-        >
-          <div class="w-5 h-5 relative">
-            <img src="{% static 'images/icon_cart.png' %}" alt="Cart Icon" />
-          </div>
-          <div class="text-white text-base font-bold font-['Raleway']">
-            Add to Cart
-          </div>
-        </button>
-
-        <button
-          onclick="toggleWishlist('{{ product.id }}')"
-          class="text-white px-4 py-2 rounded-lg flex items-center gap-2 {% if is_in_wishlist %} bg-red-400 {% else %} bg-blue-500 {% endif %}"
-          id="wishlist-button"
-        >
-          <span>
-            {% if is_in_wishlist %} Remove from Wishlist {% else %} Add to
-            Wishlist {% endif %}
-          </span>
-        </button>
+  <div class="min-h-screen bg-gray-50 py-8">
+      <!-- Back Button -->
+      <div class="mx-[300px] mb-8">
+        <a href="{% url 'catalogue:catalogue' %}" 
+          class="inline-flex items-center px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold gap-2">
+            <span>Kembali</span>
+            <img src="{% static 'icon/icon_rchevron.svg' %}" alt="Back" class="w-5 h-5">
+        </a>
       </div>
-    </div>
-  </div>
+  
+      <!-- Product Details Section -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+              <!-- Product Content -->
+              <div class="flex flex-col md:flex-row gap-8 p-8">
+                  <!-- Product Image -->
+                  <div class="flex-shrink-0">
+                      <img src="{{ product.image.url }}" 
+                          alt="{{ product.name }}" 
+                          class="w-[360px] h-[360px] rounded-lg object-cover shadow-md">
+                  </div>
 
-  <div class="flex flex-wrap gap-8 p-8">
-    <!-- Review Form Section -->
-    <div class="flex-1 min-w-[300px]">
-      <!-- Adjust min-width as necessary -->
-      <form
-        id="reviewForm"
-        class="review-form bg-white p-6 rounded-lg shadow-md w-full"
-      >
-        {% csrf_token %}
-        <input type="hidden" name="prod_id" value="{{ product.id }}" />
-
-        <div class="form-group mb-4 grid place-items-center">
-          <div class="input_rating">
-            <div class="rating-wrapper flex">
-              <input
-                type="radio"
-                id="star-5"
-                name="rate"
-                value="5"
-                class="hidden"
-              />
-              <label
-                for="star-5"
-                class="cursor-pointer text-2xl text-gray-400 hover:text-yellow-500 transition-colors duration-200"
-                >★</label
-              >
-
-              <input
-                type="radio"
-                id="star-4"
-                name="rate"
-                value="4"
-                class="hidden"
-              />
-              <label
-                for="star-4"
-                class="cursor-pointer text-2xl text-gray-400 hover:text-yellow-500 transition-colors duration-200"
-                >★</label
-              >
-
-              <input
-                type="radio"
-                id="star-3"
-                name="rate"
-                value="3"
-                class="hidden"
-              />
-              <label
-                for="star-3"
-                class="cursor-pointer text-2xl text-gray-400 hover:text-yellow-500 transition-colors duration-200"
-                >★</label
-              >
-
-              <input
-                type="radio"
-                id="star-2"
-                name="rate"
-                value="2"
-                class="hidden"
-              />
-              <label
-                for="star-2"
-                class="cursor-pointer text-2xl text-gray-400 hover:text-yellow-500 transition-colors duration-200"
-                >★</label
-              >
-
-              <input
-                type="radio"
-                id="star-1"
-                name="rate"
-                value="1"
-                class="hidden"
-              />
-              <label
-                for="star-1"
-                class="cursor-pointer text-2xl text-gray-400 hover:text-yellow-500 transition-colors duration-200"
-                >★</label
-              >
-            </div>
+                  <!-- Product Info -->
+                  <div class="flex-1 space-y-6">
+                      <h1 class="text-4xl font-bold text-gray-900">{{ product.name }}</h1>
+                      <p class="text-3xl font-bold text-[#01aae8]">Rp{{ product.price }}</p>
+                      
+                      <!-- Rating Display -->
+                      <div id="average_rating" class="text-lg font-bold"></div>
+                      
+                      <!-- Category -->
+                      <div class="flex items-center gap-2">
+                          <span class="text-gray-700 font-bold">Category:</span>
+                          <span class="px-3 py-1 bg-gray-500 text-white text-sm rounded-lg">
+                              {{ product.category }}
+                          </span>
+                      </div>
+                      
+                      <!-- Description -->
+                      <div class="prose max-w-none">
+                          <h3 class="text-gray-700 font-bold">Description:</h3>
+                          <p class="text-gray-600">{{ product.specs|linebreaks }}</p>
+                      </div>
+                      
+                      <!-- Action Buttons -->
+                      <div class="flex gap-4 pt-4">
+                          <button onclick="addToCart('{{ product.id }}')"
+                                  class="inline-flex items-center px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold gap-2">
+                              <img src="{% static 'images/icon_cart.png' %}" alt="Cart" class="w-5 h-5">
+                              <span>Add to Cart</span>
+                          </button>
+                          
+                          <button onclick="toggleWishlist('{{ product.id }}')"
+                                  id="wishlist-button"
+                                  class="px-6 py-3 rounded-lg text-white font-bold transition-colors {% if is_in_wishlist %}bg-red-400 hover:bg-red-500{% else %}bg-[#01aae8] hover:bg-[#0081b1]{% endif %}">
+                              {% if is_in_wishlist %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}
+                          </button>
+                      </div>
+                  </div>
+              </div>
           </div>
-        </div>
-
-        <div class="form-group mb-4">
-          <textarea
-            class="input w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
-            name="comment"
-            placeholder="Your Review"
-            rows="4"
-          ></textarea>
-        </div>
-
-        {% if user.is_authenticated %}
-        <div class="grid place-items-center">
-          <button
-            type="submit"
-            id="submit"
-            class="h-11 px-4 bg-[#01aae8] rounded-lg inline-flex items-center gap-2 hover:bg-[#0081b1] text-white transition-colors duration-200"
-          >
-            send
-          </button>
-        </div>
-        {% else %}
-        <div class="mt-4 text-center">
-          <p class="text-gray-500">
-            You need to log in to submit a review.
-            <a
-              href="{% url 'main:login' %}"
-              class="text-[#01aae8] underline hover:text-[#0081b1]"
-            >
-              Login
-            </a>
-          </p>
-        </div>
-        {% endif %}
-      </form>
-    </div>
-
-    <!-- Review Cards and Filter Section -->
-    <div class="flex-1 min-w-[300px]">
-      <div
-        id="filterBtn"
-        class="p-3 bg-[#01aae8] rounded-lg justify-center items-center gap-3 flex hover:bg-[#0081b1] mb-4"
-        onclick="toggleFilter()"
-      >
-        <div class="w-5 h-5 relative">
-          <img src="{% static 'icon/icon_filter.svg' %}" alt="Filter Icon" />
-        </div>
-        <div class="text-white text-base font-bold font-['Raleway']">
-          Filter
-        </div>
       </div>
 
-      <div
-        id="reviewFilter"
-        class="hidden mt-4 rounded-lg bg-[#01aae8] shadow-xl grid"
-      >
-        <form
-          id="filterForm"
-          class="items-center justify-center grid grid-cols-3 gap-4 m-4 justify-items-center items-center"
-        >
-          <label for="show_all" class="text-white">
-            <input type="radio" name="star_rating" id="show_all" checked />
-            Show All
-          </label>
-          <label for="5stars" class="text-white">
-            <input type="radio" name="star_rating" id="5stars" value="5" />
-            5 Stars
-          </label>
-          <label for="4stars" class="text-white">
-            <input type="radio" name="star_rating" id="4stars" value="4" />
-            4 Stars
-          </label>
-          <label for="3stars" class="text-white">
-            <input type="radio" name="star_rating" id="3stars" value="3" />
-            3 Stars
-          </label>
-          <label for="2stars" class="text-white">
-            <input type="radio" name="star_rating" id="2stars" value="2" />
-            2 Stars
-          </label>
-          <label for="1stars" class="text-white">
-            <input type="radio" name="star_rating" id="1stars" value="1" />
-            1 Star
-          </label>
+      <!-- Reviews Section -->
+      <div class="max-w-7xl mx-auto mt-8 px-4 sm:px-6 lg:px-8">
+          <div class="grid md:grid-cols-2 gap-8">
+              <!-- Review Form -->
+              <div class="bg-white rounded-xl shadow-lg p-6">
+                  <h2 class="text-2xl font-bold mb-6">Write a Review</h2>
+                  
+                  <form id="reviewForm" class="space-y-6">
+                      {% csrf_token %}
+                      <input type="hidden" name="prod_id" value="{{ product.id }}">
+                      
+                      <!-- Rating Stars -->
+                      <div class="flex justify-center">
+                          <div class="rating-wrapper">
+                              {% for i in '54321'|make_list %}
+                              <input type="radio" 
+                                    id="star-{{ i }}" 
+                                    name="rate" 
+                                    value="{{ i }}" 
+                                    class="hidden">
+                              <label for="star-{{ i }}" 
+                                    class="cursor-pointer text-3xl text-gray-400 hover:text-yellow-500 transition-colors">★</label>
+                              {% endfor %}
+                          </div>
+                      </div>
+                      
+                      <!-- Review Text -->
+                      <textarea name="comment" 
+                                rows="4" 
+                                placeholder="Your Review" 
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                      
+                      <!-- Submit Button -->
+                      {% if user.is_authenticated %}
+                          <div class="text-center">
+                              <button type="submit" 
+                                      class="px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold">
+                                  Submit Review
+                              </button>
+                          </div>
+                      {% else %}
+                          <p class="text-center text-gray-500">
+                              Please <a href="{% url 'main:login' %}" class="text-[#01aae8] hover:underline">login</a> to submit a review.
+                          </p>
+                      {% endif %}
+                  </form>
+              </div>
 
-          <button
-            type="submit"
-            class="text-[#01aae8] bg-white rounded-lg p-2 text-sm"
-          >
-            Filter
-          </button>
-        </form>
+              <!-- Reviews Display -->
+              <div class="space-y-4">
+                  <!-- Filter Button -->
+                  <button onclick="toggleFilter()"
+                          class="w-full px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold flex items-center justify-center gap-2">
+                      <img src="{% static 'icon/icon_filter.svg' %}" alt="Filter" class="w-5 h-5">
+                      <span>Filter Reviews</span>
+                  </button>
+
+                  <!-- Filter Options -->
+                  <div id="reviewFilter" class="hidden bg-[#01aae8] rounded-lg p-4">
+                      <form id="filterForm" class="grid grid-cols-3 gap-4">
+                          <label class="flex items-center gap-2 text-white cursor-pointer">
+                              <input type="radio" name="star_rating" checked>
+                              <span>Show All</span>
+                          </label>
+                          {% for i in '54321'|make_list %}
+                          <label class="flex items-center gap-2 text-white cursor-pointer">
+                              <input type="radio" name="star_rating" value="{{ i }}">
+                              <span>{{ i }} Star{% if i != '1' %}s{% endif %}</span>
+                          </label>
+                          {% endfor %}
+                          <button type="submit" 
+                                  class="col-span-3 px-4 py-2 bg-white text-[#01aae8] rounded-lg hover:bg-gray-100 transition-colors">
+                              Apply Filter
+                          </button>
+                      </form>
+                  </div>
+
+                  <!-- Review Cards -->
+                  <div id="message_card"></div>
+                  <div id="review_card" class="space-y-4"></div>
+              </div>
+          </div>
       </div>
-
-      <div id="message_card"></div>
-      <div id="review_card"></div>
-    </div>
   </div>
 </body>
 
@@ -361,8 +260,8 @@
         <div class="relative bg-white p-4 rounded-lg shadow-md mb-4 mt-4 transition-transform transform hover:scale-105 duration-200">
           <div class="flex justify-between items-center mb-2">
             <div class="flex items-center">
-              <i class="far fa-user mr-2 text-gray-500"></i>
-              <span class="font-semibold text-gray-800 text-lg">${
+              <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture" class="w-10 h-10 rounded-full">
+              <span class="font-semibold text-gray-800 text-lg ml-2">${
                 item.fields.username
               }</span>
               <span class="absolute top-4 right-4 text-gray-500 text-sm">
@@ -478,12 +377,12 @@
           const wishlistButton = document.getElementById("wishlist-button");
           if (data.status === "added") {
             wishlistButton.innerText = "Remove from Wishlist";
-            wishlistButton.classList.remove("bg-blue-500");
+            wishlistButton.classList.remove("bg-[#01aae8]");
             wishlistButton.classList.add("bg-red-400");
           } else if (data.status === "removed") {
             wishlistButton.innerText = "Add to Wishlist";
             wishlistButton.classList.remove("bg-red-400");
-            wishlistButton.classList.add("bg-blue-500");
+            wishlistButton.classList.add("bg-[#01aae8]");
           }
         }
       })

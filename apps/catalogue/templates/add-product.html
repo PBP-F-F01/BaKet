@@ -7,7 +7,7 @@
 {% endblock meta %}
 
 {% block content %}
-    <div class="max-w-4xl mx-auto p-8 mt-16">
+    <div class="max-w-4xl mx-auto p-8 mt-16 mb-32">
         <div class="flex flex-col gap-4">
             <!-- Back Button and Header -->
             <a href="{% url 'catalogue:catalogue' %}" class="inline-flex items-center gap-2.5 text-[#01aae8] font-bold font-['Raleway']">
@@ -30,7 +30,7 @@
                 <div>{{ form.specs.label_tag }} {{ form.specs }}</div>
                 <div>{{ form.image.label_tag }} {{ form.image }}</div>
             </div>
-            <button type="submit" class="bg-[#01aae8] text-white py-2 px-4 rounded hover:bg-[#0081b1]">
+            <button type="submit" class="bg-[#01aae8] text-xl font-bold text-white py-2 px-4 rounded hover:bg-[#0081b1] w-full">
             Create Product
             </button>
         </form>
