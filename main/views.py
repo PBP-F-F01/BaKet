@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.contrib import messages
 from apps.catalogue.models import Cart
 from django.contrib.auth.decorators import login_required
-from main.models import UserProfile
+from apps.user.models import UserProfile
 
 def index(request):
     context = {
