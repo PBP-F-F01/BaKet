@@ -1,11 +1,30 @@
-/* Default state: gray */
-.rating-wrapper label {
-  color: #ccc;
-  transition: 0.4s;
-  font-size: 2rem;
+.rating-wrapper {
+  display: inline-block;
+  direction: ltr;
+  /* Ensure stars are displayed left-to-right by removing direction */
 }
 
-/* Selected stars: gold */
-.rating-wrapper label.active {
-  color: gold;
+.rating-wrapper input[type="radio"] {
+  display: none;
+}
+
+.rating-wrapper label:hover,
+.rating-wrapper label:hover ~ label {
+  color: #ffcc00; /* Highlight stars on hover */
+}
+
+.rating-wrapper {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 0.25rem;
+}
+
+.rating-wrapper input[type="radio"]:checked ~ label {
+  color: #eab308;
+}
+
+@media (max-width: 768px) {
+  .rating-wrapper label {
+    font-size: 1.5rem;
+  }
 }
