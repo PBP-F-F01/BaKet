@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
 from datetime import datetime
 from django.http import HttpResponse, JsonResponse
-from apps.catalogue.models import Product, Review
+from apps.catalogue.models import Product, Review, Cart, CartItem,  Order
 from apps.catalogue.forms import ProductForm, ReviewForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -141,46 +141,50 @@ def show_json(request):
 
     return JsonResponse(response_data, safe=False)
 
-# @login_required
+@login_required
 def add_to_cart(request, product_id):
+    # Fetch the product with the given UUID
     product = get_object_or_404(Product, id=product_id)
-    cart, created = Cart.objects.get_or_create(user=request.user, defaults={'user': request.user})
+    
+    # Get or create the cart for the user
+    cart, created = Cart.objects.get_or_create(user=request.user)
 
-    # Check if the product is already in the cart
+    # Get or create a cart item for the product in the cart
     cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
 
-    # Increase quantity if it already exists
+    # If the cart item already exists, increment the quantity
     if not created:
         cart_item.quantity += 1
         cart_item.save()
 
-    # Return JSON response if it's an AJAX request
-    if request.is_ajax():
+    # Check if the request is an AJAX request by looking at the request headers
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         cart_count = cart.cartitem_set.count()
         return JsonResponse({'cart_count': cart_count})
 
-    return redirect('view_cart')
+    # For non-AJAX requests, redirect to the cart page
+    return redirect('catalogue:view_cart')
 
-# @login_required
+@login_required
 def view_cart(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
     cart_items = cart.cartitem_set.all()
     total = cart.get_total_price()
-    cart_count = cart.cartitem_set.count()
+    cart_count = cart_items.count()
 
-    return render(request, 'cart/cart.html', {
+    return render(request, 'cart.html', {
         'cart_items': cart_items,
         'total': total,
         'cart_count': cart_count
     })
 
-# @login_required
+@login_required
 def remove_from_cart(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id)
     cart_item.delete()
     return redirect('view_cart')
 
-# @login_required
+@login_required
 def checkout(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
     if request.method == "POST":
@@ -189,12 +193,12 @@ def checkout(request):
         return redirect('order_confirmation', order_id=order.id)
 
     total = cart.get_total_price()
-    return render(request, 'cart/checkout.html', {
+    return render(request, 'checkout.html', {
         'total': total,
         'cart': cart
     })
 
-# @login_required
+@login_required
 def order_confirmation(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    return render(request, 'cart/order_confirmation.html', {'order': order})
+    return render(request, 'order_confirmation.html', {'order': order})

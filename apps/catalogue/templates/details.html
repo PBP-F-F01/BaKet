@@ -48,7 +48,7 @@
 
       <div class="flex gap-4">
         <button
-          onclick="addToCart({{ product.id }})"
+          onclick="addToCart('{{ product.id }}')"
           class="self-stretch p-3 bg-[#01aae8] rounded-lg justify-center items-center gap-3 flex hover:bg-[#0081b1]"
         >
           <div class="w-5 h-5 relative">
@@ -398,22 +398,29 @@
 
 <script>
   function addToCart(productId) {
-    // Send AJAX request to add the item to the cart
-    fetch(`/cart/add/${productId}/`, {
+    fetch(`/catalogue/cart/add/${productId}/`, {
       method: "GET",
       headers: {
         "X-Requested-With": "XMLHttpRequest", // Required for Django to recognize it as an AJAX request
       },
     })
-      .then((response) => response.json())
-      .then((data) => {
-        // Update the cart count dynamically
-        document.getElementById("cart-count").innerText = data.cart_count;
-        alert("Barang sudah dimasukkan ke keranjang!");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json(); // Parse the JSON response
+    })
+    .then(data => {
+      // Update the cart count dynamically
+      const cartCountElement = document.getElementById("cart-count");
+      cartCountElement.innerText = data.cart_count;
+
+      alert("Item added to cart successfully!");
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      alert("Failed to add item to cart. Please try again.");
+    });
   }
 
   function toggleWishlist(productId) {
@@ -443,4 +450,6 @@
       });
   }
 </script>
+
+<script src="{% static 'js/navbar.js' %}"></script>
 {% endblock content %}

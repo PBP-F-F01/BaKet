@@ -7,6 +7,29 @@
   .dropdown-menu.open {
     transform: translateY(0);
   }
+
+  /* Profile dropdown styling
+  #profile-container {
+    position: relative;
+  } */
+
+  #profile-dropdown {
+    display: none; /* Initially hidden */
+    position: absolute;
+    right: 0;
+    top: calc(100% + 1.5rem); /* Adjusts the dropdown to appear below the navbar with spacing */
+    margin-top: 0.5rem;
+    width: 12rem;
+    background-color: #f4f4f4;
+    border-radius: 0.5rem;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+  }
+
+  /* Show dropdown when the open class is added */
+  #profile-dropdown.open {
+    display: block;
+  }
 </style>
 
 <nav class="shadow md:px-20 px-8 py-1 bg-[#f4f4f4] flex justify-between items-center inline-flex w-full z-[1000] sticky top-0">
@@ -28,13 +51,40 @@
     <a href="/articles" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Article</a>
     <a href="/wishlist" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Wishlist</a>
     
+    <!-- Divider -->
+    <div class="h-8 border-l border-gray-300 mx-0"></div>
+
     <!-- Cart Icon with Cart Count -->
-    <a href="{% url 'view_cart' %}" class="relative text-[#01aae8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">
-      <img src="{% static 'icon/cart_icon.svg' %}" alt="Cart" class="h-5 inline-block">
-      <span id="cart-count" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+    <a href="{% url 'view_cart' %}" class="relative text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8] flex flex-row items-center">
+      <img src="{% static 'images/icon_cart_blue.svg' %}" alt="Cart" class="mr-2 h-5 inline-block">
+      Cart
+      <div id="cart-count" class="ml-2 pb-1 bg-red-500 text-white text-xl rounded-full w-6 h-6 flex items-center justify-center">
         {{ cart_count }}
-      </span>
-    </a>
+      </div>
+    </a>  
+
+    <!-- Profile Section -->
+    {% if user.is_authenticated %}
+    <div id="profile-container" class="relative">
+      <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleDropdown()">
+        Profile
+      </div>
+
+      <!-- Profile Dropdown Menu -->
+      <div id="profile-dropdown" class="hidden absolute right-0 mt-6 w-48 bg-[#f4f4f4] rounded-lg shadow-lg z-10">
+        <div class="flex items-center px-4 py-3">
+          <h4 class="text-gray-800 font-semibold font-['Raleway']">{{ user.username }}</h4>
+        </div>
+
+        <div class="w-10/12 border-t-2 border-[#c8c8c8] mx-auto my-2"></div>
+
+        <a href="#" class="block px-4 py-2 font-semibold font-['Raleway'] text-gray-700 hover:bg-gray-100">Edit Profile</a>
+        <a href="{% url 'main:logout' %}" class="block px-4 py-2 font-semibold font-['Raleway'] text-gray-700 hover:bg-gray-100">Sign Out</a>
+      </div>
+    </div>
+    {% else %}
+    <a href="{% url 'main:login' %}" class="text-[#01aae8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Log In</a>
+    {% endif %}
   </div>
 </nav>
 
@@ -49,7 +99,7 @@
       <a href="/wishlist" class="text-neutral-600 text-sm font-semibold font-['Raleway']">Wishlist</a>
       
       <!-- Cart Icon in Mobile Dropdown -->
-      <a href="/cart" class="relative text-[#01aae8] text-sm font-semibold font-['Raleway']">
+      <a href="{% url 'view_cart' %}" class="relative text-[#01aae8] text-sm font-semibold font-['Raleway']">
         <img src="{% static 'images/cart_icon.svg' %}" alt="Cart" class="h-5 inline-block">
         <span id="cart-count-mobile" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
           {{ cart_count }}
@@ -60,6 +110,21 @@
 </div>
 
 <script>
+  // Toggle profile dropdown visibility on click
+  function toggleDropdown() {
+    const profileDropdown = document.getElementById('profile-dropdown');
+    profileDropdown.classList.toggle('open');
+  }
+
+  // Close dropdown if clicking outside
+  document.addEventListener('click', (event) => {
+    const profileContainer = document.getElementById('profile-container');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    if (!profileContainer.contains(event.target)) {
+      profileDropdown.classList.remove('open');
+    }
+  });
+
   const hamburger = document.getElementById('hamburger');
   const dropdownMenu = document.getElementById('dropdown-menu');
 

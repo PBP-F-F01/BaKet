@@ -38,5 +38,31 @@ function navbar() {
   dropdown.innerHTML = html;
   }
   
-  navbar();
+  // navbar();
+  function highlightNavbar() {
+    const currentPath = window.location.pathname.replace(/\/$/, ''); // Remove trailing slash if present
+    console.log("Current path:", currentPath);
+  
+    // Select all navbar and dropdown links
+    const navbarLinks = document.querySelectorAll('#navbar a, #dropdown-menu a');
+  
+    navbarLinks.forEach(link => {
+      const linkPath = link.getAttribute('href').replace(/\/$/, ''); // Remove trailing slash if present
+      console.log("Checking link path:", linkPath); // Debug: log each link path
+  
+      // Check if the link path matches the current path
+      if (linkPath === currentPath || (currentPath === '/' && linkPath === '')) {
+        link.classList.add('text-[#01aae8]'); // Add blue color for active page
+        link.classList.remove('text-[#c8c8c8]'); // Remove gray color
+        console.log("Setting link to blue:", link); // Log active link for confirmation
+      } else {
+        link.classList.add('text-[#c8c8c8]'); // Set gray for non-active links
+        link.classList.remove('text-[#01aae8]'); // Ensure blue is removed for non-active links
+        console.log("Setting link to gray:", link); // Log non-active link
+      }
+    });
+  }
+  
+  // Run the function immediately
+  highlightNavbar();
   dropdown();
