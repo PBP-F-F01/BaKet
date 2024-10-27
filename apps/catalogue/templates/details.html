@@ -282,7 +282,7 @@
         "flex flex-col items-center justify-center min-h-[24rem] p-6";
       htmlString = `
             <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
-                <p class="text-center text-gray-600 mt-4">No reviews yet.</p>
+                <p class="text-center text-gray-600 mt-4">Tidak terdapat ulasan.</p>
             </div>
         `;
     } else {
@@ -332,12 +332,12 @@
     });
 
     if (response.ok) {
-      alert("Review submitted successfully!");
+      alert("Ulasan berhasil dikirim!");
       await refreshReviewForm();
       deactivateAllStars();
       document.getElementById("reviewForm").reset();
     } else {
-      alert("Ratings can't be empty!");
+      alert("Penilaian tidak boleh kosong!");
     }
   }
 
@@ -387,7 +387,7 @@
     })
       .then((response) => {
         if (response.redirected) {
-          alert("Please log in to add items to your cart.");
+          alert("Harap login untuk menambahkan barang ke keranjang!");
 
           // Redirect to login page with `next`
           const currentUrl = window.location.pathname;
@@ -405,7 +405,7 @@
         const cartCountElement = document.getElementById("cart-count");
         cartCountElement.innerText = data.cart_count;
 
-        alert("Item added to cart successfully!");
+        alert("Barang berhasil dimasukkan ke keranjang!");
       })
       .catch((error) => {
         console.error("Error:", error);
