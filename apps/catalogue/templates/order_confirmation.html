@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 font-[Raleway]">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 font-[Raleway] mb-12">
     <div class="max-w-xl mx-auto">
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
             <div class="px-8 py-10 text-center">
@@ -26,8 +26,8 @@
                 </div>
 
                 <!-- Back to Shop Button -->
-                <a href="{% url '' %}" 
-                   class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#01aae8] hover:bg-[#0081b1] focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors">
+                <a href="{% url 'catalogue:catalogue' %}" 
+                   class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xl font-bold rounded-md text-white bg-[#01aae8] hover:bg-[#0081b1] focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors">
                     Kembali berbelanja
                 </a>
             </div>
