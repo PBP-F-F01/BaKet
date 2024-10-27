@@ -5,7 +5,7 @@ from datetime import datetime
 from django.http import HttpResponse, JsonResponse
 from apps.catalogue.models import Product, Review, Cart, CartItem,  Order
 from apps.catalogue.forms import ProductForm, ReviewForm
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
@@ -15,6 +15,9 @@ from django.db.models import Avg
 from apps.wishlist.models import Wishlist
 
 from .models import *
+
+def is_staff_or_superuser(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
 
 def catalogue_view(request):
     products = Product.objects.all()
@@ -45,7 +48,8 @@ def catalogue_view(request):
 
     return render(request, 'catalogue.html', context)
 
-
+@login_required
+@user_passes_test(is_staff_or_superuser)
 def create_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
@@ -59,7 +63,6 @@ def create_product(request):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    is_in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
     reviews = Review.objects.filter(product=product).order_by('-created_at')  # Fetch all reviews for this product
     
     if request.method == 'POST':
@@ -73,7 +76,11 @@ def product_detail(request, product_id):
     else:
         form = ReviewForm()
 
-    return render(request, 'details.html', {'product': product, 'form': form, 'reviews': reviews, 'is_in_wishlist': is_in_wishlist,})
+    if request.user.is_authenticated:
+        is_in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
+        return render(request, 'details.html', {'product': product, 'form': form, 'reviews': reviews, 'is_in_wishlist': is_in_wishlist,})
+    else:
+        return render(request, 'details.html', {'product': product, 'form': form, 'reviews': reviews, 'is_in_wishlist': None,})
         
 @csrf_exempt
 @require_POST

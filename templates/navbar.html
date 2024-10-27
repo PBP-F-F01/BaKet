@@ -49,8 +49,7 @@
     <a href="/catalogue" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Catalogue</a>
     <a href="/feeds" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Forum</a>
     <a href="/articles" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Article</a>
-    <a href="/wishlist" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Wishlist</a>
-    
+  
     <!-- Divider -->
     <div class="h-8 border-l border-gray-300 mx-0"></div>
 
@@ -90,8 +89,9 @@
 
         <div class="w-10/12 border-t-2 border-[#c8c8c8] mx-auto my-2"></div>
 
-        <a href="#" class="block px-4 py-2 font-semibold font-['Raleway'] text-gray-700 hover:bg-gray-100">Edit Profile</a>
-        <a href="{% url 'main:logout' %}" class="block px-4 py-2 font-semibold font-['Raleway'] text-gray-700 hover:bg-gray-100">Sign Out</a>
+        <a href="#" class="block px-4 py-2 font-semibold font-['Raleway'] text-gray-700 hover:text-[#01aae8]">Edit Profile</a>
+        <a href="/wishlist" class="block px-4 py-2 font-semibold font-['Raleway'] text-gray-700 hover:text-[#01aae8]">Wishlist</a>
+        <a href="{% url 'main:logout' %}" class="block px-4 py-2 font-semibold font-['Raleway'] text-gray-700 hover:text-[#01aae8]">Sign Out</a>
       </div>
     </div>
     {% else %}

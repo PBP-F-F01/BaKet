@@ -42,7 +42,12 @@ def login_user(request):
             # Check if UserProfile exists for this user, create if it doesn't
             UserProfile.objects.get_or_create(user=user)
             
-            return redirect('main:index')
+            # Redirect to 'next' URL if available, otherwise go to index
+            next_url = request.GET.get('next')
+            if next_url:
+                return HttpResponseRedirect(next_url)
+            else:
+                return redirect('main:index')
         else:
             messages.error(request, "Invalid username or password. Please try again.")
 
