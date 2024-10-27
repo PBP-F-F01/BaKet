@@ -74,9 +74,9 @@ def show_main(request):
         elif not search:
             articles = ranked_articles
     if not search and not sort:
-        if (len(ranked_articles) != articles.count() or 
-            articles.aggregate(max_like=models.Max('like_count'))['max_like'] != max_like_score or
-            articles.aggregate(max_comment=models.Max('comment_count'))['max_comment'] != max_comment_score):
+        if len(ranked_articles) != articles.count():
+            max_like_score = all_articles.aggregate(max_like=models.Max('like_count'))['max_like']
+            max_comment_score = all_articles.aggregate(max_comment=models.Max('comment_count'))['max_comment']
             ranked_articles = sorted(articles, key=calculate_article_rank, reverse=True)
 
         articles = ranked_articles
