@@ -5,15 +5,19 @@ from datetime import datetime
 from django.http import HttpResponse, JsonResponse
 from apps.catalogue.models import Product, Review, Cart, CartItem,  Order
 from apps.catalogue.forms import ProductForm, ReviewForm
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 from django.core import serializers
+from django.db.models import Avg
 
 from apps.wishlist.models import Wishlist
 
 from .models import *
+
+def is_staff_or_superuser(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
 
 def catalogue_view(request):
     products = Product.objects.all()
@@ -44,13 +48,14 @@ def catalogue_view(request):
 
     return render(request, 'catalogue.html', context)
 
-
+@login_required
+@user_passes_test(is_staff_or_superuser)
 def create_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('catalogue')  # Redirect after saving
+            return redirect('catalogue:catalogue')  # Redirect after saving
     else:
         form = ProductForm()
 
@@ -58,7 +63,6 @@ def create_product(request):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    is_in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
     reviews = Review.objects.filter(product=product).order_by('-created_at')  # Fetch all reviews for this product
     
     if request.method == 'POST':
@@ -68,11 +72,15 @@ def product_detail(request, product_id):
             review.product = product
             review.user = request.user  
             review.save()
-            return redirect('product_detail', product_id=product_id)  # Refresh the page after review submission
+            return redirect('catalogue:product_detail', product_id=product_id)  # Refresh the page after review submission
     else:
         form = ReviewForm()
 
-    return render(request, 'details.html', {'product': product, 'form': form, 'reviews': reviews, 'is_in_wishlist': is_in_wishlist,})
+    if request.user.is_authenticated:
+        is_in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
+        return render(request, 'details.html', {'product': product, 'form': form, 'reviews': reviews, 'is_in_wishlist': is_in_wishlist,})
+    else:
+        return render(request, 'details.html', {'product': product, 'form': form, 'reviews': reviews, 'is_in_wishlist': None,})
         
 @csrf_exempt
 @require_POST
@@ -113,6 +121,15 @@ def show_json(request):
     data = Review.objects.filter(product=prod_id).select_related('user') 
     reviews = []
 
+    # Filter reviews based on the selected rating if it exists
+    selected_rating = request.POST.get('star_rating')
+    if selected_rating and selected_rating.isdigit():  # Ensure it's a digit
+        data = data.filter(rating=int(selected_rating))
+    # Calculate the average rating
+    total_rating = sum(review.rating for review in data)
+    count = data.count()
+    average_rating = total_rating / count if count > 0 else 0.0
+
     for review in data:
         reviews.append({
             "id": review.id,
@@ -123,7 +140,13 @@ def show_json(request):
                 "created_at": review.created_at,
             }
         })
-    return JsonResponse(reviews, safe=False)
+
+    response_data = {
+        "reviews": reviews,
+        "average_rating": average_rating,
+    }
+
+    return JsonResponse(response_data, safe=False)
 
 @login_required
 def add_to_cart(request, product_id):
@@ -166,7 +189,7 @@ def view_cart(request):
 def remove_from_cart(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id)
     cart_item.delete()
-    return redirect('view_cart')
+    return redirect('catalogue:view_cart')
 
 @login_required
 def checkout(request):
@@ -174,7 +197,7 @@ def checkout(request):
     if request.method == "POST":
         # Create an order
         order = Order.objects.create(user=request.user, cart=cart)
-        return redirect('order_confirmation', order_id=order.id)
+        return redirect('catalogue:order_confirmation', order_id=order.id)
 
     total = cart.get_total_price()
     return render(request, 'checkout.html', {

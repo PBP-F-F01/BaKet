@@ -137,3 +137,6 @@ GitHub.sublime-settings
 !.vscode/extensions.json
 .history
 .vercel
+
+# sqlite3
+sqlite3.exe

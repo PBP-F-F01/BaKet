@@ -12,9 +12,20 @@
 </head>
 
 <body class="text-base font-bold font-['Raleway']">
-  <div class="grid grid-cols-3 gap-8 p-4 mt-4 mx-8 shadow-lg rounded-lg">
+  <div
+    class="flex flex-col sm:flex-row gap-8 p-4 mt-4 mx-8 shadow-lg rounded-lg relative"
+  >
+    <div
+      class="bg-[#01aae8] absolute top-4 right-4 flex rounded-lg hover:bg-[#0081b1]"
+    >
+      <a href="{% url 'catalogue:catalogue' %}">
+        <button class="p-4 rounded-lg">
+          <img src="{% static 'icon/icon_rchevron.svg' %}" alt="Back Icon" />
+        </button>
+      </a>
+    </div>
     <!-- Product Image -->
-    <div class="col-span-2 flex justify-center items-center">
+    <div class="flex-[2] flex justify-center items-center">
       <img
         src="{{ product.image.url }}"
         alt="{{ product.name }}"
@@ -23,14 +34,16 @@
     </div>
 
     <!-- Product Details -->
-    <div class="col-span-1 flex flex-col justify-center space-y-4">
+    <div class="flex-[1] flex flex-col justify-center space-y-4">
       <h1 class="text-3xl font-bold">{{ product.name }}</h1>
-      <p class="text-[#01aae8] text-2xl font-bold font-['Raleway']3">
+      <p class="text-[#01aae8] text-4xl font-bold font-['Raleway']">
         Rp{{ product.price }}
       </p>
 
+      <div id="average_rating" class="font-bold text-lg"></div>
+
       <p class="flex items-center">
-        <strong class="mr-2 text-lg">Category:</strong>
+        <strong class="mr-2 text-lg text-gray-700">Category:</strong>
         <span
           class="px-3 py-1 text-sm text-white bg-[#9ba7ba] rounded-lg inline-flex"
         >
@@ -69,18 +82,18 @@
     </div>
   </div>
 
-  <div class="gap-8 flex justify-center">
+  <div class="flex flex-wrap gap-8 p-8">
     <!-- Review Form Section -->
-    <div class="col-sm-5 mt-8">
+    <div class="flex-1 min-w-[300px]">
+      <!-- Adjust min-width as necessary -->
       <form
         id="reviewForm"
-        class="review-form bg-white p-6 rounded-lg shadow-md mr-20 w-full"
+        class="review-form bg-white p-6 rounded-lg shadow-md w-full"
       >
         {% csrf_token %}
         <input type="hidden" name="prod_id" value="{{ product.id }}" />
 
         <div class="form-group mb-4 grid place-items-center">
-          <!-- <label class="block text-lg font-semibold mb-2">Your Rating:</label> -->
           <div class="input_rating">
             <div class="rating-wrapper flex">
               <input
@@ -156,39 +169,107 @@
             class="input w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
             name="comment"
             placeholder="Your Review"
-            rows="4
-          "
+            rows="4"
           ></textarea>
         </div>
 
+        {% if user.is_authenticated %}
         <div class="grid place-items-center">
           <button
             type="submit"
-            id="submitAjax"
+            id="submit"
             class="h-11 px-4 bg-[#01aae8] rounded-lg inline-flex items-center gap-2 hover:bg-[#0081b1] text-white transition-colors duration-200"
           >
-            submit
+            send
           </button>
         </div>
+        {% else %}
+        <p class="text-gray-500">You need to login to submit a review.</p>
+        {% endif %}
       </form>
+    </div>
+
+    <!-- Review Cards and Filter Section -->
+    <div class="flex-1 min-w-[300px]">
+      <div
+        id="filterBtn"
+        class="p-3 bg-[#01aae8] rounded-lg justify-center items-center gap-3 flex hover:bg-[#0081b1] mb-4"
+        onclick="toggleFilter()"
+      >
+        <div class="w-5 h-5 relative">
+          <img src="{% static 'icon/icon_filter.svg' %}" alt="Filter Icon" />
+        </div>
+        <div class="text-white text-base font-bold font-['Raleway']">
+          Filter
+        </div>
+      </div>
+
+      <div
+        id="reviewFilter"
+        class="hidden mt-4 rounded-lg bg-[#01aae8] shadow-xl grid"
+      >
+        <form
+          id="filterForm"
+          class="items-center justify-center grid grid-cols-3 gap-4 m-4 justify-items-center items-center"
+        >
+          <label for="show_all" class="text-white">
+            <input type="radio" name="star_rating" id="show_all" checked />
+            Show All
+          </label>
+          <label for="5stars" class="text-white">
+            <input type="radio" name="star_rating" id="5stars" value="5" />
+            5 Stars
+          </label>
+          <label for="4stars" class="text-white">
+            <input type="radio" name="star_rating" id="4stars" value="4" />
+            4 Stars
+          </label>
+          <label for="3stars" class="text-white">
+            <input type="radio" name="star_rating" id="3stars" value="3" />
+            3 Stars
+          </label>
+          <label for="2stars" class="text-white">
+            <input type="radio" name="star_rating" id="2stars" value="2" />
+            2 Stars
+          </label>
+          <label for="1stars" class="text-white">
+            <input type="radio" name="star_rating" id="1stars" value="1" />
+            1 Star
+          </label>
+
+          <button
+            type="submit"
+            class="text-[#01aae8] bg-white rounded-lg p-2 text-sm"
+          >
+            Filter
+          </button>
+        </form>
+      </div>
 
       <div id="message_card"></div>
       <div id="review_card"></div>
     </div>
   </div>
 </body>
-<script src="https://cdn.lordicon.com/lordicon.js"></script>
+
 <script>
   async function getReviews() {
     const productId = document.querySelector('input[name="prod_id"]').value;
-    const response = await fetch("{% url 'show_json' %}", {
+    const selectedRating =
+      document.querySelector('input[name="star_rating"]:checked')?.value || "";
+
+    console.log("Product ID:", productId);
+    console.log("Selected Rating:", selectedRating);
+
+    const response = await fetch("{% url 'catalogue:show_json' %}", {
       method: "POST",
       headers: {
         "X-CSRFToken": "{{ csrf_token }}",
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
-        prod_id: productId, // Send prod_id in the request body
+        prod_id: productId,
+        star_rating: selectedRating,
       }),
     });
 
@@ -196,16 +277,53 @@
       return await response.json();
     } else {
       console.error("Failed to fetch reviews:", response.statusText);
-      return [];
+      throw new Error("Failed to fetch reviews");
     }
   }
+
+  document
+    .getElementById("filterForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const selectedRating =
+        document.querySelector('input[name="star_rating"]:checked')?.value ||
+        "";
+      console.log(selectedRating);
+      try {
+        const reviews = await getReviews(); // Get reviews with filter
+        refreshReviewForm(reviews); // Function to display reviews
+      } catch (error) {
+        console.error(error);
+      }
+    });
 
   async function refreshReviewForm() {
     document.getElementById("review_card").innerHTML = "";
     document.getElementById("review_card").className = "";
-    const reviews = await getReviews();
+    const jsonResponse = await getReviews();
+    const reviews = jsonResponse.reviews || [];
+    const averageRating = jsonResponse.average_rating || 0.0;
+    console.log(averageRating);
     let htmlString = "";
     let classNameString = "";
+    let averageRatingHtml = "";
+
+    let starsString = "";
+    for (let i = 1; i <= 5; i++) {
+      if (i <= Math.round(averageRating)) {
+        starsString += '<i class="fa fa-star text-yellow-500"></i>\n';
+      } else {
+        starsString += '<i class="fa fa-star text-gray-400"></i>\n';
+      }
+    }
+
+    averageRatingHtml = ` 
+        <div class="font-bold text-lg">
+          ${starsString}
+          ${averageRating} | ${reviews.length} Reviews
+        </div>
+    `;
+    document.getElementById("average_rating").innerHTML = averageRatingHtml;
 
     // If there is no reviews yet
     if (reviews.length === 0) {
@@ -253,22 +371,20 @@
     document.getElementById("review_card").className = classNameString;
     document.getElementById("review_card").innerHTML = htmlString;
   }
+
   refreshReviewForm();
 
   async function addReview() {
-    const response = await fetch("{% url 'add_review_ajax' %}", {
+    const response = await fetch("{% url 'catalogue:add_review_ajax' %}", {
       method: "POST",
       body: new FormData(document.querySelector("#reviewForm")),
     });
 
-    const result = await response.json();
-
     if (response.ok) {
       await refreshReviewForm();
       document.getElementById("reviewForm").reset();
-      // alert(result.message);
     } else {
-      alert(result.message);
+      alert("Ratings can't be empty!");
     }
   }
 
@@ -279,6 +395,17 @@
 </script>
 
 <script>
+  function toggleFilter() {
+    const filterOptions = document.getElementById("reviewFilter");
+    if (filterOptions.classList.contains("hidden")) {
+      filterOptions.classList.remove("hidden");
+    } else {
+      filterOptions.classList.add("hidden");
+    }
+  }
+</script>
+
+<script>
   function addToCart(productId) {
     fetch(`/catalogue/cart/add/${productId}/`, {
       method: "GET",
@@ -286,23 +413,32 @@
         "X-Requested-With": "XMLHttpRequest", // Required for Django to recognize it as an AJAX request
       },
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json(); // Parse the JSON response
-    })
-    .then(data => {
-      // Update the cart count dynamically
-      const cartCountElement = document.getElementById("cart-count");
-      cartCountElement.innerText = data.cart_count;
+      .then((response) => {
+        if (response.redirected) {
+          alert("Please log in to add items to your cart.");
+          
+          // Redirect to login page with `next`
+          const currentUrl = window.location.pathname;
+          window.location.href = `{% url 'main:login' %}?next=${currentUrl}`;
+          return;
+        }
+        
+        if (!response.ok && !response.redirected) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json(); // Parse the JSON response
+      })
+      .then((data) => {
+        // Update the cart count dynamically
+        const cartCountElement = document.getElementById("cart-count");
+        cartCountElement.innerText = data.cart_count;
 
-      alert("Item added to cart successfully!");
-    })
-    .catch(error => {
-      console.error("Error:", error);
-      alert("Failed to add item to cart. Please try again.");
-    });
+        alert("Item added to cart successfully!");
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        // alert("Failed to add item to cart. Please try again.");
+      });
   }
 
   function toggleWishlist(productId) {
@@ -314,8 +450,21 @@
       },
       credentials: "same-origin",
     })
-      .then((response) => response.json())
-      .then((data) => {
+
+    .then((response) => {
+      if (response.redirected) {
+        alert("Please log in to add items to your wishlist.");
+
+        // Redirect to login page with a `next`
+        const currentUrl = window.location.pathname;  // current product detail URL
+        window.location.href = `{% url 'main:login' %}?next=${currentUrl}`;
+        return;
+      }
+      return response.json();
+    })
+
+    .then((data) => {
+      if (data) {
         const wishlistButton = document.getElementById("wishlist-button");
         if (data.status === "added") {
           wishlistButton.innerText = "Remove from Wishlist";
@@ -326,10 +475,11 @@
           wishlistButton.classList.remove("bg-red-400");
           wishlistButton.classList.add("bg-blue-500");
         }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
   }
 </script>
 

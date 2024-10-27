@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.contrib import messages
 from apps.catalogue.models import Cart
 from django.contrib.auth.decorators import login_required
+from main.models import UserProfile
 
 def index(request):
     context = {
@@ -20,7 +21,11 @@ def register(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            
+            # Create UserProfile if not exist (prevent duplicate)
+            profile, created = UserProfile.objects.get_or_create(user=user)
+            
             messages.success(request, 'Your account has been successfully created!')
             return redirect('main:login')
     context = {'form':form}
@@ -33,7 +38,18 @@ def login_user(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('main:index')
+            
+            # Check if UserProfile exists for this user, create if it doesn't
+            UserProfile.objects.get_or_create(user=user)
+            
+            # Redirect to 'next' URL if available, otherwise go to index
+            next_url = request.GET.get('next')
+            if next_url:
+                return HttpResponseRedirect(next_url)
+            else:
+                return redirect('main:index')
+        else:
+            messages.error(request, "Invalid username or password. Please try again.")
 
     else:
         form = AuthenticationForm(request)
@@ -48,11 +64,10 @@ def logout_user(request):
 
 @login_required
 def get_cart_count(request):
+    cart_count = 0
     if request.user.is_authenticated:
         cart = Cart.objects.filter(user=request.user).first()
         if cart:
-            cart_count = cart.cartitem_set.count()  
-    else:
-        cart_count = 0 
+            cart_count = cart.cartitem_set.count()
 
-    return JsonResponse({'cart_count': cart_count}) 
+    return JsonResponse({'cart_count': cart_count})

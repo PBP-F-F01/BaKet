@@ -41,3 +41,19 @@ class Like(models.Model):
     reply = models.ForeignKey(Reply, on_delete=models.CASCADE, null=True)
     
     # If reply null == like for a post
+
+
+class Report(models.Model):
+    TYPE_CHOICES = (
+        ('P', 'Post'),
+        ('R', 'Reply'),
+    )
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    reporting = models.CharField(max_length=255)
+    report_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        # Order all the reports by created_at, descending
+        ordering = ['-created_at']

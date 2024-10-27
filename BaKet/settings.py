@@ -153,3 +153,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #       Ga bagus buat server klo makin banyak.
 MEDIA_URL = '/assets/'
 MEDIA_ROOT = BASE_DIR / 'assets'
+
+LOGIN_URL = '/login/'

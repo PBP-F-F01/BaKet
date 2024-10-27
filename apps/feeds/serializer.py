@@ -1,6 +1,6 @@
 # serializers.py
 from rest_framework import serializers
-from .models import Post, User
+from .models import Post, User, Reply, Report
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,5 +19,11 @@ class ReplySerializer(serializers.ModelSerializer):
     post = PostSerializer()
 
     class Meta:
-        model = Post
+        model = Reply
+        fields = '__all__'
+        
+
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Report
         fields = '__all__'

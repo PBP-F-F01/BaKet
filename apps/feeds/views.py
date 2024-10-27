@@ -3,9 +3,10 @@ from django.urls import reverse
 from django.core import serializers
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
+from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.utils.html import strip_tags
+from django.contrib.auth.decorators import login_required
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -41,6 +42,7 @@ def detail_post(request, id):
     context = {
         'post': post,
         'anonymous': request.user.is_anonymous,
+        'is_user_post': request.user == post.user,
         'created_at': created_at,
         'updated_at': updated_at,
     }
@@ -63,18 +65,45 @@ def change_tabs(request, all_tabs='all'):
 # Create a new post with AJAX
 @csrf_exempt
 @require_POST
+@login_required
 def create_post(request):
     content = strip_tags(request.POST.get("content"))
     
     # Check if any of the fields are empty
     if not content:
         return HttpResponse(b"Missing required fields", status=400)
-
-    new_product = Post(content=content.strip())
     
+    new_product = Post(content=content.strip(), user=request.user)
     new_product.save()
 
     return HttpResponse(b"Successfully Created", status=201)
+
+
+# Update a post
+@csrf_exempt
+@login_required
+def edit_post(request, id):
+    post = Post.objects.get(pk=id)
+    if request.user != post.user:
+        return HttpResponse(b"Unauthorized", status=401)
+    
+    post.content = strip_tags(request.POST.get("content"))
+    post.save()
+    
+    return HttpResponse(b"Successfully Updated", status=201)
+
+
+# Delete a post
+@csrf_exempt
+@login_required
+def delete_post(request, id):
+    post = Post.objects.get(pk=id)
+    if request.user != post.user:
+        return HttpResponse(b"Unauthorized", status=401)
+    
+    post.delete()
+    
+    return HttpResponse(b"Successfully Deleted", status=204)
 
 
 # Show all Posts in JSON format
@@ -107,6 +136,7 @@ def is_liked(user, post): # Use UUID
 
 
 # Liked a post
+@login_required
 def like_post(request, id):
     post = Post.objects.get(pk=id)
     
@@ -123,6 +153,7 @@ def like_post(request, id):
 
 
 # Unliked a post
+@login_required
 def unlike_post(request, id):
     post = Post.objects.get(pk=id)
     
@@ -137,13 +168,6 @@ def unlike_post(request, id):
     return HttpResponse(b"Successfully Unliked", status=201)
 
 
-# Delete a post
-@csrf_exempt
-def delete_post(request, id):
-    Post.objects.get(pk=id).delete()
-    return HttpResponse(b"Successfully Deleted", status=201)
-
-
 ####################
 # REPLY MANAGEMENT #
 ####################
@@ -152,6 +176,7 @@ def delete_post(request, id):
 # Create a new reply with AJAX
 @csrf_exempt
 @require_POST
+@login_required
 def create_reply(request):
     post_id = request.POST.get("post_id")
     content = strip_tags(request.POST.get("content"))
@@ -161,7 +186,7 @@ def create_reply(request):
         return HttpResponse(b"Missing required fields", status=400)
     
     post = Post.objects.get(pk=post_id)
-    new_reply = Reply(post=post, content=content.strip())
+    new_reply = Reply(post=post, content=content.strip(), user=request.user)
     
     new_reply.save()
     
@@ -169,6 +194,18 @@ def create_reply(request):
     post.save()
     
     return HttpResponse(b"Successfully Created", status=201)
+
+
+# Delete a reply
+@login_required
+def delete_reply(request, id):
+    reply = Reply.objects.get(pk=id)
+    if request.user != reply.user:
+        return HttpResponse(b"Unauthorized", status=401)
+    
+    reply.delete()
+    
+    return HttpResponse(b"Successfully Deleted", status=204)
 
 
 # Show all Replies in JSON format
@@ -201,6 +238,7 @@ def is_liked(user, post, reply): # Use UUID
 
 
 # Liked a reply
+@login_required
 def like_reply(request, id):
     reply = Reply.objects.get(pk=id)
     
@@ -217,6 +255,7 @@ def like_reply(request, id):
 
 
 # Unliked a reply
+@login_required
 def unlike_reply(request, id):
     reply = Reply.objects.get(pk=id)
     
@@ -231,7 +270,30 @@ def unlike_reply(request, id):
     return HttpResponse(b"Successfully Unliked", status=201)
 
 
-# Delete a reply
-def delete_reply(request, id):
-    Reply.objects.get(pk=id).delete()
-    return HttpResponse(b"Successfully Deleted", status=201)
+#################
+# REPORT SYSTEM #
+#################
+
+
+# Report a post or reply
+@csrf_exempt
+@require_POST
+def report(request):
+    reporting = request.POST.get("id")
+    report_type = request.POST.get("type")
+    
+    # Check if any of the fields are empty
+    if not report_type:
+        return HttpResponse(b"Missing required fields", status=400)
+    
+    new_report = Report(reporting=reporting, report_type=report_type)
+    new_report.save()
+    
+    return HttpResponse(b"Successfully Reported", status=201)
+
+
+@api_view(['GET'])
+def report_json(request):
+    data = Report.objects.all()
+    serializer = ReportSerializer(data, many=True)
+    return Response(serializer.data)
