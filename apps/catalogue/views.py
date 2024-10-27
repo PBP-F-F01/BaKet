@@ -130,6 +130,8 @@ def show_json(request):
     count = data.count()
     average_rating = total_rating / count if count > 0 else 0.0
 
+    
+
     for review in data:
         reviews.append({
             "id": review.id,
