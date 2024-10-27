@@ -37,7 +37,7 @@ def calculate_article_rank(article):
     # Calculate the score for each factor
     like_score = article.like_count
     comment_score = article.comment_count
-    date_score = (datetime.datetime.now() - article.created_at).days
+    date_score = (datetime.datetime.now(datetime.timezone.utc) - article.created_at).days
 
     normalized_like_score = like_score / max_like_score if max_like_score != 0 else 0
     normalized_comment_score = comment_score / max_comment_score if max_comment_score != 0 else 0
@@ -91,27 +91,30 @@ def show_article(request, id):
     article = Article.objects.get(pk=id)
     other = []
     for a in ranked_articles:
-        if a.id != id:
+        print(a.id)
+        print(id)
+        if a != article:
+            print(f"kok kelewat {a.id} == {id}")
             other.append(a)
         if len(other) >= 3:
             break
 
-    comment = Comment.objects.filter(article=article)
-    like_comment = Like.objects.filter(comment=comment)
+    # comment = Comment.objects.filter(article=article)
+    # like_comment = Like.objects.filter(comment=comment)
     context = {
         "article": article,
         "other": other,
-        "comment": comment,
-        "like_comment": like_comment,
+        # "comment": comment,
+        # "like_comment": like_comment,
         "anonymous": request.user.is_anonymous
     }
     return render(request, 'article.html', context=context)
 
 @csrf_exempt
 @require_POST
-def add_comment(request, article):
+def add_comment(request, article_id):
     content = strip_tags(request.POST.get('content'))
-    article = Article.objects.get(pk=article.id)
+    article = Article.objects.get(pk=article_id)
 
     new_comment = Comment(
         content=content,
