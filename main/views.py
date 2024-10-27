@@ -43,6 +43,8 @@ def login_user(request):
             UserProfile.objects.get_or_create(user=user)
             
             return redirect('main:index')
+        else:
+            messages.error(request, "Invalid username or password. Please try again.")
 
     else:
         form = AuthenticationForm(request)
