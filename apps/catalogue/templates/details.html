@@ -35,8 +35,8 @@
 
     <!-- Product Details -->
     <div class="flex-[1] flex flex-col justify-center space-y-4">
-      <h1 class="text-3xl font-bold">{{ product.name }}</h1>
-      <p class="text-[#01aae8] text-4xl font-bold font-['Raleway']">
+      <h1 class="text-4xl font-bold">{{ product.name }}</h1>
+      <p class="text-[#01aae8] text-3xl font-bold font-['Raleway']">
         Rp{{ product.price }}
       </p>
 
@@ -45,14 +45,14 @@
       <p class="flex items-center">
         <strong class="mr-2 text-lg text-gray-700">Category:</strong>
         <span
-          class="px-3 py-1 text-sm text-white bg-[#9ba7ba] rounded-lg inline-flex"
+          class="px-3 py-1 text-sm text-white bg-[#9ba7ba] rounded-lg inline-flex transition-transform transform hover:scale-105 duration-200"
         >
           {{ product.category }}
         </span>
       </p>
 
       <p class="text-gray-700 text-lg">
-        <strong>Specifications:</strong> <br />{{ product.specs }}
+        <strong>Descriptions:</strong> <br />{{ product.specs|linebreaks }}
       </p>
 
       <div class="flex gap-4">
@@ -70,7 +70,7 @@
 
         <button
           onclick="toggleWishlist('{{ product.id }}')"
-          class="text-white px-4 py-2 rounded flex items-center gap-2 {% if is_in_wishlist %} bg-red-400 {% else %} bg-blue-500 {% endif %}"
+          class="text-white px-4 py-2 rounded-lg flex items-center gap-2 {% if is_in_wishlist %} bg-red-400 {% else %} bg-blue-500 {% endif %}"
           id="wishlist-button"
         >
           <span>
@@ -184,7 +184,17 @@
           </button>
         </div>
         {% else %}
-        <p class="text-gray-500">You need to login to submit a review.</p>
+        <div class="mt-4 text-center">
+          <p class="text-gray-500">
+            You need to log in to submit a review.
+            <a
+              href="{% url 'main:login' %}"
+              class="text-[#01aae8] underline hover:text-[#0081b1]"
+            >
+              Login
+            </a>
+          </p>
+        </div>
         {% endif %}
       </form>
     </div>
@@ -381,6 +391,7 @@
     });
 
     if (response.ok) {
+      alert("Review submitted successfully!");
       await refreshReviewForm();
       document.getElementById("reviewForm").reset();
     } else {
@@ -416,13 +427,13 @@
       .then((response) => {
         if (response.redirected) {
           alert("Please log in to add items to your cart.");
-          
+
           // Redirect to login page with `next`
           const currentUrl = window.location.pathname;
           window.location.href = `{% url 'main:login' %}?next=${currentUrl}`;
           return;
         }
-        
+
         if (!response.ok && !response.redirected) {
           throw new Error("Network response was not ok");
         }
@@ -450,36 +461,35 @@
       },
       credentials: "same-origin",
     })
+      .then((response) => {
+        if (response.redirected) {
+          alert("Please log in to add items to your wishlist.");
 
-    .then((response) => {
-      if (response.redirected) {
-        alert("Please log in to add items to your wishlist.");
-
-        // Redirect to login page with a `next`
-        const currentUrl = window.location.pathname;  // current product detail URL
-        window.location.href = `{% url 'main:login' %}?next=${currentUrl}`;
-        return;
-      }
-      return response.json();
-    })
-
-    .then((data) => {
-      if (data) {
-        const wishlistButton = document.getElementById("wishlist-button");
-        if (data.status === "added") {
-          wishlistButton.innerText = "Remove from Wishlist";
-          wishlistButton.classList.remove("bg-blue-500");
-          wishlistButton.classList.add("bg-red-400");
-        } else if (data.status === "removed") {
-          wishlistButton.innerText = "Add to Wishlist";
-          wishlistButton.classList.remove("bg-red-400");
-          wishlistButton.classList.add("bg-blue-500");
+          // Redirect to login page with a `next`
+          const currentUrl = window.location.pathname; // current product detail URL
+          window.location.href = `{% url 'main:login' %}?next=${currentUrl}`;
+          return;
         }
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
+        return response.json();
+      })
+
+      .then((data) => {
+        if (data) {
+          const wishlistButton = document.getElementById("wishlist-button");
+          if (data.status === "added") {
+            wishlistButton.innerText = "Remove from Wishlist";
+            wishlistButton.classList.remove("bg-blue-500");
+            wishlistButton.classList.add("bg-red-400");
+          } else if (data.status === "removed") {
+            wishlistButton.innerText = "Add to Wishlist";
+            wishlistButton.classList.remove("bg-red-400");
+            wishlistButton.classList.add("bg-blue-500");
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   }
 </script>
 

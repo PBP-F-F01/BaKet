@@ -7,3 +7,4 @@ urllib3
 Pillow
 python-dotenv
 pytz
+djangorestframework

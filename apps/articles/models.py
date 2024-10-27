@@ -8,7 +8,7 @@ class Article(models.Model):
     title = models.CharField(max_length=256)
     posted_by = models.CharField(max_length=256, null=True, blank=True)
     content = models.TextField()
-    created_at = models.DateTimeField(default=datetime.datetime.now)
+    created_at = models.DateTimeField()
     source = models.URLField(null=True, blank=True)
     like_count = models.IntegerField(default=0)
     comment_count = models.IntegerField(default=0)
