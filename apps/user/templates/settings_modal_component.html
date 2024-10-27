@@ -1,0 +1,61 @@
+<!-- modal_component.html -->
+<div id="{{ modal_id }}" class="modal hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0 flex items-center justify-center transition-opacity duration-300">
+    <div class="modal-content bg-white p-8 rounded-lg shadow-lg w-[500px] max-w-[90%] transition duration-300 transform scale-0">
+        <h3 class="text-2xl font-semibold mb-6 use-poppins">{{ modal_title }}</h3>
+        <form method="POST" action="{% url modal_action %}">
+            {% csrf_token %}
+            
+            <!-- Handle Name Modal separately with first and last name fields -->
+            {% if modal_id == "nameModal" %}
+                <div class="w-full">
+                    <label for="first_name" class="mb-2 font-semibold use-poppins">First Name</label>
+                    <input
+                        type="text"
+                        name="first_name"
+                        id="first_name"
+                        class="bg-zinc-50 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#01aae8]"
+                        value="{{ user.userprofile.user.first_name|default_if_none:'' }}"
+                        required
+                    />
+                </div>
+                <div class="w-full mt-4">
+                    <label for="last_name" class="mb-2 font-semibold use-poppins">Last Name</label>
+                    <input
+                        type="text"
+                        name="last_name"
+                        id="last_name"
+                        class="bg-zinc-50 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#01aae8]"
+                        value="{{ user.userprofile.user.last_name|default_if_none:'' }}"
+                        required
+                    />
+                </div>
+            {% else %}
+                <!-- General Field for Other Modals -->
+                <div class="w-full">
+                    <label for="{{ field_name }}" class="mb-2 font-semibold use-poppins">{{ field_label }}</label>
+                    
+                    {% if field_type == "select" %}
+                        <select name="{{ field_name }}" id="{{ field_name }}" class="bg-zinc-50 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#01aae8]" required>
+                            <option value="Pria" {% if field_value == "Pria" %}selected{% endif %}>Pria</option>
+                            <option value="Wanita" {% if field_value == "Wanita" %}selected{% endif %}>Wanita</option>
+                        </select>
+                    {% else %}
+                        <input
+                            type="{{ field_type }}"
+                            name="{{ field_name }}"
+                            id="{{ field_name }}"
+                            class="bg-zinc-50 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#01aae8]"
+                            value="{{ field_value|default_if_none:'' }}"
+                            {% if field_type == 'date' or field_type == 'email' %} required {% endif %}
+                        />
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            <div class="flex justify-end gap-4 mt-8">
+                <button type="button" class="px-5 py-2 bg-gray-300 rounded-md" onclick="closeModal('{{ modal_id }}')">Cancel</button>
+                <button type="submit" class="px-5 py-2 bg-[#01aae8] text-white rounded-md">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
