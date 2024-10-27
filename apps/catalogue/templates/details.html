@@ -13,23 +13,24 @@
 
 <body class="text-base font-bold font-['Raleway']">
   <div
-    class="flex flex-col sm:flex-row gap-8 p-4 mt-4 mx-8 shadow-lg rounded-lg relative"
+    class="flex flex-col sm:flex-row gap-8 p-4 py-12 mx-8 shadow-lg rounded-lg relative "
   >
     <div
-      class="bg-[#01aae8] absolute top-4 right-4 flex rounded-lg hover:bg-[#0081b1]"
+      class="bg-[#01aae8] absolute right-4 flex rounded-lg hover:bg-[#0081b1]"
     >
       <a href="{% url 'catalogue:catalogue' %}">
-        <button class="p-4 rounded-lg">
+        <button class="p-4 rounded-lg text-white font-bold text-xl flex flex-row items-center gap-4">
+          Kembali
           <img src="{% static 'icon/icon_rchevron.svg' %}" alt="Back Icon" />
         </button>
       </a>
     </div>
     <!-- Product Image -->
-    <div class="flex-[2] flex justify-center items-center">
+    <div class="mx-4 flex justify-center items-center">
       <img
         src="{{ product.image.url }}"
         alt="{{ product.name }}"
-        class="w-full max-h-[60rem] rounded-lg object-cover"
+        class="w-[360px] h-[360px] rounded-lg object-cover"
       />
     </div>
 
@@ -180,7 +181,7 @@
             id="submit"
             class="h-11 px-4 bg-[#01aae8] rounded-lg inline-flex items-center gap-2 hover:bg-[#0081b1] text-white transition-colors duration-200"
           >
-            send
+            Kirim Ulasan
           </button>
         </div>
         {% else %}
@@ -210,7 +211,7 @@
           <img src="{% static 'icon/icon_filter.svg' %}" alt="Filter Icon" />
         </div>
         <div class="text-white text-base font-bold font-['Raleway']">
-          Filter
+          Saring Ulasan
         </div>
       </div>
 
