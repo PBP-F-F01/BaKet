@@ -16,10 +16,14 @@
         <div id="the-post" class="w-full mt-[3px] pb-4 pt-4 px-5 md:pb-5 md:pt-7 md:px-7">
             <div class="flex flex-row space-x-2 justify-start">
                 <img alt="User Avatar" draggable="false" oncontextmenu="return false;"
-                    src="{% static 'images/dummy.jpeg' %}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
+                    src="{% if post.user.userprofile %} {{ post.user.userprofile.profile_picture.url }} {% else %} {% static 'images/default_pp.png' %} {% endif %}"
+                    class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
                 <div class="flex w-full justify-between items-start pt-[3px] pr-[3px]">
                     <div class="flex flex-col text-left justify-start">
-                        <p id="username" class="font-semibold text-gray-700 leading-none mb-1"></p>
+                        <div class="flex items-center space-x-1.5">
+                            <p id="name" class="font-bold text-gray-700 leading-none mb-1.5"></p>
+                            <p id="username" class="text-sm leading-none text-gray-400 mb-1.5"></p>
+                        </div>
                         <p id="dates" class="text-xs text-gray-400"></p>
                     </div>
                     <div class="relative inline-block text-left">
@@ -76,7 +80,8 @@
         <div class="bg-white py-4 px-5 md:py-5 md:px-7 w-full">
             <div class="flex items-start">
                 <img alt="User Avatar" draggable="false" oncontextmenu="return false;"
-                    src="{% static 'images/dummy.gif' %}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
+                    src="{{ user.userprofile.profile_picture.url }}"
+                    class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
                 <div class="flex-grow flex-col">
                     <form id="add-reply">
                         <textarea type="text" id="reply-content" name="content" rows="1" placeholder="Give a reply!"
@@ -266,6 +271,12 @@
                 const content = DOMPurify.sanitize(reply.content).replace(/\r?\n/g, '<br>').trim();
                 const dates = getTime(reply.created_at);
                 const likeSVG = reply.is_liked ? "{% static 'icon/icon_heart_fill.svg' %}" : "{% static 'icon/icon_heart.svg' %}";
+                const profile_picture = reply.user.userprofile === null
+                    ? "{% static 'images/default_pp.png' %}"
+                    : reply.user.userprofile.profile_picture;
+                const name = reply.user.first_name + " " + reply.user.last_name === " "
+                    ? reply.user.username
+                    : reply.user.first_name + " " + reply.user.last_name;
 
                 liked_map[reply.id] = reply.is_liked;
 
@@ -273,11 +284,14 @@
                     <div class="w-full py-5 px-6 md:py-6 md:px-8">
                         <div class="flex flex-row space-x-2 justify-start">
                             <img alt="User Avatar" draggable="false" oncontextmenu="return false;"
-                            src="{% static 'images/dummy.jpeg' %}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
+                            src="${profile_picture}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
                             <div class="flex-grow flex-col">
                                 <div class="flex flex-col items-start space-x-1.5">
                                     <div class="flex flex-col text-left justify-start">
-                                        <p class="font-semibold text-gray-700 leading-none my-1">${reply.user.username}</p>
+                                        <div class="flex items-center space-x-1.5">
+                                            <p class="font-bold text-gray-700">${name}</p>
+                                            <p class="text-sm text-gray-400">@${reply.user.username}</p>
+                                        </div>
                                         <p class="text-xs text-gray-400">${dates}</p>
                                     </div>
                                 </div>
@@ -362,13 +376,18 @@
 
     function loadPost() {
         const usernameElement = document.getElementById('username');
+        const nameElement = document.getElementById('name');
         const datesElement = document.getElementById('dates');
         const contentElement = document.getElementById('content');
 
+        const name = "{{ post.user.first_name }} {{ post.user.last_name }}" === " "
+            ? "{{ post.user.username }}"
+            : "{{ post.user.first_name }} {{ post.user.last_name }}";
         const content = DOMPurify.sanitize(contentElement.textContent).replace(/\r?\n/g, '<br>').trim();
         let dates = `${getTime("{{ created_at }}")}`;
 
-        usernameElement.textContent = "{{ post.user.username }}";
+        nameElement.textContent = name;
+        usernameElement.textContent = "@{{ post.user.username }}";
         datesElement.textContent = dates;
         contentElement.innerHTML = content;
     }
