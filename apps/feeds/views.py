@@ -19,34 +19,33 @@ from pytz import timezone
 # Get all the posts
 def show_all(request):
     is_all = request.COOKIES.get('last_tabs', 'all') == 'all'
-    
-    posts = Post.objects.all() if is_all else Post.objects.filter(like_count__gt=0)
-    
+
     context = {
         'date': datetime.now(timezone('Asia/Jakarta')).strftime("%A, %d %B %Y"),
         'tabs': is_all,
-        'posts': posts,
         'anonymous': request.user.is_anonymous,
+        'user_id': request.user.id,
     }
-    
+
     return render(request, 'feeds_page.html', context)
 
 
 # Get specific posts
 def detail_post(request, id):
     post = Post.objects.get(pk=id)
-    
+
     created_at = post.created_at.isoformat()
     updated_at = post.updated_at.isoformat()
-    
+
     context = {
         'post': post,
         'anonymous': request.user.is_anonymous,
         'is_user_post': request.user == post.user,
+        'is_liked': Like.objects.filter(user=request.user, post=post).exists(),
         'created_at': created_at,
         'updated_at': updated_at,
     }
-    
+
     return render(request, 'detail_post.html', context)
 
 
@@ -68,11 +67,11 @@ def change_tabs(request, all_tabs='all'):
 @login_required
 def create_post(request):
     content = strip_tags(request.POST.get("content"))
-    
+
     # Check if any of the fields are empty
     if not content:
         return HttpResponse(b"Missing required fields", status=400)
-    
+
     new_product = Post(content=content.strip(), user=request.user)
     new_product.save()
 
@@ -86,10 +85,10 @@ def edit_post(request, id):
     post = Post.objects.get(pk=id)
     if request.user != post.user:
         return HttpResponse(b"Unauthorized", status=401)
-    
+
     post.content = strip_tags(request.POST.get("content"))
     post.save()
-    
+
     return HttpResponse(b"Successfully Updated", status=201)
 
 
@@ -100,16 +99,21 @@ def delete_post(request, id):
     post = Post.objects.get(pk=id)
     if request.user != post.user:
         return HttpResponse(b"Unauthorized", status=401)
-    
+
     post.delete()
-    
+
     return HttpResponse(b"Successfully Deleted", status=204)
 
 
 # Show all Posts in JSON format
 @api_view(['GET'])
 def post_json(request):
-    data = Post.objects.all()
+    data = Post.objects.annotate(
+        is_liked=models.Exists(Like.objects.filter(
+            user=request.user, post=models.OuterRef('pk')))
+    ) if request.user.is_authenticated else Post.objects.annotate(
+        is_liked=models.Value(False, output_field=models.BooleanField())
+    )
     serializer = PostSerializer(data, many=True)
     return Response(serializer.data)
 
@@ -117,7 +121,12 @@ def post_json(request):
 # Show all Posts by user in JSON format
 @api_view(['GET'])
 def post_json_by_user(request, user):
-    data = Post.objects.filter(user=user)
+    data = Post.objects.filter(user=user).annotate(
+        is_liked=models.Exists(Like.objects.filter(
+            user=request.user, post=models.OuterRef('pk')))
+    ) if request.user.is_authenticated else Post.objects.filter(user=user).annotate(
+        is_liked=models.Value(False, output_field=models.BooleanField())
+    )
     serializer = PostSerializer(data, many=True)
     return Response(serializer.data)
 
@@ -130,41 +139,38 @@ def post_json_by_id(request, id):
     return Response(serializer.data)
 
 
-# See if user liked the given post
-def is_liked(user, post): # Use UUID
-    return Like.objects.filter(user=user, post=post).exists()
-
-
 # Liked a post
-@login_required
+@csrf_exempt
+@login_required(login_url='/login/')
 def like_post(request, id):
     post = Post.objects.get(pk=id)
-    
-    if is_liked(request.user, post):
+
+    if Like.objects.filter(user=request.user, post=post).exists():
         return HttpResponse(b"Already Liked", status=400)
-    
+
     new_like = Like(user=request.user, post=post)
     new_like.save()
-    
-    post.like_count += 1
+
+    post.like_count = Like.objects.filter(post=post).count()
     post.save()
-    
+
     return HttpResponse(b"Successfully Liked", status=201)
 
 
 # Unliked a post
-@login_required
+@csrf_exempt
+@login_required(login_url='/login/')
 def unlike_post(request, id):
     post = Post.objects.get(pk=id)
-    
-    if not is_liked(request.user, post):
+
+    if not Like.objects.filter(user=request.user, post=post).exists():
         return HttpResponse(b"Already Unliked", status=400)
-    
+
     Like.objects.filter(user=request.user, post=post).delete()
-    
-    post.like_count -= 1
+
+    post.like_count = Like.objects.filter(post=post).count()
     post.save()
-    
+
     return HttpResponse(b"Successfully Unliked", status=201)
 
 
@@ -180,19 +186,19 @@ def unlike_post(request, id):
 def create_reply(request):
     post_id = request.POST.get("post_id")
     content = strip_tags(request.POST.get("content"))
-    
+
     # Check if any of the fields are empty
     if not post_id or not content:
         return HttpResponse(b"Missing required fields", status=400)
-    
+
     post = Post.objects.get(pk=post_id)
     new_reply = Reply(post=post, content=content.strip(), user=request.user)
-    
+
     new_reply.save()
-    
+
     post.reply_count += 1
     post.save()
-    
+
     return HttpResponse(b"Successfully Created", status=201)
 
 
@@ -202,16 +208,21 @@ def delete_reply(request, id):
     reply = Reply.objects.get(pk=id)
     if request.user != reply.user:
         return HttpResponse(b"Unauthorized", status=401)
-    
+
     reply.delete()
-    
+
     return HttpResponse(b"Successfully Deleted", status=204)
 
 
 # Show all Replies in JSON format
 @api_view(['GET'])
 def reply_json(request, post_id):
-    data = Reply.objects.filter(post=post_id)
+    data = Reply.objects.filter(post=post_id).annotate(
+        is_liked=models.Exists(Like.objects.filter(
+            user=request.user, reply=models.OuterRef('pk')))
+    ) if request.user.is_authenticated else Reply.objects.filter(post=post_id).annotate(
+        is_liked=models.Value(False, output_field=models.BooleanField())
+    )
     serializer = ReplySerializer(data, many=True)
     return Response(serializer.data)
 
@@ -232,41 +243,39 @@ def reply_json_by_id(request, id):
     return Response(serializer.data)
 
 
-# See if user liked the given reply
-def is_liked(user, post, reply): # Use UUID
-    return Like.objects.filter(user=user, post=post, reply=reply).exists()
-
-
 # Liked a reply
-@login_required
+@csrf_exempt
+@login_required(login_url='/login/')
 def like_reply(request, id):
     reply = Reply.objects.get(pk=id)
-    
-    if is_liked(request.user, reply):
+    post = reply.post
+
+    if Like.objects.filter(user=request.user, reply=reply).exists():
         return HttpResponse(b"Already Liked", status=400)
-    
-    new_like = Like(user=request.user, reply=reply)
+
+    new_like = Like(user=request.user, reply=reply, post=post)
     new_like.save()
-    
-    reply.like_count += 1
+
+    reply.like_count = Like.objects.filter(reply=reply).count()
     reply.save()
-    
+
     return HttpResponse(b"Successfully Liked", status=201)
 
 
 # Unliked a reply
-@login_required
+@csrf_exempt
+@login_required(login_url='/login/')
 def unlike_reply(request, id):
     reply = Reply.objects.get(pk=id)
-    
-    if not is_liked(request.user, reply):
+
+    if not Like.objects.filter(user=request.user, reply=reply).exists():
         return HttpResponse(b"Already Unliked", status=400)
-    
+
     Like.objects.filter(user=request.user, reply=reply).delete()
-    
-    reply.like_count -= 1
+
+    reply.like_count = Like.objects.filter(reply=reply).count()
     reply.save()
-    
+
     return HttpResponse(b"Successfully Unliked", status=201)
 
 
@@ -281,14 +290,14 @@ def unlike_reply(request, id):
 def report(request):
     reporting = request.POST.get("id")
     report_type = request.POST.get("type")
-    
+
     # Check if any of the fields are empty
     if not report_type:
         return HttpResponse(b"Missing required fields", status=400)
-    
+
     new_report = Report(reporting=reporting, report_type=report_type)
     new_report.save()
-    
+
     return HttpResponse(b"Successfully Reported", status=201)
 
 
