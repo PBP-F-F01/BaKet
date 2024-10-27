@@ -55,7 +55,7 @@ def create_product(request):
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('catalogue')  # Redirect after saving
+            return redirect('catalogue:catalogue')  # Redirect after saving
     else:
         form = ProductForm()
 
@@ -72,7 +72,7 @@ def product_detail(request, product_id):
             review.product = product
             review.user = request.user  
             review.save()
-            return redirect('product_detail', product_id=product_id)  # Refresh the page after review submission
+            return redirect('catalogue:product_detail', product_id=product_id)  # Refresh the page after review submission
     else:
         form = ReviewForm()
 
@@ -189,7 +189,7 @@ def view_cart(request):
 def remove_from_cart(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id)
     cart_item.delete()
-    return redirect('view_cart')
+    return redirect('catalogue:view_cart')
 
 @login_required
 def checkout(request):
@@ -197,7 +197,7 @@ def checkout(request):
     if request.method == "POST":
         # Create an order
         order = Order.objects.create(user=request.user, cart=cart)
-        return redirect('order_confirmation', order_id=order.id)
+        return redirect('catalogue:order_confirmation', order_id=order.id)
 
     total = cart.get_total_price()
     return render(request, 'checkout.html', {
