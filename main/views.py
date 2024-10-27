@@ -34,6 +34,10 @@ def register(request):
 
 def login_user(request):
     if request.method == 'POST':
+        
+        # Clear all previous messages
+        storage = messages.get_messages(request)
+        storage.used = True
         form = AuthenticationForm(data=request.POST)
 
         if form.is_valid():
