@@ -8,17 +8,23 @@
   display: none;
 }
 
-.rating-wrapper label {
-  font-size: 2rem;
-  color: #ccc;
-  cursor: pointer;
-}
-
-.rating-wrapper input[type="radio"]:checked ~ label {
-  color: #ffcc00;
-}
-
 .rating-wrapper label:hover,
 .rating-wrapper label:hover ~ label {
   color: #ffcc00; /* Highlight stars on hover */
+}
+
+.rating-wrapper {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 0.25rem;
+}
+
+.rating-wrapper input[type="radio"]:checked ~ label {
+    color: #EAB308;
+}
+
+@media (max-width: 768px) {
+    .rating-wrapper label {
+        font-size: 1.5rem;
+    }
 }
