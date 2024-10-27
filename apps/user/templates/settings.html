@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+    <!-- <link rel="stylesheet" href="{% static 'css/articles/catalogue.css' %}"> -->
+    <title>{% block title %} User Setting | {% endblock title %}</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="pl-24 pr-20 w-full flex-col justify-start items-start gap-5 inline-flex h-[100vh]">
+    <div class="h-[38px] pt-14 pb-4 justify-center items-center gap-2.5 inline-flex">
+        <div class="grow shrink basis-0 text-[#01aae8] text-[32px] font-bold font-['Raleway']">Settings</div>
+    </div>
+
+    <!-- Container -->
+    <!-- min-h-[700px] -->
+    <div class="w-full mx-auto bg-white shadow-lg rounded-lg py-10 px-12">
+
+        <!-- Header Tabs -->
+        <div class="border-b mb-6">
+            <ul class="flex space-x-6 text-gray-600">
+                <li class="text-[#01aae8] font-semibold border-b-2 border-[#01aae8] pb-2">Biodata Diri</li>
+                <li>Daftar Alamat</li>
+            </ul>
+        </div>
+    
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Left Sidebar (Profile Picture and Options) -->
+            <div class="space-y-4 max-w-96">
+                <form id="profilePictureForm" enctype="multipart/form-data" class="space-y-4 max-w-96">
+                    {% csrf_token %}
+                    
+                    <!-- Profile Picture Section -->
+                    <div class="flex flex-col items-center p-4 bg-[#f4f4f4] rounded-lg">
+                        <div class="w-32 h-32 rounded-full overflow-hidden mb-4">
+                            <img id="profilePicturePreview" src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture" class="object-cover w-full h-full">
+                        </div>
+                        
+                        <!-- File Input Button -->
+                        <label for="profilePictureInput" class="w-full px-4 py-2 bg-gray-200 rounded-md text-center font-semibold font-['Raleway'] hover:bg-gray-300 cursor-pointer">
+                            Change Photo
+                        </label>
+                        <input type="file" id="profilePictureInput" name="profile_picture" accept="image/*" class="hidden" onchange="uploadProfilePicture()">
+                        
+                        <p class="text-xs text-gray-500 text-center mt-2">
+                            File size limit: 10 MB.<br>
+                            Ratio: 1:1.<br>
+                            Allowed formats: JPG, JPEG, PNG
+                        </p>
+                    </div>
+                </form>
+    
+                <!-- Action Buttons -->
+                <button class="w-full px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 flex space-x-2 items-center text-center font-semibold font-['Raleway']">
+                    <span class="">Change Password</span>
+                </button>
+            </div>
+    
+            <!-- Right Sidebar (Profile Information) -->
+            <div class="md:col-span-2 space-y-6">
+            
+                <!-- Profile Info -->
+                <div>
+                    <h3 class="text-2xl font-semibold font-['Raleway'] text-[#01aae8] mb-4">Change User Information</h3>
+                    
+                    <!-- Name -->
+                    <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600">Nama</p>
+                        <p class="text-lg">Kukuh Cikal Yuntama</p>
+                    </div>
+                    <a href="#" class="text-[#01aae8]">Change</a>
+                    </div>
+                    
+                    <!-- Birth Date -->
+                    <div class="flex items-center justify-between mt-4">
+                    <div>
+                        <p class="text-gray-600">Tanggal Lahir</p>
+                        <p class="text-lg">18 Juni 1991</p>
+                    </div>
+                    <a href="#" class="text-[#01aae8]">Change Birth Date</a>
+                    </div>
+        
+                    <!-- Gender -->
+                    <div class="flex items-center justify-between mt-4">
+                    <div>
+                        <p class="text-gray-600">Jenis Kelamin</p>
+                        <p class="text-lg">Pria</p>
+                    </div>
+                    <a href="#" class="text-[#01aae8]">Change</a>
+                    </div>
+                </div>
+        
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-2xl font-semibold font-['Raleway'] text-[#01aae8] mb-4">Change User Contact</h3>
+                    
+                    <!-- Email -->
+                    <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600">Email</p>
+                        <p class="text-lg">gaung@cs.ui.ac.id <span class="bg-blue-100 text-[#01aae8] text-xs font-semibold px-2 py-1 rounded">Terverifikasi</span></p>
+                    </div>
+                    <a href="#" class="text-[#01aae8]">Change</a>
+                    </div>
+                    
+                    <!-- Phone Number -->
+                    <div class="flex items-center justify-between mt-4">
+                    <div>
+                        <p class="text-gray-600">Nomor HP</p>
+                        <p class="text-lg">0816969696969 <span class="bg-blue-100 text-[#01aae8] text-xs font-semibold px-2 py-1 rounded">Terverifikasi</span></p>
+                    </div>
+                    <a href="#" class="text-[#01aae8]">Change</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // function previewProfilePicture(event) {
+    //     const file = event.target.files[0];
+    //     if (file) {
+    //         const reader = new FileReader();
+    //         reader.onload = function(e) {
+    //             document.getElementById('profilePicturePreview').src = e.target.result;
+    //         }
+    //         reader.readAsDataURL(file);
+    //     }
+    // }
+    
+    function uploadProfilePicture() {
+        const input = document.getElementById('profilePictureInput');
+        const file = input.files[0];
+        const formData = new FormData();
+        formData.append('profile_picture', file);
+
+        fetch("{% url 'upload_profile_picture' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.profile_picture_url) {
+                // Update the profile picture on the settings page
+                document.getElementById('profilePicturePreview').src = data.profile_picture_url;
+                
+                
+                // Update the profile picture in the navbar
+                const navbarProfilePicture = document.getElementById('navbarProfilePicture');
+                const navbarDropdownProfilePicture = document.getElementById('navbarDropdownProfilePicture');
+                if (navbarProfilePicture && navbarDropdownProfilePicture) {
+                    navbarProfilePicture.src = data.profile_picture_url;
+                    navbarDropdownProfilePicture.src = data.profile_picture_url;
+                }
+            } else {
+                alert('Failed to upload image');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while uploading the image.');
+        });
+    }
+</script>
+
+{% endblock content %}

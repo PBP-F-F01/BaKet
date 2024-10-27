@@ -69,9 +69,9 @@
 
         <!-- If UserProfile exist, use its profile (the UserProfile shouldve exist anyway, login automatically create the relation) -->
         {% if user.userprofile %}
-          <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile" class="w-10 h-10 rounded-full border-t-2">
+          <img id="navbarProfilePicture" src="{{ user.userprofile.profile_picture.url }}" alt="Profile" class="w-10 h-10 rounded-full border-t-2">
         {% else %}
-          <img src="{{ 'assets/profile_image/default.png' }}" alt="Profile" class="w-10 h-10 rounded-full border-t-2">
+          <img id="navbarProfilePicture" src="{% static 'assets/profile_image/default.png' %}" alt="Profile" class="w-10 h-10 rounded-full border-t-2">
         {% endif %}
       </div>
 
@@ -79,17 +79,17 @@
       <div id="profile-dropdown" class="hidden absolute right-0 mt-6 w-48 bg-[#f4f4f4] rounded-lg shadow-lg z-10">
         <div class="flex items-center px-4 py-3">
           <!-- If UserProfile exist, use its profile (the UserProfile shouldve exist anyway, login automatically create the relation) -->
-          {% if user.userprofile %}
-            <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile" class="w-10 h-10 rounded-full mr-3 border-t-2">
-          {% else %}
-            <img src="{{ 'assets/profile_image/default.png' }}" alt="Profile" class="w-10 h-10 rounded-full mr-3 border-t-2">
-          {% endif %}
+        {% if user.userprofile %}
+          <img id="navbarDropdownProfilePicture" src="{{ user.userprofile.profile_picture.url }}" alt="Profile" class="w-10 h-10 rounded-full border-t-2 mr-3">
+        {% else %}
+          <img id="navbarDropdownProfilePicture" src="{% static 'assets/profile_image/default.png' %}" alt="Profile" class="w-10 h-10 rounded-full border-t-2 mr-3">
+        {% endif %}
           <h4 class="text-gray-800 font-semibold font-['Raleway']">{{ user.username }}</h4>
         </div>
 
         <div class="w-10/12 border-t-2 border-[#c8c8c8] mx-auto my-2"></div>
 
-        <a href="#" class="block px-4 py-2 font-semibold font-['Raleway'] text-gray-700 hover:text-[#01aae8]">Edit Profile</a>
+        <a href="/user/settings" class="block px-4 py-2 font-semibold font-['Raleway'] text-gray-700 hover:text-[#01aae8]">Settings</a>
         <a href="/wishlist" class="block px-4 py-2 font-semibold font-['Raleway'] text-gray-700 hover:text-[#01aae8]">Wishlist</a>
         <a href="{% url 'main:logout' %}" class="block px-4 py-2 font-semibold font-['Raleway'] text-gray-700 hover:text-[#01aae8]">Sign Out</a>
       </div>
