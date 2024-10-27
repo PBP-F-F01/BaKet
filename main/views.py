@@ -64,11 +64,10 @@ def logout_user(request):
 
 @login_required
 def get_cart_count(request):
+    cart_count = 0
     if request.user.is_authenticated:
         cart = Cart.objects.filter(user=request.user).first()
         if cart:
-            cart_count = cart.cartitem_set.count()  
-    else:
-        cart_count = 0 
+            cart_count = cart.cartitem_set.count()
 
-    return JsonResponse({'cart_count': cart_count}) 
+    return JsonResponse({'cart_count': cart_count})

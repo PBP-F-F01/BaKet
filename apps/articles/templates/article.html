@@ -7,35 +7,22 @@
     <title>{% block title %} Article | {% endblock title %}</title>
     <script src="{% static 'js/articles/article.js' %}"></script>
     <script>
-        function getTime(isoString) {
-        console.log(isoString);
-        const dateObject = new Date(isoString);
-        console.log(dateObject);
-
-        const hours = dateObject.getHours();
-        const minutes = dateObject.getMinutes();
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        const formattedHours = hours % 12 || 12; // Convert to 12-hour format
-        const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
-        const timePart = `${formattedHours}.${formattedMinutes} ${ampm}`;
-
-        const day = dateObject.getDate();
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Agu", "Sep", "Oct", "Nov", "Dec"];
-        const month = monthNames[dateObject.getMonth()];
-        const year = dateObject.getFullYear();
-        const datePart = `${day} ${month} ${year}`;
-
-        return `${timePart} · ${datePart}`;
+        function getTime(s) {
+        return s.replace(/\b(a\.m)\b/g, 'A.M').replace(/\b(p\.m)\b/g, 'P.M');
     }
 
     function parseContent(content) {
         return DOMPurify.sanitize(content).replace(/\r?\n/g, '<br>').trim();
     }
+
+    function print(s) {
+        console.log(s);
+    }
     </script>
     {% endblock meta %}
     
     {% block content %}
-    <div class="h-screen flex flex-col justify-start bg-[#fbfbf9] p-5">
+    <div class="flex flex-col justify-start bg-[#fbfbf9] p-5">
         <!-- desktop-->
         <div class="hidden md:flex md:flex-row rounded-[16px] shadow-lg bg-white p-10 flex flex-col justify-start desktop w-full">
             <div class="flex flex-col w-2/3 main-article p-8 rounded-lg">
@@ -44,7 +31,7 @@
                     {% if article.posted_by %}
                     Posted by: <span class="username font-semibold">{{ article.posted_by }}</span> |
                     {% endif %}
-                    Created at: <span class="created_at">12 Oktober 2024, 12:34</span>
+                    Created at: <span class="created_at">{{ article.created_at }}</span>
                 </p>
                 {% if article.source %}
                 <p class="text-left mb-1 text-[#555]">
@@ -104,7 +91,7 @@
         </div>
 
         <!-- mobile -->
-        <div class="md:hidden h-screen flex flex-col justify-start bg-[#fbfbf9] px-3 py-10 mobile">
+        <div class="md:hidden min-h-screen flex flex-col justify-start bg-[#fbfbf9] px-3 py-10 mobile">
             <div class="rounded-[16px] shadow-lg bg-white p-5 flex flex-col justify-start">
                 <h2 class="mb-6 font-bold text-3xl text-center title text-[#333]">{{ article.title }}</h2>
                 {% if article.posted_by %}
@@ -165,8 +152,19 @@
     </div>
 
     <script>
-        const article = fetch("{% url 'articles:json_by_id_aricle' article.id %}").then(response => response.json());
-        const user = fetch(`/articles/json/user/`).then(response => response.json());
+        var article;
+        var user;
+        async function init() {
+            var article = await fetch("{% url 'articles:json_by_id_aricle' article.id %}").then(response => response.json());
+            var user = await fetch(`{% url 'articles:current_user' %}`).then(response => response.json());
+            // getArticleUser(article[0], user);
+            return {article, user};
+        }
+        init().then(res => {
+            article = res.article[0];
+            user = res.user;
+        });
+        console.log(article.pk);
     </script>
     <script>
         async function getComment() {
@@ -181,65 +179,75 @@
             const commentSectionDesktop = document.querySelector('.comment-section-desktop');
             const comments = await getComment();
             let html = "";
-            comments.foreach(c => {
-                const content = parseContent(c.fields.content);
-                html += `<div class="mt-4 comment" comment-id="${c.pk}">
-                        <p class="text-left mb-2 break-words">
-                            <span class="font-bold">${c.fields.username}</span> - <span class="text-gray-500">${c.fields.created_at}`;
-                
-                if (c.fields.has_edited) {
-                    html += `<span class="text-gray-500"> (edited)</span>`;
-                }
-                
-                html += `</span>
-                        </p>
-                        <p class="text-left break-words leading-7 content">
-                            ${content}
-                        </p>
-                        <div class="flex items-center cursor-default flex-wrap like">
-                            <span comment-like-id="${c.pk}" class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
-                            <span class="like-count">${c.fields.like_count}</span>`;
-
-                if (c.fields.user.id === user.pk) {
-                    html += `<span edit-id="${c.pk}" class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
-                            <span delete-id="${c.pk}" class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>`;
-                }
-
-                html += `</div>
-                    </div>`;
-            });
+            if (comments.length === 0) {
+                html += `<p class="text-gray-500 text-center mt-4">No comments yet</p>`;
+            }
+            else {
+                comments.forEach(c => {
+                    const content = parseContent(c.fields.content);
+                    html += `<div class="mt-4 comment" comment-id="${c.pk}">
+                            <p class="text-left mb-2 break-words">
+                                <span class="font-bold">${c.fields.username}</span> - <span class="text-gray-500">${c.fields.created_at}`;
+                    
+                    if (c.fields.has_edited) {
+                        html += `<span class="text-gray-500"> (edited)</span>`;
+                    }
+                    
+                    html += `</span>
+                            </p>
+                            <p class="text-left break-words leading-7 content">
+                                ${content}
+                            </p>
+                            <div class="flex items-center cursor-default flex-wrap like">
+                                <span comment-like-id="${c.pk}" class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
+                                <span class="like-count">${c.fields.like_count}</span>`;
+    
+                    if (c.fields.user.id === user.pk) {
+                        html += `<span edit-id="${c.pk}" class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
+                                <span delete-id="${c.pk}" class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>`;
+                    }
+    
+                    html += `</div>
+                        </div>`;
+                });
+            }
             commentSectionDesktop.innerHTML = html;
 
             const commentSectionMobile = document.querySelector('.comment-section-desktop');
 
             html = "";
-            comments.foreach(c => {
-                const content = parseContent(c.fields.content);
-                html += `<div class="mt-4 comment" comment-id="${c.pk}">
-                        <p class="text-left mb-2 break-words">
-                            <span class="font-bold">${c.fields.username}</span> - <span class="text-gray-500">${c.fields.created_at}`;
-                
-                if (c.fields.has_edited) {
-                    html += `<span class="text-gray-500"> (edited)</span>`;
-                }
-                
-                html += `</span>
-                        </p>
-                        <p class="text-left break-words leading-7 content">
-                            ${content}
-                        </p>
-                        <div class="flex items-center cursor-default flex-wrap like">
-                            <span comment-like-id="${c.pk}" class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
-                            <span class="like-count">${c.fields.like_count}</span>`;
-
-                if (c.fields.user.id === user.pk) {
-                    html += `<span edit-id="${c.pk}" class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
-                            <span delete-id="${c.pk}" class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>`;
-                }
-
-                html += `</div>
-                    </div>`;
-            });
+            if (comments.length === 0) {
+                html += `<p class="text-gray-500 text-center mt-4">No comments yet</p>`;
+            }
+            else {
+                comments.forEach(c => {
+                    const content = parseContent(c.fields.content);
+                    html += `<div class="mt-4 comment" comment-id="${c.pk}">
+                            <p class="text-left mb-2 break-words">
+                                <span class="font-bold">${c.fields.username}</span> - <span class="text-gray-500">${c.fields.created_at}`;
+                    
+                    if (c.fields.has_edited) {
+                        html += `<span class="text-gray-500"> (edited)</span>`;
+                    }
+                    
+                    html += `</span>
+                            </p>
+                            <p class="text-left break-words leading-7 content">
+                                ${content}
+                            </p>
+                            <div class="flex items-center cursor-default flex-wrap like">
+                                <span comment-like-id="${c.pk}" class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
+                                <span class="like-count">${c.fields.like_count}</span>`;
+    
+                    if (c.fields.user.id === user.pk) {
+                        html += `<span edit-id="${c.pk}" class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
+                                <span delete-id="${c.pk}" class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>`;
+                    }
+    
+                    html += `</div>
+                        </div>`;
+                });
+            }
 
             commentSectionMobile.innerHTML = html;
 
@@ -346,13 +354,13 @@
             });
         }
 
-        // function cleanTime() {
-        //     const created_at = document.body.querySelectorAll(".created_at");
+        function cleanTime() {
+            const created_at = document.body.querySelectorAll(".created_at");
 
-        //     created_at.forEach(c => {
-        //         c.innerHTML = getTime(c.innerHTML);
-        //     });
-        // }
+            created_at.forEach(c => {
+                c.innerHTML = getTime(c.innerHTML);
+            });
+        }
 
         function cleanContent() {
             const content = document.body.querySelectorAll(".content");
@@ -402,7 +410,7 @@
     </script>
     <script>
         cleanContent();
-        // cleanTime();
+        cleanTime();
         const commentDesktop = document.getElementById("comment-input-desktop");
         const commentMobile = document.getElementById("comment-input-mobile");
         if (commentDesktop) {
@@ -419,4 +427,5 @@
         }
         refreshComments();
     </script>
+    <script src="{% static 'js/navbar.js' %}"></script>
     {% endblock content %}
