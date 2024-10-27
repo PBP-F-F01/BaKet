@@ -47,8 +47,8 @@
         {% if not anonymous %}
         <div class="bg-white py-5 px-6 md:py-6 md:px-8 w-full">
             <div class="flex items-start">
-                <img alt="User Avatar" draggable="false" oncontextmenu="return false;"
-                    src="{% static 'images/dummy.gif' %}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
+                <button onclick="window.location.href='/user/settings'"><img alt="User Avatar" draggable="false" oncontextmenu="return false;"
+                    src="{{ user.userprofile.profile_picture.url }}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover"></button>
                 <div class="flex-grow flex-col">
                     <form id="add-post">
                         <textarea type="text" id="post-content" name="content" rows="1" placeholder="Post something!"
@@ -148,7 +148,7 @@
     }
 
     async function getUserPost(user) {
-        // return fetch("/feeds/json/post/user/" + user).then(response => response.json());
+        return fetch("/feeds/json/post/user/" + user).then(response => response.json());
         return [];
     }
 
@@ -182,7 +182,7 @@
             return;
         }
 
-        const allPosts = is_all ? await getAllPost() : await getUserPost(1); // To be replaced with the actual user id
+        const allPosts = is_all ? await getAllPost() : await getUserPost("{{ user_id }}"); // To be replaced with the actual user id
 
         if (allPosts.length === 0) {
             classNameStr = "flex flex-col items-center justify-center my-12";
@@ -193,15 +193,20 @@
         } else {
             classNameStr = "flex flex-col items-center justify-center";
             allPosts.forEach((post) => {
-                console.log(post);
                 const content = DOMPurify.sanitize(post.content).replace(/\r?\n/g, '<br>').trim();
                 const dates = getTime(post.created_at);
+                const likeSVG = post.is_liked ? "{% static 'icon/icon_heart_fill.svg' %}" : "{% static 'icon/icon_heart.svg' %}";
+                const profile_picture = post.user.userprofile === null
+                    ? "{% static 'images/default_pp.png' %}"
+                    : post.user.userprofile.profile_picture;
+
+                liked[post.id] = post.is_liked;
 
                 postCards += `
                     <a href="/feeds/post/${post.id}" class="w-full py-5 px-6 md:py-6 md:px-8 hover:bg-gray-50">
                         <div class="flex flex-row space-x-2">
                             <img alt="User Avatar" draggable="false" oncontextmenu="return false;"
-                            src="{% static 'images/dummy.jpeg' %}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
+                            src="${profile_picture}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
                             <div class="flex-grow flex-col">
                                 <div class="flex items-center space-x-1.5">
                                     <p class="font-semibold text-gray-700">${post.user.username}</p>
@@ -211,8 +216,8 @@
                                 <p class="text-left content-text mt-1">${content}</p>
                                 <div class="flex flex-row justify-between mt-3 space-x-2">
                                     <div class="flex space-x-10">
-                                        <button class="like-icon flex space-x-2 items-center z-50" data-post-id="${post.pk}" data-like-count="${post.like_count}" onclick="event.preventDefault(); event.stopPropagation(); clickLikeButton('${post.pk}')">
-                                            <img src="{% static 'icon/icon_heart.svg' %}" class="w-5 h-5">
+                                        <button class="like-icon flex space-x-2 items-center z-50" data-post-id="${post.id}" data-like-count="${post.like_count}" onclick="event.preventDefault(); event.stopPropagation(); clickLikeButton('${post.id}')">
+                                            <img src="${likeSVG}" class="w-5 h-5">
                                             <p class="text-gray-500">${post.like_count}</p>
                                         </button>
                                         <button class="flex space-x-2 items-center">
@@ -220,7 +225,7 @@
                                             <p class="text-gray-500">${post.reply_count}</p>
                                         </button>
                                     </div>
-                                    <button class="copy-link z-50" onclick="event.preventDefault(); event.stopPropagation(); copy_link('${post.pk}');">
+                                    <button class="copy-link z-50" onclick="event.preventDefault(); event.stopPropagation(); copy_link('${post.id}');">
                                         <img src="{% static 'icon/icon_upload.svg' %}" class="w-5 h-5">
                                     </button>
                                 </div>
@@ -234,16 +239,6 @@
 
         document.getElementById("posts").className = classNameStr;
         document.getElementById("posts").innerHTML = postCards;
-
-        likeIcons.forEach((icon) => {
-            const postId = icon.dataset.postId;
-            liked[postId] = false; // Default/Initial value, nanti klo udh ada user bisa pake get dari API
-
-            const heartIcon = icon.getElementsByTagName('img')[0];
-            heartIcon.src = liked[postId]
-                ? "{% static 'icon/icon_heart_fill.svg' %}"
-                : "{% static 'icon/icon_heart.svg' %}";
-        });
     }
 
     refreshPosts();
@@ -261,44 +256,41 @@
         });
     }
 
-    function clickLikeButton(postId) {
-        liked[postId] = !liked[postId];
+    async function clickLikeButton(postId) {
+        if ("{{ anonymous }}" === "True") {
+            window.location.href = "/login/";
+        }
 
-        const icon = document.querySelector(`.like-icon[data-post-id="${postId}"]`);
+        try {
+            const url = liked[postId] ? `/feeds/post-unlike/${postId}` : `/feeds/post-like/${postId}`;
+            const response = await fetch(url, {
+                method: 'POST',
+            }).then(response => {
+                if (response.status !== 201) {
+                    console.error('Failed to update like status:', response);
+                } else {
+                    console.log('Like status updated successfully!');
+                }
+            });
+        } catch (error) {
+            console.error('Error updating like status:', error);
+        }
 
-        const heartIcon = icon.getElementsByTagName('img')[0];
-        const likeCount = icon.getElementsByTagName('p')[0];
+        if ("{{ anonymous }}" !== "True") {
+            liked[postId] = !liked[postId];
 
-        heartIcon.src = liked[postId]
-            ? "{% static 'icon/icon_heart_fill.svg' %}"
-            : "{% static 'icon/icon_heart.svg' %}";
+            const icon = document.querySelector(`.like-icon[data-post-id="${postId}"]`);
 
-        const currentCount = parseInt(likeCount.textContent);
-        likeCount.textContent = liked[postId] ? currentCount + 1 : currentCount - 1;
+            const heartIcon = icon.getElementsByTagName('img')[0];
+            const likeCount = icon.getElementsByTagName('p')[0];
 
-        // try {
-        //     const response = await fetch(`/api/posts/${postId}/like`, {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //             'X-CSRFToken': getCsrfToken(),
-        //         },
-        //         body: JSON.stringify({
-        //             liked: liked[postId]
-        //         })
-        //     });
+            heartIcon.src = liked[postId]
+                ? "{% static 'icon/icon_heart_fill.svg' %}"
+                : "{% static 'icon/icon_heart.svg' %}";
 
-        //     if (!response.ok) {
-        //         liked[postId] = !liked[postId];
-        //         heartIcon.src = liked[postId]
-        //             ? "{% static 'icon/icon_heart_fill.svg' %}"
-        //             : "{% static 'icon/icon_heart.svg' %}";
-        //         likeCount.textContent = currentCount;
-        //         throw new Error('Failed to update like status');
-        //     }
-        // } catch (error) {
-        //     console.error('Error updating like status:', error);
-        // }
+            const currentCount = parseInt(likeCount.textContent);
+            likeCount.textContent = liked[postId] ? currentCount + 1 : currentCount - 1;
+        }
     }
 
     document.getElementById("add-post").addEventListener("submit", async (e) => {
