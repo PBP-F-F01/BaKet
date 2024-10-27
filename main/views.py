@@ -8,6 +8,7 @@ from django.contrib import messages
 from apps.catalogue.models import Cart
 from django.contrib.auth.decorators import login_required
 from apps.user.models import UserProfile
+from apps.user.forms import BaKetUserCreationForm
 
 def index(request):
     context = {
@@ -16,10 +17,10 @@ def index(request):
     return render(request, "main.html", context)
 
 def register(request):
-    form = UserCreationForm()
+    form = BaKetUserCreationForm()
 
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = BaKetUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             
