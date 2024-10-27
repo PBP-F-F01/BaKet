@@ -144,9 +144,11 @@ def update_comment(request, comment_id):
     return HttpResponse(b"UPDATED", status=201)
 
 def delete_comment(request, comment_id):
-    comment = Comment.objects.get(pk=comment_id)
-    comment.delete()
-    return HttpResponse(b"DELETED", status=201)
+    if request.method == "DELETE":
+        comment = Comment.objects.get(pk=comment_id)
+        comment.delete()
+        return HttpResponse(b"DELETED", status=201)
+    return HttpResponse(b"FORBIDDEN", status=403)
 
 def like_article(request, article_id):
     if request.user.is_authenticated:
@@ -217,23 +219,7 @@ def json_by_id_comment(request, id):
 
 def json_comment_by_article(request, article_id):
     comments = Comment.objects.filter(article=Article.objects.get(pk=article_id))
-    data = []
-
-    for comment in comments:
-        data.append({
-            'pk': comment.pk,
-            'fields': {
-                'content': comment.content,
-                'user': {
-                    'username': comment.user.username,
-                    'id': comment.user.id,
-                    'is_anonymous': request.user.is_anonymous,
-                },
-                'created_at': comment.created_at,
-                'has_edited': comment.has_edited,
-                'like_count': comment.like_count
-            }
-        })
+    data = comments
 
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
