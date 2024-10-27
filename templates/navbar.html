@@ -67,12 +67,24 @@
     {% if user.is_authenticated %}
     <div id="profile-container" class="relative">
       <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleDropdown()">
-        Profile
+
+        <!-- If UserProfile exist, use its profile (the UserProfile shouldve exist anyway, login automatically create the relation) -->
+        {% if user.userprofile %}
+          <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile" class="w-10 h-10 rounded-full border-t-2">
+        {% else %}
+          <img src="{{ 'assets/profile_image/default.png' }}" alt="Profile" class="w-10 h-10 rounded-full border-t-2">
+        {% endif %}
       </div>
 
       <!-- Profile Dropdown Menu -->
       <div id="profile-dropdown" class="hidden absolute right-0 mt-6 w-48 bg-[#f4f4f4] rounded-lg shadow-lg z-10">
         <div class="flex items-center px-4 py-3">
+          <!-- If UserProfile exist, use its profile (the UserProfile shouldve exist anyway, login automatically create the relation) -->
+          {% if user.userprofile %}
+            <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile" class="w-10 h-10 rounded-full mr-3 border-t-2">
+          {% else %}
+            <img src="{{ 'assets/profile_image/default.png' }}" alt="Profile" class="w-10 h-10 rounded-full mr-3 border-t-2">
+          {% endif %}
           <h4 class="text-gray-800 font-semibold font-['Raleway']">{{ user.username }}</h4>
         </div>
 
@@ -83,7 +95,7 @@
       </div>
     </div>
     {% else %}
-    <a href="{% url 'main:login' %}" class="text-[#01aae8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Log In</a>
+    <a id="login-link" href="{% url 'main:login' %}" class="text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8]">Log In</a>
     {% endif %}
   </div>
 </nav>

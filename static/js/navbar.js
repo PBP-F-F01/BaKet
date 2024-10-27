@@ -7,6 +7,7 @@ function highlightNavbar() {
 
   // Highlight main navbar links
   navbarLinks.forEach(link => {
+    if (link.id === 'login-link') return;
     const linkPath = link.getAttribute('href').replace(/\/$/, '');
 
     console.log("Checking navbar link path:", linkPath); // Debug
