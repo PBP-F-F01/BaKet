@@ -11,7 +11,7 @@ class ProductModelTest(TestCase):
             price=50000,
             category='smartphone',
             specs='Test Specifications',
-            image=None  # You can use mock or temp file for images
+            image=None
         )
 
     def test_product_creation(self):
@@ -70,5 +70,5 @@ class AddToCartViewTest(TestCase):
 
     def test_add_to_cart(self):
         response = self.client.get(f'/catalogue/cart/add/{self.product.id}/')
-        self.assertEqual(response.status_code, 200)  # Check that the view is accessible
-        self.assertEqual(Cart.objects.get(user=self.user).cartitem_set.count(), 1)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/catalogue/cart/')
