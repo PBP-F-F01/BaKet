@@ -3,11 +3,23 @@ console.log(csrf_token, "BLYATT");
 console.log(article_id, "BLYATT");
 console.log(user, "BLYATT");
 async function getComment(article_id) {
-    return fetch(`/articles/json/comment/${article_id}/`, {
-        headers: {
-        'X-CSRFToken': csrf_token
+    try {
+        const response = await fetch(`/articles/json/comment/${article_id}/`, {
+            headers: {
+                'X-CSRFToken': csrf_token
+            }
+        });
+        console.log('Server response:', response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    }).then(response => response.json());
+        const data = await response.json();
+        console.log('Parsed JSON data:', data);
+        return data;
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        return []; // or some other default value
+    }
 }
 
 async function refreshComments(article_id) {
@@ -22,7 +34,7 @@ async function refreshComments(article_id) {
             const content = parseContent(c.fields.content);
             html += `<div class="mt-4 comment" comment-id="${c.pk}">
                     <p class="text-left mb-2 break-words">
-                        <span class="font-bold">${c.fields.username}</span> - <span class="text-gray-500">${c.fields.created_at}`;
+                        <span class="font-bold">${c.fields.user.username}</span> - <span class="text-gray-500">${c.fields.created_at}`;
             
             if (c.fields.has_edited) {
                 html += `<span class="text-gray-500"> (edited)</span>`;
@@ -37,7 +49,7 @@ async function refreshComments(article_id) {
                         <span comment-like-id="${c.pk}" class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
                         <span class="like-count">${c.fields.like_count}</span>`;
 
-            if (!user.is_anonymous && c.fields.user.id === user.pk) {
+            if (!user.is_anonymous && c.fields.user === user.id) {
                 html += `<span edit-id="${c.pk}" class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
                         <span delete-id="${c.pk}" class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>`;
             }
@@ -59,7 +71,7 @@ async function refreshComments(article_id) {
             const content = parseContent(c.fields.content);
             html += `<div class="mt-4 comment" comment-id="${c.pk}">
                     <p class="text-left mb-2 break-words">
-                        <span class="font-bold">${c.fields.username}</span> - <span class="text-gray-500">${c.fields.created_at}`;
+                        <span class="font-bold">${c.fields.user.name}</span> - <span class="text-gray-500">${c.fields.created_at}`;
             
             if (c.fields.has_edited) {
                 html += `<span class="text-gray-500"> (edited)</span>`;
@@ -74,7 +86,7 @@ async function refreshComments(article_id) {
                         <span comment-like-id="${c.pk}" class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
                         <span class="like-count">${c.fields.like_count}</span>`;
 
-            if (c.fields.user.id === user.pk) {
+            if (c.fields.user.id === user.id) {
                 html += `<span edit-id="${c.pk}" class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
                         <span delete-id="${c.pk}" class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>`;
             }
@@ -101,11 +113,11 @@ async function refreshComments(article_id) {
             contentElement.appendChild(textarea);
 
             // Hide the edit, delete, and like buttons
-            button.classlist.add('hidden');
+            button.classList.add('hidden');
             const deleteButton = commentElement.querySelector('.delete-button');
-            deleteButton.classlist.add('hidden');
+            deleteButton.classList.add('hidden');
             const likeButton = commentElement.querySelector('.like-button');
-            likeButton.classlist.add('hidden');
+            likeButton.classList.add('hidden');
 
             // Create a save button
             const saveButton = document.createElement('button');
@@ -126,7 +138,7 @@ async function refreshComments(article_id) {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
+                        'X-CSRFToken': csrf_token,
                     },
                     body: JSON.stringify({ content: newContent }),
                 });
@@ -135,18 +147,18 @@ async function refreshComments(article_id) {
                     contentElement.innerHTML = newContent;
                     saveButton.remove();
                     cancelButton.remove();
-                    button.classlist.remove('hidden');
-                    deleteButton.classlist.remove('hidden');
-                    likeButton.classlist.remove('hidden');
+                    button.classList.remove('hidden');
+                    deleteButton.classList.remove('hidden');
+                    likeButton.classList.remove('hidden');
                 } 
                 else {
                     console.error('Error updating comment:', response.statusText);
                     contentElement.innerHTML = originalContent;
                     saveButton.remove();
                     cancelButton.remove();
-                    button.classlist.remove('hidden');
-                    deleteButton.classlist.remove('hidden');
-                    likeButton.classlist.remove('hidden');
+                    button.classList.remove('hidden');
+                    deleteButton.classList.remove('hidden');
+                    likeButton.classList.remove('hidden');
                 }
             });
 
@@ -155,9 +167,9 @@ async function refreshComments(article_id) {
                 contentElement.innerHTML = originalContent;
                 saveButton.remove();
                 cancelButton.remove();
-                button.classlist.add('hidden');
-                deleteButton.classlist.add('hidden');
-                likeButton.classlist.remove('hidden');
+                button.classList.add('hidden');
+                deleteButton.classList.add('hidden');
+                likeButton.classList.remove('hidden');
             });
         });
     });
@@ -175,11 +187,14 @@ async function refreshComments(article_id) {
                 try {
                     const response = await fetch(`/articles/delete_comment/${commentId}/`, {
                         method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': csrf_token,
+                        },
                     });
 
                     if (response.ok) {
                         // Refresh the comments after deletion
-                        refreshComments();
+                        refreshComments(article_id);
                     } 
                     else {
                         console.error('Failed to delete comment:', response.status);
@@ -223,7 +238,7 @@ async function addCommentDesktop() {
 
     if (response.ok) {
         document.getElementById("comment-input-desktop").querySelector("textarea").value = "";
-        refreshComments();
+        refreshComments(article_id);
         console.log("succed");
     }
     else {
@@ -248,7 +263,7 @@ async function addCommentMobile() {
 
     if (response.ok) {
         document.getElementById("comment-input-mobile").querySelector("textarea").value = "";
-        refreshComments();
+        refreshComments(article_id);
     }
     else {
         console.error("Failed to post comment: ", response.status);
