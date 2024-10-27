@@ -41,12 +41,14 @@
                     </div>
 
 
+                    {% if user.is_superuser or user.is_staff %}
                     <!-- Add Item -->
                     <a href="{% url 'add_product' %}">
                         <div class="self-stretch p-3 rounded-lg border-4 border-[#01aae8] justify-center items-center gap-3 flex hover:bg-[#caecf8]">
                             <div class="text-[#01aae8] text-base font-bold font-['Raleway']">Tambahkan Barang</div>
                         </div>
                     </a>
+                    {% endif %}
                 </div>
 
                 <!-- Filter Options -->

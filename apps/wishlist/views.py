@@ -6,6 +6,7 @@ from apps.wishlist.models import Wishlist
 
 # Create your views here.
 
+@login_required
 def wishlist_view(request):
     # wishlists = Wishlist.objects.filter(user=request.user)
     wishlist_items = Wishlist.objects.all().select_related('product')

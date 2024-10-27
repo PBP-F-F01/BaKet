@@ -414,7 +414,16 @@
       },
     })
       .then((response) => {
-        if (!response.ok) {
+        if (response.redirected) {
+          alert("Please log in to add items to your cart.");
+          
+          // Redirect to login page with `next`
+          const currentUrl = window.location.pathname;
+          window.location.href = `{% url 'main:login' %}?next=${currentUrl}`;
+          return;
+        }
+        
+        if (!response.ok && !response.redirected) {
           throw new Error("Network response was not ok");
         }
         return response.json(); // Parse the JSON response
@@ -428,7 +437,7 @@
       })
       .catch((error) => {
         console.error("Error:", error);
-        alert("Failed to add item to cart. Please try again.");
+        // alert("Failed to add item to cart. Please try again.");
       });
   }
 
@@ -441,8 +450,21 @@
       },
       credentials: "same-origin",
     })
-      .then((response) => response.json())
-      .then((data) => {
+
+    .then((response) => {
+      if (response.redirected) {
+        alert("Please log in to add items to your wishlist.");
+
+        // Redirect to login page with a `next`
+        const currentUrl = window.location.pathname;  // current product detail URL
+        window.location.href = `{% url 'main:login' %}?next=${currentUrl}`;
+        return;
+      }
+      return response.json();
+    })
+
+    .then((data) => {
+      if (data) {
         const wishlistButton = document.getElementById("wishlist-button");
         if (data.status === "added") {
           wishlistButton.innerText = "Remove from Wishlist";
@@ -453,10 +475,11 @@
           wishlistButton.classList.remove("bg-red-400");
           wishlistButton.classList.add("bg-blue-500");
         }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
   }
 </script>
 
