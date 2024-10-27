@@ -1,7 +1,3 @@
-
-console.log(csrf_token, "BLYATT");
-console.log(article_id, "BLYATT");
-console.log(user, "BLYATT");
 async function getComment(article_id) {
     try {
         const response = await fetch(`/articles/json/comment/${article_id}/`, {
@@ -9,12 +5,10 @@ async function getComment(article_id) {
                 'X-CSRFToken': csrf_token
             }
         });
-        console.log('Server response:', response);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Parsed JSON data:', data);
         return data;
     } catch (error) {
         console.error('Error fetching comments:', error);
@@ -239,10 +233,8 @@ async function addCommentDesktop() {
     if (response.ok) {
         document.getElementById("comment-input-desktop").querySelector("textarea").value = "";
         refreshComments(article_id);
-        console.log("succed");
     }
     else {
-        console.log("not succed");
         console.error("Failed to post comment");
         const errorMessage = await response.text();
         alert(`Error posting comment: ${errorMessage}. Please try again.`);
