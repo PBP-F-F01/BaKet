@@ -10,6 +10,7 @@ from apps.articles.models import *
 import datetime
 import random
 import math
+import json
 
 # Create your views here.
 
@@ -91,10 +92,7 @@ def show_article(request, id):
     article = Article.objects.get(pk=id)
     other = []
     for a in ranked_articles:
-        print(a.id)
-        print(id)
         if a != article:
-            print(f"kok kelewat {a.id} == {id}")
             other.append(a)
         if len(other) >= 3:
             break
@@ -138,8 +136,11 @@ def delete_comment(request, comment_id):
     return HttpResponse(b"DELETED", status=201)
 
 def current_user(request):
-    data = request.user
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+    user_data = {
+        'id': request.user.id,
+        'is_anonymous': request.user.is_anonymous
+    }
+    return HttpResponse(json.dumps(user_data), content_type="application/json")
 
 def is_like_article(request, article):
     return Like.objects.filter(user=request.user, article=article).exist()
@@ -160,7 +161,7 @@ def json_comment(request):
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
 def json_by_id_comment(request, id):
-    data = Comment.objects.filter(pk=id)
+    data = Comment.objects.comment(pk=id)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
 def json_comment_by_article(request, article_id):
@@ -189,6 +190,6 @@ def json_like(request):
     data = Like.objects.all()
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
-def json_by_id_like(request, article):
-    data = Article.objects.filter()
+def json_by_id_like(request, id):
+    data = Article.objects.get(pk=id)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
