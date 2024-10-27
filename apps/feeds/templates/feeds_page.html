@@ -54,11 +54,11 @@
                         <textarea type="text" id="post-content" name="content" rows="1" placeholder="Post something!"
                             class="w-full p-2 focus:outline-none resize-none"></textarea>
                     </form>
-                    <div class="flex justify-between items-center mt-1">
-                        <button class="flex items-center space-x-0.5 mx-2 rounded-full">
+                    <div class="flex justify-end items-center mt-1">
+                        <!-- <button class="flex items-center space-x-0.5 mx-2 rounded-full">
                             <p class="font-bold text-[#01aae8]">+</p>
                             <img src="{% static 'icon/icon_image.svg' %}" class="w-5 h-5">
-                        </button>
+                        </button> -->
                         <button id="post-button" type="submit" form="add-post"
                             class="bg-[#01aae8] text-white px-4 py-2 rounded-full font-semibold opacity-50 cursor-not-allowed">Posting</button>
                     </div>
@@ -199,6 +199,10 @@
                 const profile_picture = post.user.userprofile === null
                     ? "{% static 'images/default_pp.png' %}"
                     : post.user.userprofile.profile_picture;
+                const name = post.user.first_name + " " + post.user.last_name === " "
+                    ? post.user.username
+                    : post.user.first_name + " " + post.user.last_name;
+            
 
                 liked[post.id] = post.is_liked;
 
@@ -209,11 +213,12 @@
                             src="${profile_picture}" class="rounded-[999px] mr-3 w-[40px] h-[40px] object-cover">
                             <div class="flex-grow flex-col">
                                 <div class="flex items-center space-x-1.5">
-                                    <p class="font-semibold text-gray-700">${post.user.username}</p>
+                                    <p class="font-bold text-gray-700">${name}</p>
+                                    <p class="text-sm text-gray-400">@${post.user.username}</p>
                                     <p class="text-gray-400"> · </p>
                                     <p class="text-sm text-gray-400">${dates}</p>
                                 </div>
-                                <p class="text-left content-text mt-1">${content}</p>
+                                <p class="text-left content-text mt-1 break-words break-all max-w-full">${content}</p>
                                 <div class="flex flex-row justify-between mt-3 space-x-2">
                                     <div class="flex space-x-10">
                                         <button class="like-icon flex space-x-2 items-center z-50" data-post-id="${post.id}" data-like-count="${post.like_count}" onclick="event.preventDefault(); event.stopPropagation(); clickLikeButton('${post.id}')">
