@@ -1,24 +1,11 @@
-.rating-wrapper {
-  display: inline-block;
-  direction: ltr;
-  /* Ensure stars are displayed left-to-right by removing direction */
-}
-
-.rating-wrapper input[type="radio"] {
-  display: none;
-}
-
+/* Default state: gray */
 .rating-wrapper label {
-  font-size: 2rem;
   color: #ccc;
-  cursor: pointer;
+  transition: 0.4s;
+  font-size: 2rem;
 }
 
-.rating-wrapper input[type="radio"]:checked ~ label {
-  color: #ffcc00;
-}
-
-.rating-wrapper label:hover,
-.rating-wrapper label:hover ~ label {
-  color: #ffcc00; /* Highlight stars on hover */
+/* Selected stars: gold */
+.rating-wrapper label.active {
+  color: gold;
 }
