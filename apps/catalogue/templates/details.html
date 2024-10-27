@@ -184,7 +184,11 @@
           </button>
         </div>
         {% else %}
-        <p class="text-gray-500">You need to login to submit a review.</p>
+        <p class="text-gray-500">
+          You need to login to submit a review.<a href="{% url 'login' %}"
+            >Login</a
+          >
+        </p>
         {% endif %}
       </form>
     </div>
@@ -351,7 +355,7 @@
         <div class="relative bg-white p-4 rounded-lg shadow-md mb-4 mt-4 transition-transform transform hover:scale-105 duration-200">
           <div class="flex justify-between items-center mb-2">
             <div class="flex items-center">
-              <i class="far fa-user mr-2 text-gray-500"></i>
+              <img src="{{ item.fields.user.profile_picture.url }}" alt="{{ item.fields.user.username }}'s Profile Picture" />
               <span class="font-semibold text-gray-800 text-lg">${
                 item.fields.username
               }</span>
