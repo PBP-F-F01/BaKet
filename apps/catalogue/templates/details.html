@@ -13,151 +13,193 @@
 
 <body class="text-base font-bold font-['Raleway']">
   <div class="min-h-screen bg-gray-50 py-8">
-      <!-- Back Button -->
-      <div class="mx-[300px] mb-8">
-        <a href="{% url 'catalogue:catalogue' %}" 
-          class="inline-flex items-center px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold gap-2">
-            <span>Kembali</span>
-            <img src="{% static 'icon/icon_rchevron.svg' %}" alt="Back" class="w-5 h-5">
-        </a>
-      </div>
-  
-      <!-- Product Details Section -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-              <!-- Product Content -->
-              <div class="flex flex-col md:flex-row gap-8 p-8">
-                  <!-- Product Image -->
-                  <div class="flex-shrink-0">
-                      <img src="{{ product.image.url }}" 
-                          alt="{{ product.name }}" 
-                          class="w-[360px] h-[360px] rounded-lg object-cover shadow-md">
-                  </div>
+    <!-- Back Button -->
+    <div class="mx-[300px] mb-8">
+      <a
+        href="{% url 'catalogue:catalogue' %}"
+        class="inline-flex items-center px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold gap-2"
+      >
+        <span>Kembali</span>
+        <img
+          src="{% static 'icon/icon_rchevron.svg' %}"
+          alt="Back"
+          class="w-5 h-5"
+        />
+      </a>
+    </div>
 
-                  <!-- Product Info -->
-                  <div class="flex-1 space-y-6">
-                      <h1 class="text-4xl font-bold text-gray-900">{{ product.name }}</h1>
-                      <p class="text-3xl font-bold text-[#01aae8]">Rp{{ product.price }}</p>
-                      
-                      <!-- Rating Display -->
-                      <div id="average_rating" class="text-lg font-bold"></div>
-                      
-                      <!-- Category -->
-                      <div class="flex items-center gap-2">
-                          <span class="text-gray-700 font-bold">Category:</span>
-                          <span class="px-3 py-1 bg-gray-500 text-white text-sm rounded-lg">
-                              {{ product.category }}
-                          </span>
-                      </div>
-                      
-                      <!-- Description -->
-                      <div class="prose max-w-none">
-                          <h3 class="text-gray-700 font-bold">Description:</h3>
-                          <p class="text-gray-600">{{ product.specs|linebreaks }}</p>
-                      </div>
-                      
-                      <!-- Action Buttons -->
-                      <div class="flex gap-4 pt-4">
-                          <button onclick="addToCart('{{ product.id }}')"
-                                  class="inline-flex items-center px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold gap-2">
-                              <img src="{% static 'images/icon_cart.png' %}" alt="Cart" class="w-5 h-5">
-                              <span>Add to Cart</span>
-                          </button>
-                          
-                          <button onclick="toggleWishlist('{{ product.id }}')"
-                                  id="wishlist-button"
-                                  class="px-6 py-3 rounded-lg text-white font-bold transition-colors {% if is_in_wishlist %}bg-red-400 hover:bg-red-500{% else %}bg-[#01aae8] hover:bg-[#0081b1]{% endif %}">
-                              {% if is_in_wishlist %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}
-                          </button>
-                      </div>
-                  </div>
-              </div>
+    <!-- Product Details Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <!-- Product Content -->
+        <div class="flex flex-col md:flex-row gap-8 p-8">
+          <!-- Product Image -->
+          <div class="flex-shrink-0">
+            <img
+              src="{{ product.image.url }}"
+              alt="{{ product.name }}"
+              class="w-[360px] h-[360px] rounded-lg object-cover shadow-md"
+            />
           </div>
-      </div>
 
-      <!-- Reviews Section -->
-      <div class="max-w-7xl mx-auto mt-8 px-4 sm:px-6 lg:px-8">
-          <div class="grid md:grid-cols-2 gap-8">
-              <!-- Review Form -->
-              <div class="bg-white rounded-xl shadow-lg p-6">
-                  <h2 class="text-2xl font-bold mb-6">Write a Review</h2>
-                  
-                  <form id="reviewForm" class="space-y-6">
-                      {% csrf_token %}
-                      <input type="hidden" name="prod_id" value="{{ product.id }}">
-                      
-                      <!-- Rating Stars -->
-                      <div class="flex justify-center">
-                          <div class="rating-wrapper">
-                              {% for i in '54321'|make_list %}
-                              <input type="radio" 
-                                    id="star-{{ i }}" 
-                                    name="rate" 
-                                    value="{{ i }}" 
-                                    class="hidden">
-                              <label for="star-{{ i }}" 
-                                    class="cursor-pointer text-3xl text-gray-400 hover:text-yellow-500 transition-colors">★</label>
-                              {% endfor %}
-                          </div>
-                      </div>
-                      
-                      <!-- Review Text -->
-                      <textarea name="comment" 
-                                rows="4" 
-                                placeholder="Your Review" 
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-                      
-                      <!-- Submit Button -->
-                      {% if user.is_authenticated %}
-                          <div class="text-center">
-                              <button type="submit" 
-                                      class="px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold">
-                                  Submit Review
-                              </button>
-                          </div>
-                      {% else %}
-                          <p class="text-center text-gray-500">
-                              Please <a href="{% url 'main:login' %}" class="text-[#01aae8] hover:underline">login</a> to submit a review.
-                          </p>
-                      {% endif %}
-                  </form>
-              </div>
+          <!-- Product Info -->
+          <div class="flex-1 space-y-6">
+            <h1 class="text-4xl font-bold text-gray-900">{{ product.name }}</h1>
+            <p class="text-3xl font-bold text-[#01aae8]">
+              Rp{{ product.price }}
+            </p>
 
-              <!-- Reviews Display -->
-              <div class="space-y-4">
-                  <!-- Filter Button -->
-                  <button onclick="toggleFilter()"
-                          class="w-full px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold flex items-center justify-center gap-2">
-                      <img src="{% static 'icon/icon_filter.svg' %}" alt="Filter" class="w-5 h-5">
-                      <span>Filter Reviews</span>
-                  </button>
+            <!-- Rating Display -->
+            <div id="average_rating" class="text-lg font-bold"></div>
 
-                  <!-- Filter Options -->
-                  <div id="reviewFilter" class="hidden bg-[#01aae8] rounded-lg p-4">
-                      <form id="filterForm" class="grid grid-cols-3 gap-4">
-                          <label class="flex items-center gap-2 text-white cursor-pointer">
-                              <input type="radio" name="star_rating" checked>
-                              <span>Show All</span>
-                          </label>
-                          {% for i in '54321'|make_list %}
-                          <label class="flex items-center gap-2 text-white cursor-pointer">
-                              <input type="radio" name="star_rating" value="{{ i }}">
-                              <span>{{ i }} Star{% if i != '1' %}s{% endif %}</span>
-                          </label>
-                          {% endfor %}
-                          <button type="submit" 
-                                  class="col-span-3 px-4 py-2 bg-white text-[#01aae8] rounded-lg hover:bg-gray-100 transition-colors">
-                              Apply Filter
-                          </button>
-                      </form>
-                  </div>
+            <!-- Category -->
+            <div class="flex items-center gap-2">
+              <span class="text-gray-700 font-bold">Kategori:</span>
+              <span class="px-3 py-1 bg-gray-500 text-white text-sm rounded-lg">
+                {{ product.category }}
+              </span>
+            </div>
 
-                  <!-- Review Cards -->
-                  <div id="message_card"></div>
-                  <div id="review_card" class="space-y-4"></div>
-              </div>
+            <!-- Description -->
+            <div class="prose max-w-none">
+              <h3 class="text-gray-700 font-bold">Deskripsi:</h3>
+              <p class="text-gray-600">{{ product.specs|linebreaks }}</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-4 pt-4">
+              <button
+                onclick="addToCart('{{ product.id }}')"
+                class="inline-flex items-center px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold gap-2"
+              >
+                <img
+                  src="{% static 'images/icon_cart.png' %}"
+                  alt="Cart"
+                  class="w-5 h-5"
+                />
+                <span>Masukkan Keranjang</span>
+              </button>
+
+              <button
+                onclick="toggleWishlist('{{ product.id }}')"
+                id="wishlist-button"
+                class="px-6 py-3 rounded-lg text-white font-bold transition-colors {% if is_in_wishlist %}bg-red-400 hover:bg-red-500{% else %}bg-[#01aae8] hover:bg-[#0081b1]{% endif %}"
+              >
+                {% if is_in_wishlist %}Hapus dari Wishlist{% else %}Tambah ke
+                Wishlist{% endif %}
+              </button>
+            </div>
           </div>
+        </div>
       </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="max-w-7xl mx-auto mt-8 px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Review Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-2xl font-bold mb-6">Tulis Ulasan</h2>
+
+          <form id="reviewForm" class="space-y-6">
+            {% csrf_token %}
+            <input type="hidden" name="prod_id" value="{{ product.id }}" />
+
+            <!-- Rating Stars -->
+            <div class="flex justify-center">
+              <div class="rating-wrapper">
+                {% for i in '54321'|make_list %}
+                <input
+                  type="radio"
+                  id="star-{{ i }}"
+                  name="rate"
+                  value="{{ i }}"
+                  class="hidden"
+                />
+                <label
+                  for="star-{{ i }}"
+                  class="cursor-pointer text-3xl text-gray-400 hover:text-yellow-500 transition-colors"
+                  >★</label
+                >
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Review Text -->
+            <textarea
+              name="comment"
+              rows="4"
+              placeholder="Apa pendapat Anda tentang produk ini?"
+              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            ></textarea>
+
+            <!-- Submit Button -->
+            {% if user.is_authenticated %}
+            <div class="text-center">
+              <button
+                type="submit"
+                class="px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold"
+              >
+                Kirim
+              </button>
+            </div>
+            {% else %}
+            <p class="text-center text-gray-500">
+              Anda perlu
+              <a
+                href="{% url 'main:login' %}"
+                class="text-[#01aae8] hover:underline"
+                >login</a
+              >
+              untuk mengirim ulasan.
+            </p>
+            {% endif %}
+          </form>
+        </div>
+
+        <!-- Reviews Display -->
+        <div class="space-y-4">
+          <!-- Filter Button -->
+          <button
+            onclick="toggleFilter()"
+            class="w-full px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold flex items-center justify-center gap-2"
+          >
+            <img
+              src="{% static 'icon/icon_filter.svg' %}"
+              alt="Filter"
+              class="w-5 h-5"
+            />
+            <span>Filter Ulasan</span>
+          </button>
+
+          <!-- Filter Options -->
+          <div id="reviewFilter" class="hidden bg-[#01aae8] rounded-lg p-4">
+            <form id="filterForm" class="grid grid-cols-3 gap-4">
+              <label class="flex items-center gap-2 text-white cursor-pointer">
+                <input type="radio" name="star_rating" checked />
+                <span>Semua</span>
+              </label>
+              {% for i in '54321'|make_list %}
+              <label class="flex items-center gap-2 text-white cursor-pointer">
+                <input type="radio" name="star_rating" value="{{ i }}" />
+                <span>{{ i }} Star{% if i != '1' %}s{% endif %}</span>
+              </label>
+              {% endfor %}
+              <button
+                type="submit"
+                class="col-span-3 px-4 py-2 bg-white text-[#01aae8] rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                Cari
+              </button>
+            </form>
+          </div>
+
+          <!-- Review Cards -->
+          <div id="message_card"></div>
+          <div id="review_card" class="space-y-4"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </body>
 
@@ -229,7 +271,7 @@
     averageRatingHtml = ` 
         <div class="font-bold text-lg">
           ${starsString}
-          ${averageRating} | ${reviews.length} Reviews
+          ${averageRating} | ${reviews.length} Ulasan
         </div>
     `;
     document.getElementById("average_rating").innerHTML = averageRatingHtml;
@@ -240,7 +282,7 @@
         "flex flex-col items-center justify-center min-h-[24rem] p-6";
       htmlString = `
             <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
-                <p class="text-center text-gray-600 mt-4">No reviews yet.</p>
+                <p class="text-center text-gray-600 mt-4">Tidak terdapat ulasan.</p>
             </div>
         `;
     } else {
@@ -290,11 +332,12 @@
     });
 
     if (response.ok) {
-      alert("Review submitted successfully!");
+      alert("Ulasan berhasil dikirim!");
       await refreshReviewForm();
+      deactivateAllStars();
       document.getElementById("reviewForm").reset();
     } else {
-      alert("Ratings can't be empty!");
+      alert("Penilaian tidak boleh kosong!");
     }
   }
 
@@ -313,6 +356,25 @@
       filterOptions.classList.add("hidden");
     }
   }
+
+  var stars = document.querySelectorAll(".rating-wrapper label");
+  stars.forEach((item, index1) => {
+    item.addEventListener("click", () => {
+      stars.forEach((star, index2) => {
+        if (index1 >= index2) {
+          star.classList.add("active");
+        } else {
+          star.classList.remove("active");
+        }
+      });
+    });
+  });
+
+  function deactivateAllStars() {
+    document.querySelectorAll(".rating-wrapper label").forEach((star) => {
+      star.classList.remove("active");
+    });
+  }
 </script>
 
 <script>
@@ -325,7 +387,7 @@
     })
       .then((response) => {
         if (response.redirected) {
-          alert("Please log in to add items to your cart.");
+          alert("Harap login untuk menambahkan barang ke keranjang!");
 
           // Redirect to login page with `next`
           const currentUrl = window.location.pathname;
@@ -343,7 +405,7 @@
         const cartCountElement = document.getElementById("cart-count");
         cartCountElement.innerText = data.cart_count;
 
-        alert("Item added to cart successfully!");
+        alert("Barang berhasil dimasukkan ke keranjang!");
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -362,7 +424,7 @@
     })
       .then((response) => {
         if (response.redirected) {
-          alert("Please log in to add items to your wishlist.");
+          alert("Harap login untuk memasukkan barang ke wishlist.");
 
           // Redirect to login page with a `next`
           const currentUrl = window.location.pathname; // current product detail URL
@@ -376,11 +438,11 @@
         if (data) {
           const wishlistButton = document.getElementById("wishlist-button");
           if (data.status === "added") {
-            wishlistButton.innerText = "Remove from Wishlist";
+            wishlistButton.innerText = "Hapus dari Wishlist";
             wishlistButton.classList.remove("bg-[#01aae8]");
             wishlistButton.classList.add("bg-red-400");
           } else if (data.status === "removed") {
-            wishlistButton.innerText = "Add to Wishlist";
+            wishlistButton.innerText = "Tambah ke Wishlist";
             wishlistButton.classList.remove("bg-red-400");
             wishlistButton.classList.add("bg-[#01aae8]");
           }

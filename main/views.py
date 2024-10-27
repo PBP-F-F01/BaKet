@@ -11,6 +11,7 @@ from apps.user.models import UserProfile
 from apps.user.forms import BaKetUserCreationForm
 
 def index(request):
+    # messages.success(request, "You have successfully logged out.")
     context = {
         'current_time': datetime.now(),
     }
@@ -34,6 +35,10 @@ def register(request):
 
 def login_user(request):
     if request.method == 'POST':
+        
+        # Clear all previous messages
+        storage = messages.get_messages(request)
+        storage.used = True
         form = AuthenticationForm(data=request.POST)
 
         if form.is_valid():
@@ -42,6 +47,8 @@ def login_user(request):
             
             # Check if UserProfile exists for this user, create if it doesn't
             UserProfile.objects.get_or_create(user=user)
+            
+            messages.success(request, "Logged In Successfully")
             
             # Redirect to 'next' URL if available, otherwise go to index
             next_url = request.GET.get('next')
@@ -59,6 +66,7 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
+    messages.success(request, "Logged Out Successfully")
     response = HttpResponseRedirect(reverse('main:index'))
     response.delete_cookie('last_login')
     return response

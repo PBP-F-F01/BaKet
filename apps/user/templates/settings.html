@@ -19,7 +19,7 @@
         <!-- Header Tabs -->
         <div class="border-b mb-6">
             <ul class="flex space-x-6 text-gray-600">
-                <li class="text-[#01aae8] font-semibold border-b-2 border-[#01aae8] pb-2">Biodata Diri</li>
+                <li class="text-[#01aae8] font-semibold border-b-2 border-[#01aae8] pb-2">Biodata User</li>
                 <li>Daftar Alamat</li>
             </ul>
         </div>
@@ -27,8 +27,8 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             <!-- Left Sidebar (Profile Picture and Options) -->
-            <div class="space-y-4 max-w-96">
-                <form id="profilePictureForm" enctype="multipart/form-data" class="space-y-4 max-w-96">
+            <div class="w-full space-y-4">
+                <form id="profilePictureForm" enctype="multipart/form-data" class="space-y-4">
                     {% csrf_token %}
                     
                     <!-- Profile Picture Section -->
@@ -39,14 +39,14 @@
                         
                         <!-- File Input Button -->
                         <label for="profilePictureInput" class="w-full px-4 py-2 bg-gray-200 rounded-md text-center font-semibold font-['Raleway'] hover:bg-gray-300 cursor-pointer">
-                            Change Photo
+                            Ubah Foto Profil
                         </label>
                         <input type="file" id="profilePictureInput" name="profile_picture" accept="image/*" class="hidden" onchange="uploadProfilePicture()">
                         
                         <p class="text-xs text-gray-500 text-center mt-2">
-                            File size limit: 10 MB.<br>
-                            Ratio: 1:1.<br>
-                            Allowed formats: JPG, JPEG, PNG
+                            Batas ukuran file : 10 MB.<br>
+                            Rasio: 1:1.<br>
+                            Format yang diperbolehkan: JPG, JPEG, PNG, GIF
                         </p>
                     </div>
                 </form>
@@ -62,7 +62,7 @@
             
                 <!-- Profile Info -->
                 <div>
-                    <h3 class="text-2xl font-semibold font-['Raleway'] text-[#01aae8] mb-4">User Information</h3>
+                    <h3 class="text-2xl font-semibold font-['Raleway'] text-[#01aae8] mb-4">Biodata Diri</h3>
                     
                     <!-- Name -->
                     <div class="flex items-center justify-between">
@@ -76,7 +76,7 @@
                             {% endif %}
                         </p>
                     </div>
-                    <a href="#" class="text-[#01aae8]" onclick="openModal('nameModal')">Change</a>
+                    <a href="#" class="text-[#01aae8]" onclick="openModal('nameModal')">Ubah</a>
                     </div>
                     
                     <!-- Birth Date -->
@@ -91,7 +91,7 @@
                             {% endif %}
                         </p>
                     </div>
-                    <a href="#" class="text-[#01aae8]" onclick="openModal('birthDateModal')">Change Birth Date</a>
+                    <a href="#" class="text-[#01aae8]" onclick="openModal('birthDateModal')">Ubah tanggal lahir</a>
                     </div>
         
                     <!-- Gender -->
@@ -106,13 +106,13 @@
                             {% endif %}
                         </p>
                     </div>
-                    <a href="#" class="text-[#01aae8]" onclick="openModal('genderModal')">Change</a>
+                    <a href="#" class="text-[#01aae8]" onclick="openModal('genderModal')">Ubah</a>
                     </div>
                 </div>
         
                 <!-- Contact Info -->
                 <div>
-                    <h3 class="text-2xl font-semibold font-['Raleway'] text-[#01aae8] mb-4">User Contact</h3>
+                    <h3 class="text-2xl font-semibold font-['Raleway'] text-[#01aae8] mb-4">Kontak User</h3>
                     
                     <!-- Email -->
                     <div class="flex items-center justify-between">
@@ -127,7 +127,7 @@
                             {% endif %}
                         </p>
                     </div>
-                    <a href="#" class="text-[#01aae8]" onclick="openModal('emailModal')">Change</a>
+                    <a href="#" class="text-[#01aae8]" onclick="openModal('emailModal')">Ubah</a>
                     </div>
                     
                     <!-- Phone Number -->
@@ -143,7 +143,7 @@
                             {% endif %}                        
                         </p>
                     </div>
-                    <a href="#" class="text-[#01aae8]" onclick="openModal('phoneModal')">Change</a>
+                    <a href="#" class="text-[#01aae8]" onclick="openModal('phoneModal')">Ubah</a>
                     </div>
                 </div>
             </div>
