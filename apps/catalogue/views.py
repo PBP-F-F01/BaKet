@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 from django.core import serializers
+from django.db.models import Avg
 
 from apps.wishlist.models import Wishlist
 
@@ -113,6 +114,15 @@ def show_json(request):
     data = Review.objects.filter(product=prod_id).select_related('user') 
     reviews = []
 
+    # Filter reviews based on the selected rating if it exists
+    selected_rating = request.POST.get('star_rating')
+    if selected_rating and selected_rating.isdigit():  # Ensure it's a digit
+        data = data.filter(rating=int(selected_rating))
+    # Calculate the average rating
+    total_rating = sum(review.rating for review in data)
+    count = data.count()
+    average_rating = total_rating / count if count > 0 else 0.0
+
     for review in data:
         reviews.append({
             "id": review.id,
@@ -123,7 +133,13 @@ def show_json(request):
                 "created_at": review.created_at,
             }
         })
-    return JsonResponse(reviews, safe=False)
+
+    response_data = {
+        "reviews": reviews,
+        "average_rating": average_rating,
+    }
+
+    return JsonResponse(response_data, safe=False)
 
 # @login_required
 def add_to_cart(request, product_id):
