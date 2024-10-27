@@ -52,9 +52,9 @@
                 </form>
     
                 <!-- Action Buttons -->
-                <button class="w-full px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 flex space-x-2 items-center text-center font-semibold font-['Raleway']">
+                <!-- <button class="w-full px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 flex space-x-2 items-center text-center font-semibold font-['Raleway']">
                     <span class="">Change Password</span>
-                </button>
+                </button> -->
             </div>
     
             <!-- Right Sidebar (Profile Information) -->
@@ -62,56 +62,88 @@
             
                 <!-- Profile Info -->
                 <div>
-                    <h3 class="text-2xl font-semibold font-['Raleway'] text-[#01aae8] mb-4">Change User Information</h3>
+                    <h3 class="text-2xl font-semibold font-['Raleway'] text-[#01aae8] mb-4">User Information</h3>
                     
                     <!-- Name -->
                     <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-600">Nama</p>
-                        <p class="text-lg">Kukuh Cikal Yuntama</p>
+                        <p class="text-lg">
+                            {% if user.userprofile.user.first_name %}
+                                {{ user.userprofile.user.first_name }} {{ user.userprofile.user.last_name }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
                     </div>
-                    <a href="#" class="text-[#01aae8]">Change</a>
+                    <a href="#" class="text-[#01aae8]" onclick="openModal('nameModal')">Change</a>
                     </div>
                     
                     <!-- Birth Date -->
                     <div class="flex items-center justify-between mt-4">
                     <div>
                         <p class="text-gray-600">Tanggal Lahir</p>
-                        <p class="text-lg">18 Juni 1991</p>
+                        <p class="text-lg">
+                            {% if user.userprofile.birth_date %}
+                                {{ user.userprofile.birth_date }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
                     </div>
-                    <a href="#" class="text-[#01aae8]">Change Birth Date</a>
+                    <a href="#" class="text-[#01aae8]" onclick="openModal('birthDateModal')">Change Birth Date</a>
                     </div>
         
                     <!-- Gender -->
                     <div class="flex items-center justify-between mt-4">
                     <div>
                         <p class="text-gray-600">Jenis Kelamin</p>
-                        <p class="text-lg">Pria</p>
+                        <p class="text-lg">
+                            {% if user.userprofile.gender %}
+                                {{ user.userprofile.gender }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
                     </div>
-                    <a href="#" class="text-[#01aae8]">Change</a>
+                    <a href="#" class="text-[#01aae8]" onclick="openModal('genderModal')">Change</a>
                     </div>
                 </div>
         
                 <!-- Contact Info -->
                 <div>
-                    <h3 class="text-2xl font-semibold font-['Raleway'] text-[#01aae8] mb-4">Change User Contact</h3>
+                    <h3 class="text-2xl font-semibold font-['Raleway'] text-[#01aae8] mb-4">User Contact</h3>
                     
                     <!-- Email -->
                     <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-600">Email</p>
-                        <p class="text-lg">gaung@cs.ui.ac.id <span class="bg-blue-100 text-[#01aae8] text-xs font-semibold px-2 py-1 rounded">Terverifikasi</span></p>
+                        <p class="text-lg">
+                            {% if user.userprofile.email %}
+                                {{ user.userprofile.email }}
+                                <span class="bg-blue-100 text-[#01aae8] text-xs font-semibold px-2 py-1 rounded">Terverifikasi</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
                     </div>
-                    <a href="#" class="text-[#01aae8]">Change</a>
+                    <a href="#" class="text-[#01aae8]" onclick="openModal('emailModal')">Change</a>
                     </div>
                     
                     <!-- Phone Number -->
                     <div class="flex items-center justify-between mt-4">
                     <div>
                         <p class="text-gray-600">Nomor HP</p>
-                        <p class="text-lg">0816969696969 <span class="bg-blue-100 text-[#01aae8] text-xs font-semibold px-2 py-1 rounded">Terverifikasi</span></p>
+                        <p class="text-lg">
+                            {% if user.userprofile.phone_number %}
+                                {{ user.userprofile.phone_number }}
+                                <span class="bg-blue-100 text-[#01aae8] text-xs font-semibold px-2 py-1 rounded">Terverifikasi</span>
+                            {% else %}
+                                -
+                            {% endif %}                        
+                        </p>
                     </div>
-                    <a href="#" class="text-[#01aae8]">Change</a>
+                    <a href="#" class="text-[#01aae8]" onclick="openModal('phoneModal')">Change</a>
                     </div>
                 </div>
             </div>
@@ -119,17 +151,64 @@
     </div>
 </div>
 
+<!-- Modals -->
+<!-- Name Modal
+<div id="nameModal" class="modal hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0 flex items-center justify-center transition-opacity duration-300">
+    <div class="modal-content bg-white p-8 rounded-lg shadow-lg w-[500px] max-w-[90%] transition duration-300 transform scale-0">
+        <h3 class="text-2xl font-semibold mb-6 use-poppins">Change Name</h3>
+        <form method="POST" action="{% url 'update_name' %}">
+            {% csrf_token %}
+            <div class="w-full">
+                <label for="first_name" class="mb-2 font-semibold use-poppins">First Name</label>
+                <input type="text" name="first_name" id="first_name" value="{{ user.userprofile.user.first_name }}" class="bg-zinc-50 w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#01aae8]" required>
+            </div>
+            <div class="w-full mt-6">
+                <label for="last_name" class="mb-2 font-semibold use-poppins">Last Name</label>
+                <input type="text" name="last_name" id="last_name" value="{{ user.userprofile.user.last_name }}" class="bg-zinc-50 w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#01aae8]" required>
+            </div>
+            <div class="flex justify-end gap-4 mt-8">
+                <button type="button" class="px-5 py-2 bg-gray-300 rounded-md" onclick="closeModal('nameModal')">Cancel</button>
+                <button type="submit" class="px-5 py-2 bg-[#01aae8] text-white rounded-md">Save</button>
+            </div>
+        </form>
+    </div>
+</div> -->
+
+<!-- Include the modal components with direct arguments -->
+{% include 'settings_modal_component.html' with modal_id="nameModal" modal_title="Change Name" modal_action="update_name" field_name="name" field_label="Full Name" field_value=user.userprofile.user.get_full_name field_type="text" %}
+{% include 'settings_modal_component.html' with modal_id="birthDateModal" modal_title="Change Birth Date" modal_action="update_birth_date" field_name="birth_date" field_label="Birth Date" field_value=user.userprofile.birth_date field_type="date" %}
+{% include 'settings_modal_component.html' with modal_id="emailModal" modal_title="Change Email" modal_action="update_email" field_name="email" field_label="Email" field_value=user.userprofile.email field_type="email" %}
+{% include 'settings_modal_component.html' with modal_id="phoneModal" modal_title="Change Phone Number" modal_action="update_phone" field_name="phone_number" field_label="Phone Number" field_value=user.userprofile.phone_number field_type="text" %}
+{% include 'settings_modal_component.html' with modal_id="genderModal" modal_title="Change Gender" modal_action="update_gender" field_name="gender" field_label="Gender" field_value=user.userprofile.gender field_type="select" %}
+
+
 <script>
-    // function previewProfilePicture(event) {
-    //     const file = event.target.files[0];
-    //     if (file) {
-    //         const reader = new FileReader();
-    //         reader.onload = function(e) {
-    //             document.getElementById('profilePicturePreview').src = e.target.result;
-    //         }
-    //         reader.readAsDataURL(file);
-    //     }
-    // }
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        const modalContent = modal.querySelector('.modal-content');
+
+        modal.classList.remove('hidden');  // Show the modal background
+        setTimeout(() => {
+            modal.classList.add('opacity-100');  // Fade in the background
+            modal.classList.remove('opacity-0');
+            modalContent.classList.remove('scale-0');  // Scale up the modal content
+            modalContent.classList.add('scale-100');
+        }, 10);
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        const modalContent = modal.querySelector('.modal-content');
+
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0');  // Fade out the background
+        modalContent.classList.remove('scale-100');
+        modalContent.classList.add('scale-0');  // Scale down the modal content
+
+        setTimeout(() => {
+            modal.classList.add('hidden');  // Hide the modal completely after animations
+        }, 300);
+    }
     
     function uploadProfilePicture() {
         const input = document.getElementById('profilePictureInput');
