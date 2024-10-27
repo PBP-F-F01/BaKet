@@ -2,6 +2,9 @@ from django.shortcuts import render
 from django.core import serializers
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
 from django.db.models import F
 from apps.articles.models import *
 import datetime
@@ -74,7 +77,7 @@ def show_main(request):
             articles.aggregate(max_like=models.Max('like_count'))['max_like'] != max_like_score or
             articles.aggregate(max_comment=models.Max('comment_count'))['max_comment'] != max_comment_score):
             ranked_articles = sorted(articles, key=calculate_article_rank, reverse=True)
-            
+
         articles = ranked_articles
 
     paginator = Paginator(articles, 10)  # Show 10 articles per page
@@ -104,6 +107,37 @@ def show_article(request, id):
     }
     return render(request, 'article.html', context=context)
 
+@csrf_exempt
+@require_POST
+def add_comment(request, article):
+    content = strip_tags(request.POST.get('content'))
+    article = Article.objects.get(pk=article.id)
+
+    new_comment = Comment(
+        content=content,
+        article=article,
+        user=request.user
+    )
+
+    new_comment.save()
+    return HttpResponse(b"CREATED", status=201)
+
+def update_comment(request, comment_id):
+    comment = Comment.objects.get(pk=comment_id)
+    comment.content = strip_tags(request.PATCH.get("content"))
+    comment.has_edited = True
+    comment.save()
+    return HttpResponse(b"UPDATED", status=201)
+
+def delete_comment(request, comment_id):
+    comment = Comment.objects.get(pk=comment_id)
+    comment.delete()
+    return HttpResponse(b"DELETED", status=201)
+
+def current_user(request):
+    data = request.user
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
 def is_like_article(request, article):
     return Like.objects.filter(user=request.user, article=article).exist()
 
@@ -127,7 +161,25 @@ def json_by_id_comment(request, id):
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
 def json_comment_by_article(request, article_id):
-    data = Comment.objects.filter(article=Article.objects.get(pk=article_id))
+    comments = Comment.objects.filter(article=Article.objects.get(pk=article_id))
+    data = []
+
+    for comment in comments:
+        data.append({
+            'pk': comment.pk,
+            'fields': {
+                'content': comment.content,
+                'user': {
+                    'username': comment.user.username,
+                    'id': comment.user.id,
+                    'is_anonymous': request.user.is_anonymous,
+                },
+                'created_at': comment.created_at,
+                'has_edited': comment.has_edited,
+                'like_count': comment.like_count
+            }
+        })
+
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
 def json_like(request):
