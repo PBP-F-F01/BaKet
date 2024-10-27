@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.contrib import messages
 from apps.catalogue.models import Cart
 from django.contrib.auth.decorators import login_required
+from main.models import UserProfile
 
 def index(request):
     context = {
@@ -20,7 +21,11 @@ def register(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            
+            # Create UserProfile if not exist (prevent duplicate)
+            profile, created = UserProfile.objects.get_or_create(user=user)
+            
             messages.success(request, 'Your account has been successfully created!')
             return redirect('main:login')
     context = {'form':form}
@@ -33,6 +38,10 @@ def login_user(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            
+            # Check if UserProfile exists for this user, create if it doesn't
+            UserProfile.objects.get_or_create(user=user)
+            
             return redirect('main:index')
 
     else:
