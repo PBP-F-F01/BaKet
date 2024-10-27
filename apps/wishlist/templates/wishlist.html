@@ -42,7 +42,7 @@
 
 
                     <!-- Add Item -->
-                    <!-- <a href="{% url 'add_product' %}">
+                    <!-- <a href="{% url 'catalogue:add_product' %}">
                         <div class="self-stretch p-3 rounded-lg border-4 border-[#01aae8] justify-center items-center gap-3 flex hover:bg-[#caecf8]">
                             <div class="text-[#01aae8] text-base font-bold font-['Raleway']">Tambahkan Barang</div>
                         </div>
@@ -94,9 +94,9 @@
                 <img src="{% static 'images/ItemNotFound.svg' %}" class="w-2/4 max-w-md h-auto object-contain">
             </div>
             {% else %}
-            <div class="self-stretch pl-24 pr-20 flex-wrap justify-start items-start gap-5 flex">
+            <div class="self-stretch pl-24 pr-20 mb-40 flex-wrap justify-start items-start gap-5 flex">
                 {% for product in wishlist_items %}
-                <a href="{% url 'product_detail' product.id %}">
+                <a href="{% url 'catalogue:product_detail' product.id %}">
                 <div class="justify-start items-center gap-[25px] inline-flex shadow-lg">
                     <div class="h-auto p-3 bg-white rounded-lg shadow border-4 border-[#01aae8] backdrop-blur-[70.36px] flex-col justify-start items-center gap-2.5 inline-flex">
                         <div class="self-stretch grow shrink basis-0 flex-col justify-center items-center gap-2 flex">

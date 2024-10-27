@@ -55,7 +55,7 @@
     <div class="h-8 border-l border-gray-300 mx-0"></div>
 
     <!-- Cart Icon with Cart Count -->
-    <a href="{% url 'view_cart' %}" class="relative text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8] flex flex-row items-center">
+    <a href="{% url 'catalogue:view_cart' %}" class="relative text-[#c8c8c8] text-base font-bold font-['Raleway'] hover:text-[#01aae8] flex flex-row items-center">
       <img src="{% static 'images/icon_cart_blue.svg' %}" alt="Cart" class="mr-2 h-5 inline-block">
       Cart
       <div id="cart-count" class="ml-2 pb-1 bg-red-500 text-white text-xl rounded-full w-6 h-6 flex items-center justify-center">
@@ -111,7 +111,7 @@
       <a href="/wishlist" class="text-neutral-600 text-sm font-semibold font-['Raleway']">Wishlist</a>
       
       <!-- Cart Icon in Mobile Dropdown -->
-      <a href="{% url 'view_cart' %}" class="relative text-[#01aae8] text-sm font-semibold font-['Raleway']">
+      <a href="{% url 'catalogue:view_cart' %}" class="relative text-[#01aae8] text-sm font-semibold font-['Raleway']">
         <img src="{% static 'images/cart_icon.svg' %}" alt="Cart" class="h-5 inline-block">
         <span id="cart-count-mobile" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
           {{ cart_count }}

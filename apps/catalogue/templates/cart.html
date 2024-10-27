@@ -2,10 +2,10 @@
 {% load static %}
 
 {% block content %}
-<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 font-[Raleway]">
-    <h2 class="text-3xl font-bold text-gray-900 mb-8 font-[Raleway]">Keranjangmu</h2>
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 font-[Raleway] mb-60">
 
     {% if cart_items %}
+    <h2 class="text-3xl font-bold text-gray-900 mb-8 font-[Raleway]">Keranjangmu</h2>
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 mb-8">
             <thead class="bg-gray-50">
@@ -43,7 +43,7 @@
                         Rp{{ item.get_total_price }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                        <a href="{% url 'remove_from_cart' item.id %}" 
+                        <a href="{% url 'catalogue:remove_from_cart' item.id %}" 
                            class="text-red-600 hover:text-red-900 font-medium transition-colors">
                             Remove
                         </a>
@@ -61,7 +61,7 @@
                     Total: <span class="text-2xl font-bold text-[#01aae8]">Rp{{ total }}</span>
                 </h3>
             </div>
-            <a href="{% url 'checkout' %}" 
+            <a href="{% url 'catalogue:checkout' %}" 
                class="inline-flex items-center px-6 py-3 border border-transparent text-xl font-bold rounded-md shadow-sm text-white bg-[#01aae8] hover:bg-[#0081b1] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                 Checkout
             </a>
@@ -69,9 +69,10 @@
     </div>
 
     {% else %}
-    <div class="flex justify-center items-center w-screen pt-20">
+    <div class="flex justify-center items-center w-full pt-2 flex-col my-12">
         <img src="{% static 'images/KeranjangKosong.svg' %}" class="w-2/4 max-w-md h-auto object-contain">
-        <a href="{% url 'products' %}" class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-blue-600 bg-[#01aae8] hover:bg-[#0081b1] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+        <br/>
+        <a href="{% url 'catalogue:catalogue' %}" class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-xl font-bold rounded-md text-white bg-[#01aae8] hover:bg-[#0081b1] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
             Lanjutkan Berbelanja
         </a>
     </div>

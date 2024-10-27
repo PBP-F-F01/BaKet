@@ -18,7 +18,7 @@
     <div
       class="bg-[#01aae8] absolute top-4 right-4 flex rounded-lg hover:bg-[#0081b1]"
     >
-      <a href="{% url 'catalogue' %}">
+      <a href="{% url 'catalogue:catalogue' %}">
         <button class="p-4 rounded-lg">
           <img src="{% static 'icon/icon_rchevron.svg' %}" alt="Back Icon" />
         </button>
@@ -261,7 +261,7 @@
     console.log("Product ID:", productId);
     console.log("Selected Rating:", selectedRating);
 
-    const response = await fetch("{% url 'show_json' %}", {
+    const response = await fetch("{% url 'catalogue:show_json' %}", {
       method: "POST",
       headers: {
         "X-CSRFToken": "{{ csrf_token }}",
@@ -375,7 +375,7 @@
   refreshReviewForm();
 
   async function addReview() {
-    const response = await fetch("{% url 'add_review_ajax' %}", {
+    const response = await fetch("{% url 'catalogue:add_review_ajax' %}", {
       method: "POST",
       body: new FormData(document.querySelector("#reviewForm")),
     });

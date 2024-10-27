@@ -1,6 +1,8 @@
 from django.urls import path
 from apps.catalogue.views import *
 
+app_name = 'catalogue'
+
 urlpatterns = [
     path('', catalogue_view, name='catalogue'),
     path('add-product/', create_product, name='add_product'),
