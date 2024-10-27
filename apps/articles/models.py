@@ -1,36 +1,36 @@
-# from django.db import models
-# from django.contrib.auth.models import User
-# import uuid
-# import datetime
+from django.db import models
+from django.contrib.auth.models import User
+import uuid
+import datetime
 
-# class Article(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     title = models.CharField(max_length=256)
-#     posted_by = models.CharField(max_length=256, null=True, blank=True)
-#     content = models.TextField()
-#     created_at = models.DateTimeField(default=datetime.datetime.now())
-#     source = models.URLField(null=True, blank=True)
-#     like_count = models.IntegerField(default=0)
-#     comment_count = models.IntegerField(default=0)
+class Article(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=256)
+    posted_by = models.CharField(max_length=256, null=True, blank=True)
+    content = models.TextField()
+    created_at = models.DateTimeField(default=datetime.datetime.now())
+    source = models.URLField(null=True, blank=True)
+    like_count = models.IntegerField(default=0)
+    comment_count = models.IntegerField(default=0)
 
-#     class Meta:
-#         ordering = ['-created_at']
+    class Meta:
+        ordering = ['-created_at']
 
-# class Comment(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     article = models.ForeignKey(Article, on_delete=models.CASCADE)
-#     content = models.TextField()
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-#     has_edited = models.BooleanField(default=False)
-#     like_count = models.IntegerField(default=0)
+class Comment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    has_edited = models.BooleanField(default=False)
+    like_count = models.IntegerField(default=0)
     
-#     class Meta:
-#         ordering = ['-created_at']
+    class Meta:
+        ordering = ['-created_at']
 
-# class Like(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     article = models.ForeignKey(Article, on_delete=models.CASCADE, null=True, blank=True)
-#     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+class Like(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
