@@ -8,7 +8,9 @@
     <script src="{% static 'js/articles/article.js' %}"></script>
     <script>
         function getTime(isoString) {
+        console.log(isoString);
         const dateObject = new Date(isoString);
+        console.log(dateObject);
 
         const hours = dateObject.getHours();
         const minutes = dateObject.getMinutes();
@@ -36,40 +38,41 @@
     <div class="h-screen flex flex-col justify-start bg-[#fbfbf9] p-5">
         <!-- desktop-->
         <div class="hidden md:flex md:flex-row rounded-[16px] shadow-lg bg-white p-10 flex flex-col justify-start desktop w-full">
-            <h2 class="mb-6 font-bold text-3xl text-center title text-[#333]">{{ article.title }}</h2>
-            <p class="text-left mb-1 text-[#555]">
-                {% if article.posted_by %}
-                Posted by: <span class="username font-semibold">{{ article.posted_by}}</span> |
+            <div class="flex flex-col w-2/3 main-article p-8 rounded-lg">
+                <h2 class="mb-6 font-bold text-3xl text-center title content text-[#333]">{{ article.title }}</h2>
+                <p class="text-left mb-1 text-[#555]">
+                    {% if article.posted_by %}
+                    Posted by: <span class="username font-semibold">{{ article.posted_by }}</span> |
+                    {% endif %}
+                    Created at: <span class="created_at">12 Oktober 2024, 12:34</span>
+                </p>
+                {% if article.source %}
+                <p class="text-left mb-1 text-[#555]">
+                    Source: <a href="{{ article.source }}" target="_blank" class="source font-semibold">Source</a>
+                </p>
                 {% endif %}
-                Created at: <span class="created_at">{{ article.created_at }}</span>
-            </p>
-            {% if article.source %}
-            <p class="text-left mb-1 text-[#555]">
-                Source: <a href="{{ article.source }}" target="_blank" class="source font-semibold">Source</a>
-            </p>
-            {% endif %}
-            <div class="flex justify-start py-6 mb-3">
-                <div class="flex items-center cursor-default like">
-                    <span article-like-id="{{ article.id }}" class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
-                    <span class="like-count">{{ article.like_count }}</span>
+                <div class="flex justify-start py-6 mb-3">
+                    <div class="flex items-center cursor-default like">
+                        <span article-like-id="{{ article.id }}" class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
+                        <span class="like-count">{{ article.like_count }}</span>
+                    </div>
+                    <div class="flex items-center cursor-default ml-6">
+                        <span class="mr-3 align-bottom cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons comment-button" onclick="window.scrollTo(0, document.body.querySelector('.comment-input').getBoundingClientRect().top);">comment</span>
+                        <span class="comment-count align-bottom">{{ article.comment_count }}</span>
+                    </div>
                 </div>
-                <div class="flex items-center cursor-default ml-6">
-                    <span class="mr-3 align-bottom cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons comment-button" onclick="window.scrollTo(0, document.body.querySelector('.comment-input').getBoundingClientRect().top);">comment</span>
-                    <span class="comment-count align-bottom">{{ article.comment_count }}</span>
-                </div>
+                <p class="text-left text-justify leading-7 content text-[#333]">{{ article.content }}</p>
+                <h2 class="text-2xl font-bold mt-6 mb-2 text-[#555]">Comments</h2>
+                {% if not anonymous%}
+                <form id="comment-input-desktop">
+                    <div class="flex items-center cursor-default comment-input">
+                        <textarea placeholder="Write a comment..." class="border border-gray-300 rounded-md p-2 w-full h-20 hover:border-[#171e2a] text-black"></textarea>
+                        <button class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins m-1">Post</button>
+                    </div>
+                </form>
+                {% endif %}
+                <div class="comment-section-desktop">
             </div>
-            <p class="text-left break-words leading-7 content text-[#333]">{{ article.content }}</p>
-            <h2 class="text-2xl font-bold mt-6 mb-2 text-[#555]">Comments</h2>
-            {% if not anonymous%}
-            <form id="comment-input-desktop">
-                <div class="flex items-center cursor-default comment-input">
-                    <textarea placeholder="Write a comment..." class="border border-gray-300 rounded-md p-2 w-full h-20 hover:border-[#171e2a] text-black"></textarea>
-                    <button class="bg-[#01aae8] hover:bg-[#15a1d4] text-white font-semibold py-2 px-4 rounded-[10px] use-poppins m-1">Post</button>
-                </div>
-            </form>
-            {% endif %}
-            <div class="comment-section-desktop">
-
             </div>
             <!-- Other Articles -->
             <div class="flex flex-col w-1/3">
@@ -162,8 +165,8 @@
     </div>
 
     <script>
-        const article = fetch("{% url 'articles:json_article_by_id' article.id %}").then(res => res.json());
-        const user = fetch("{% url 'articles:current_user' %}").then(res => res.json());
+        const article = fetch("{% url 'articles:json_by_id_aricle' article.id %}").then(response => response.json());
+        const user = fetch(`/articles/json/user/`).then(response => response.json());
     </script>
     <script>
         async function getComment() {
@@ -276,7 +279,7 @@
                     // Add an event listener to the save button
                     saveButton.addEventListener('click', async () => {
                         const newContent = textarea.value;
-                        const response = await fetch(`{% url 'articles:update_comment' commentId %}`, {
+                        const response = await fetch(`update_comment/${commentId}/`, {
                             method: 'PATCH',
                             body: CommentForm(newContent)
                         });
@@ -323,7 +326,7 @@
                     if (confirmDelete) {
                     // Send a DELETE request to the server to delete the comment
                         try {
-                            const response = await fetch(`{% url 'articles:delete_comment' commentId %}`, {
+                            const response = await fetch(`delete_comment/${commentId}/`, {
                                 method: 'DELETE',
                             });
 
@@ -343,20 +346,18 @@
             });
         }
 
-        function cleanTime() {
-            const created_at = document.body.querySelectorAll(".created_at");
+        // function cleanTime() {
+        //     const created_at = document.body.querySelectorAll(".created_at");
 
-            created_at.forEach(c => {
-                c.innerHTML = getTime(c.innerHTML);
-            });
-        }
-
-        commentSectionDesktop.innerHTML = html;
+        //     created_at.forEach(c => {
+        //         c.innerHTML = getTime(c.innerHTML);
+        //     });
+        // }
 
         function cleanContent() {
             const content = document.body.querySelectorAll(".content");
 
-            content.foreach(c => {
+            content.forEach(c => {
                 c.innerHTML = parseContent(c.innerHTML);
             });
         }
@@ -364,7 +365,7 @@
         async function addCommentDesktop() {
             const commentText = document.getElementById("comment-input-desktop").querySelector("textarea").value;
 
-            const response = await fetch(`{% url 'articles:add_comment' ${article.pk} %}`, {
+            const response = await fetch(`{% url 'articles:add_comment' article.id %}`, {
                 method: 'POST',
                 body: new CommentForm(commentText),
             });
@@ -383,7 +384,7 @@
         async function addCommentMobile() {
             const commentText = document.getElementById("comment-input-mobile").querySelector("textarea").value;
 
-            const response = await fetch(`{% url 'articles:add_comment' ${article.pk} %}`, {
+            const response = await fetch(`add_comment/<str:article_id>`, {
                 method: 'POST',
                 body: new CommentForm(commentText),
             });
@@ -401,15 +402,21 @@
     </script>
     <script>
         cleanContent();
-        cleanTime();
-        document.getElementById("comment-input-desktop").addEventListener("submit", e => {
-            e.preventDefault();
-            addCommentDesktop();
-        });
-        document.getElementById("comment-input-mobile").addEventListener("submit", e => {
-            e.preventDefault();
-            addCommentMobile();
-        });
+        // cleanTime();
+        const commentDesktop = document.getElementById("comment-input-desktop");
+        const commentMobile = document.getElementById("comment-input-mobile");
+        if (commentDesktop) {
+            commentDesktop.addEventListener("submit", e => {
+                e.preventDefault();
+                addCommentDesktop();
+            });
+        }
+        if (commentMobile) {
+            commentMobile.addEventListener("submit", e => {
+                e.preventDefault();
+                addCommentMobile();
+            });
+        }
         refreshComments();
     </script>
     {% endblock content %}
