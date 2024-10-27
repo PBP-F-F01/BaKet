@@ -361,8 +361,8 @@
         <div class="relative bg-white p-4 rounded-lg shadow-md mb-4 mt-4 transition-transform transform hover:scale-105 duration-200">
           <div class="flex justify-between items-center mb-2">
             <div class="flex items-center">
-              <i class="far fa-user mr-2 text-gray-500"></i>
-              <span class="font-semibold text-gray-800 text-lg">${
+              <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture" class="w-10 h-10 rounded-full">
+              <span class="font-semibold text-gray-800 text-lg ml-2">${
                 item.fields.username
               }</span>
               <span class="absolute top-4 right-4 text-gray-500 text-sm">
