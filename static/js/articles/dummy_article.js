@@ -1,6 +1,6 @@
 document.head.querySelector("title").innerHTML = `Dummy Artikel`;
 
-function addListener() {
+function addLikeListener() {
     document.querySelector(".desktop").querySelectorAll(".like").forEach((element) => {
         const button = element.querySelector(".like-button");
         const likeCount = element.querySelector(".like-count");
