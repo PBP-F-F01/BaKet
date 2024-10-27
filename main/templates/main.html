@@ -2,6 +2,54 @@
 {% load static %}
 
 {% block content %}
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed top-[-100px] left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-4 rounded-lg shadow-lg z-[1000] opacity-0 transition-all duration-300 ease-in-out">
+  This is a test message.
+</div>
+
+<script>
+  // Function to show the toast notification
+  function showToast(message, color = "green") {
+      const toast = document.getElementById('toast');
+      toast.className = `fixed top-[-100px] left-1/2 transform -translate-x-1/2 bg-${color}-500 text-white p-4 rounded-lg shadow-lg z-[1000] opacity-0 transition-all duration-300 ease-in-out`;
+      toast.innerText = message;
+
+      // Start the animation to slide down and fade in, positioning it below the navbar
+      setTimeout(() => {
+          toast.classList.add('top-[100px]', 'opacity-100');  // Adjust top-[70px] as needed
+      }, 50);
+
+      // After 2 seconds, slide up and fade out
+      setTimeout(() => {
+          toast.classList.remove('top-[100px]', 'opacity-100');
+          toast.classList.add('top-[-100px]', 'opacity-0');
+      }, 2000);
+
+      // Hide after animation
+      setTimeout(() => {
+          toast.classList.add('hidden');
+      }, 2300);
+  }
+
+  // Example: Trigger the toast notification on page load for testing
+  document.addEventListener('DOMContentLoaded', () => {
+    {% for message in messages %}
+      {% if message.tags == "success" %}
+          showToast("{{ message }}", "green");
+      {% elif message.tags == "error" %}
+          showToast("{{ message }}", "red");
+      {% elif message.tags == "warning" %}
+          showToast("{{ message }}", "yellow");
+      {% else %}
+          showToast("{{ message }}", "blue");  // Default to blue for other types
+      {% endif %}
+    {% endfor %}
+  });
+</script>
+
+
+
 <!-- Hero Section -->
 
 <div class="relative bg-gray-50 font-[Raleway]">
