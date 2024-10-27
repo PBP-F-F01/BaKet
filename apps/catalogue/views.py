@@ -196,12 +196,14 @@ def remove_from_cart(request, cart_item_id):
 @login_required
 def checkout(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
+    total = cart.get_total_price()
+
     if request.method == "POST":
         # Create an order
-        order = Order.objects.create(user=request.user, cart=cart)
+        order = Order.objects.create(user=request.user, cart=cart, total=total)
+        cart.cartitem_set.all().delete()
         return redirect('catalogue:order_confirmation', order_id=order.id)
 
-    total = cart.get_total_price()
     return render(request, 'checkout.html', {
         'total': total,
         'cart': cart
@@ -210,4 +212,4 @@ def checkout(request):
 @login_required
 def order_confirmation(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    return render(request, 'order_confirmation.html', {'order': order})
+    return render(request, 'order_confirmation.html', {'order': order, 'total': order.total})

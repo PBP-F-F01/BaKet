@@ -34,14 +34,14 @@
                                     Report
                                 </button>
                                 {% if is_user_post %}
-                                    <button id="edit-post-button"
-                                        class="w-[150px] text-left px-4 py-2 text-sm font-semibold text-[#01aae8] hover:bg-zinc-100 focus:outline-none">
-                                        Edit
-                                    </button>
-                                    <button id="delete-post-button"
-                                        class="w-[150px] text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-zinc-100 focus:outline-none">
-                                        Delete
-                                    </button>
+                                <button id="edit-post-button"
+                                    class="w-[150px] text-left px-4 py-2 text-sm font-semibold text-[#01aae8] hover:bg-zinc-100 focus:outline-none">
+                                    Edit
+                                </button>
+                                <button id="delete-post-button"
+                                    class="w-[150px] text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-zinc-100 focus:outline-none">
+                                    Delete
+                                </button>
                                 {% endif %}
                             </div>
                         </div>
@@ -53,7 +53,11 @@
                 <div class="flex flex-row justify-between mt-3 space-x-2">
                     <div class="flex space-x-10">
                         <button id="like-icon" class="flex space-x-2 items-center">
+                            {% if is_liked %}
+                            <img src="{% static 'icon/icon_heart_fill.svg' %}" class="w-5 h-5">
+                            {% else %}
                             <img src="{% static 'icon/icon_heart.svg' %}" class="w-5 h-5">
+                            {% endif %}
                             <p class="text-gray-500">{{ post.like_count }}</p>
                         </button>
                         <button class="flex space-x-2 items-center">
@@ -261,6 +265,9 @@
             allReplies.forEach((reply) => {
                 const content = DOMPurify.sanitize(reply.content).replace(/\r?\n/g, '<br>').trim();
                 const dates = getTime(reply.created_at);
+                const likeSVG = reply.is_liked ? "{% static 'icon/icon_heart_fill.svg' %}" : "{% static 'icon/icon_heart.svg' %}";
+
+                liked_map[reply.id] = reply.is_liked;
 
                 replyCards += `
                     <div class="w-full py-5 px-6 md:py-6 md:px-8">
@@ -277,7 +284,7 @@
                                 <p class="text-left content-text mt-2 mb-3">${content}</p>
                                 <div class="flex justify-start">
                                     <button class="like-icon flex space-x-2 items-center z-50" data-reply-id="${reply.id}" data-like-count="${reply.like_count}" onclick="event.preventDefault(); event.stopPropagation(); clickLikeButton('${reply.id}')">
-                                        <img src="{% static 'icon/icon_heart.svg' %}" class="w-5 h-5">
+                                        <img src="${likeSVG}" class="w-5 h-5">  
                                         <p class="text-gray-500">${reply.like_count}</p>
                                     </button>
                                 </div>
@@ -292,19 +299,9 @@
 
         document.getElementById("replies").className = classNameStr;
         document.getElementById("replies").innerHTML = replyCards;
-
-        likeIcons.forEach((icon) => {
-            const replyId = icon.dataset.replyId;
-            liked[replyId] = false; // Default/Initial value, nanti klo udh ada user bisa pake get dari API
-
-            const heartIcon = icon.getElementsByTagName('img')[0];
-            heartIcon.src = liked[replyId]
-                ? "{% static 'icon/icon_heart_fill.svg' %}"
-                : "{% static 'icon/icon_heart.svg' %}";
-        });
     }
 
-    async function report(id, type){
+    async function report(id, type) {
         const formData = new FormData();
         formData.append("id", id);
         formData.append("type", type);
@@ -326,35 +323,40 @@
     refreshReplies();
 
     async function clickLikeButton(replyId) {
-        liked_map[replyId] = !liked_map[replyId];
-
-        const icon = document.querySelector(`.like-icon[data-reply-id="${replyId}"]`);
-
-        const heartIcon = icon.getElementsByTagName('img')[0];
-        const likeCount = icon.getElementsByTagName('p')[0];
-
-        heartIcon.src = liked_map[replyId]
-            ? "{% static 'icon/icon_heart_fill.svg' %}"
-            : "{% static 'icon/icon_heart.svg' %}";
-
-        const currentCount = parseInt(likeCount.textContent);
-        likeCount.textContent = liked_map[replyId] ? currentCount + 1 : currentCount - 1;
+        if ("{{ anonymous }}" === "True") {
+            window.location.href = "/login/";
+        }
 
         try {
-            const response = await fetch(`/api/posts/${postId}/like`, {
-                method: 'POST',
-            });
+            const url = liked_map[replyId] ? `/feeds/reply-unlike/${replyId}` : `/feeds/reply-like/${replyId}`;
 
-            if (!response.ok) {
-                liked[postId] = !liked[postId];
-                heartIcon.src = liked[postId]
-                    ? "{% static 'icon/icon_heart_fill.svg' %}"
-                    : "{% static 'icon/icon_heart.svg' %}";
-                likeCount.textContent = currentCount;
-                throw new Error('Failed to update like status');
-            }
+            const response = await fetch(url, {
+                method: 'POST',
+            }).then(response => {
+                if (response.status !== 201) {
+                    console.error('Failed to update like status:', response);
+                } else {
+                    console.log('Like status updated successfully!');
+                }
+            });
         } catch (error) {
             console.error('Error updating like status:', error);
+        }
+
+        if ("{{ anonymous }}" !== "True") {
+            liked_map[replyId] = !liked_map[replyId];
+
+            const icon = document.querySelector(`.like-icon[data-reply-id="${replyId}"]`);
+
+            const heartIcon = icon.getElementsByTagName('img')[0];
+            const likeCount = icon.getElementsByTagName('p')[0];
+
+            heartIcon.src = liked_map[replyId]
+                ? "{% static 'icon/icon_heart_fill.svg' %}"
+                : "{% static 'icon/icon_heart.svg' %}";
+
+            const currentCount = parseInt(likeCount.textContent);
+            likeCount.textContent = liked_map[replyId] ? currentCount + 1 : currentCount - 1;
         }
     }
 
@@ -373,14 +375,33 @@
 
     loadPost();
 
-    let liked = false;
-    document.getElementById("like-icon").addEventListener("click", () => {
-        liked = !liked;
-        document.getElementById("like-icon").getElementsByTagName('img')[0].src = liked ? "{% static 'icon/icon_heart_fill.svg' %}" : "{% static 'icon/icon_heart.svg' %}";
-        document.getElementById("like-icon").getElementsByTagName('p')[0].textContent = liked ? parseInt(document.getElementById("like-icon").getElementsByTagName('p')[0].textContent) + 1 : parseInt(document.getElementById("like-icon").getElementsByTagName('p')[0].textContent) - 1;
+    let liked = "{{ is_liked }}" === "True";
 
-        // TODO: Send a request to like/unlike the post
-        const postId = "{{ post.id }}";
+    document.getElementById("like-icon").addEventListener("click", async () => {
+        if ("{{ anonymous }}" === "True") {
+            window.location.href = "/login/";
+        }
+
+        try {
+            const url = liked ? `/feeds/post-unlike/{{ post.id }}` : `/feeds/post-like/{{ post.id }}`;
+            const response = await fetch(url, {
+                method: 'POST',
+            }).then(response => {
+                if (response.status !== 201) {
+                    console.error('Failed to update like status:', response);
+                } else {
+                    console.log('Like status updated successfully!');
+                }
+            });
+        } catch (error) {
+            console.error('Error updating like status:', error);
+        }
+
+        if ("{{ anonymous }}" !== "True") {
+            liked = !liked;
+            document.getElementById("like-icon").getElementsByTagName('img')[0].src = liked ? "{% static 'icon/icon_heart_fill.svg' %}" : "{% static 'icon/icon_heart.svg' %}";
+            document.getElementById("like-icon").getElementsByTagName('p')[0].textContent = liked ? parseInt(document.getElementById("like-icon").getElementsByTagName('p')[0].textContent) + 1 : parseInt(document.getElementById("like-icon").getElementsByTagName('p')[0].textContent) - 1;
+        }
     });
 
     document.getElementById("copy-link").addEventListener("click", () => {

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.core import serializers
 from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
@@ -74,9 +74,9 @@ def show_main(request):
         elif not search:
             articles = ranked_articles
     if not search and not sort:
-        if (len(ranked_articles) != articles.count() or 
-            articles.aggregate(max_like=models.Max('like_count'))['max_like'] != max_like_score or
-            articles.aggregate(max_comment=models.Max('comment_count'))['max_comment'] != max_comment_score):
+        if len(ranked_articles) != articles.count():
+            max_like_score = all_articles.aggregate(max_like=models.Max('like_count'))['max_like']
+            max_comment_score = all_articles.aggregate(max_comment=models.Max('comment_count'))['max_comment']
             ranked_articles = sorted(articles, key=calculate_article_rank, reverse=True)
 
         articles = ranked_articles
@@ -99,29 +99,42 @@ def show_article(request, id):
 
     # comment = Comment.objects.filter(article=article)
     # like_comment = Like.objects.filter(comment=comment)
+    user_data = {
+        'id': request.user.id,
+        'is_anonymous': request.user.is_anonymous
+    }
     context = {
         "article": article,
         "other": other,
         # "comment": comment,
         # "like_comment": like_comment,
-        "anonymous": request.user.is_anonymous
+        "anonymous": request.user.is_anonymous,
+        "user_data": json.dumps(user_data)
     }
     return render(request, 'article.html', context=context)
 
 @csrf_exempt
 @require_POST
 def add_comment(request, article_id):
-    content = strip_tags(request.POST.get('content'))
-    article = Article.objects.get(pk=article_id)
+    if request.user.is_authenticated:
+        data = json.loads(request.body)
+        content = strip_tags(data.get("content"))
+        article = Article.objects.get(pk=article_id)
 
-    new_comment = Comment(
-        content=content,
-        article=article,
-        user=request.user
-    )
+        new_comment = Comment(
+            content=content,
+            article=article,
+            user=request.user
+        )
 
-    new_comment.save()
-    return HttpResponse(b"CREATED", status=201)
+        new_comment.save()
+        return JsonResponse({
+            'id': new_comment.id,
+            'text': new_comment.content,
+            'author': new_comment.user.username,
+            'created_at': new_comment.created_at.isoformat()
+        }, status=201)
+    return JsonResponse({}, status=401)
 
 def update_comment(request, comment_id):
     comment = Comment.objects.get(pk=comment_id)
@@ -135,6 +148,38 @@ def delete_comment(request, comment_id):
     comment.delete()
     return HttpResponse(b"DELETED", status=201)
 
+def like_article(request, article_id):
+    if request.user.is_authenticated:
+        article = Article.objects.get(pk=article_id)
+        if not is_like_article(request, article):
+            Like.objects.create(user=request.user, article=article)
+        return HttpResponse(b"LIKED", status=201)
+    return HttpResponse(b"not authenticated", status=401)
+
+def unlike_article(request, article_id):
+    if request.user.is_authenticated:
+        article = Article.objects.get(pk=article_id)
+        if is_like_article(request, article):
+            Like.objects.filter(user=request.user, article=article).delete()
+        return HttpResponse(b"UNLIKED", status=201)
+    return HttpResponse(b"not authenticated", status=401)
+
+def like_comment(request, comment_id):
+    if request.user.is_authenticated:
+        comment = Comment.objects.get(pk=comment_id)
+        if not is_like_comment(request, comment):
+            Like.objects.create(user=request.user, comment=comment)
+        return HttpResponse(b"LIKED", status=201)
+    return HttpResponse(b"not authenticated", status=401)
+
+def unlike_comment(request, comment_id):
+    if request.user.is_authenticated:
+        comment = Comment.objects.get(pk=comment_id)
+        if is_like_comment(request, comment):
+            Like.objects.filter(user=request.user, comment=comment).delete()
+        return HttpResponse(b"UNLIKED", status=201)
+    return HttpResponse(b"not authenticated", status=401)
+
 def current_user(request):
     user_data = {
         'id': request.user.id,
@@ -142,11 +187,17 @@ def current_user(request):
     }
     return HttpResponse(json.dumps(user_data), content_type="application/json")
 
-def is_like_article(request, article):
-    return Like.objects.filter(user=request.user, article=article).exist()
+def is_like_article(request, article_id):
+    return Like.objects.filter(user=request.user, article=Article.objects.get(pk=article_id)).exist()
 
-def is_like_comment(request, comment):
-    return Like.objects.filter(user=request.user, comment=comment).exist()
+def is_like_article_view(request, article_id):
+    return JsonResponse({'is_like': is_like_article(request, article_id)})
+
+def is_like_comment(request, comment_id):
+    return Like.objects.filter(user=request.user, comment=Comment.objects.get(pk=comment_id)).exist()
+
+def is_like_comment_view(request, comment_id):
+    return JsonResponse({'is_like': is_like_comment(request, comment_id)})
 
 def json_article(request):
     data = Article.objects.all()
