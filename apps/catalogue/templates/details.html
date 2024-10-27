@@ -54,7 +54,7 @@
 
             <!-- Category -->
             <div class="flex items-center gap-2">
-              <span class="text-gray-700 font-bold">Category:</span>
+              <span class="text-gray-700 font-bold">Kategori:</span>
               <span class="px-3 py-1 bg-gray-500 text-white text-sm rounded-lg">
                 {{ product.category }}
               </span>
@@ -62,7 +62,7 @@
 
             <!-- Description -->
             <div class="prose max-w-none">
-              <h3 class="text-gray-700 font-bold">Description:</h3>
+              <h3 class="text-gray-700 font-bold">Deskripsi:</h3>
               <p class="text-gray-600">{{ product.specs|linebreaks }}</p>
             </div>
 
@@ -77,7 +77,7 @@
                   alt="Cart"
                   class="w-5 h-5"
                 />
-                <span>Add to Cart</span>
+                <span>Masukkan Keranjang</span>
               </button>
 
               <button
@@ -85,7 +85,7 @@
                 id="wishlist-button"
                 class="px-6 py-3 rounded-lg text-white font-bold transition-colors {% if is_in_wishlist %}bg-red-400 hover:bg-red-500{% else %}bg-[#01aae8] hover:bg-[#0081b1]{% endif %}"
               >
-                {% if is_in_wishlist %}Remove from Wishlist{% else %}Add to
+                {% if is_in_wishlist %}Hapus dari Wishlist{% else %}Tambah ke
                 Wishlist{% endif %}
               </button>
             </div>
@@ -99,7 +99,7 @@
       <div class="grid md:grid-cols-2 gap-8">
         <!-- Review Form -->
         <div class="bg-white rounded-xl shadow-lg p-6">
-          <h2 class="text-2xl font-bold mb-6">Write a Review</h2>
+          <h2 class="text-2xl font-bold mb-6">Tulis Ulasan</h2>
 
           <form id="reviewForm" class="space-y-6">
             {% csrf_token %}
@@ -129,7 +129,7 @@
             <textarea
               name="comment"
               rows="4"
-              placeholder="Your Review"
+              placeholder="Apa pendapat Anda tentang produk ini?"
               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             ></textarea>
 
@@ -140,18 +140,18 @@
                 type="submit"
                 class="px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold"
               >
-                Submit Review
+                Kirim
               </button>
             </div>
             {% else %}
             <p class="text-center text-gray-500">
-              Please
+              Anda perlu
               <a
                 href="{% url 'main:login' %}"
                 class="text-[#01aae8] hover:underline"
                 >login</a
               >
-              to submit a review.
+              untuk mengirim ulasan.
             </p>
             {% endif %}
           </form>
@@ -169,7 +169,7 @@
               alt="Filter"
               class="w-5 h-5"
             />
-            <span>Filter Reviews</span>
+            <span>Filter Ulasan</span>
           </button>
 
           <!-- Filter Options -->
@@ -177,7 +177,7 @@
             <form id="filterForm" class="grid grid-cols-3 gap-4">
               <label class="flex items-center gap-2 text-white cursor-pointer">
                 <input type="radio" name="star_rating" checked />
-                <span>Show All</span>
+                <span>Semua</span>
               </label>
               {% for i in '54321'|make_list %}
               <label class="flex items-center gap-2 text-white cursor-pointer">
@@ -189,7 +189,7 @@
                 type="submit"
                 class="col-span-3 px-4 py-2 bg-white text-[#01aae8] rounded-lg hover:bg-gray-100 transition-colors"
               >
-                Apply Filter
+                Cari
               </button>
             </form>
           </div>
@@ -271,7 +271,7 @@
     averageRatingHtml = ` 
         <div class="font-bold text-lg">
           ${starsString}
-          ${averageRating} | ${reviews.length} Reviews
+          ${averageRating} | ${reviews.length} Ulasan
         </div>
     `;
     document.getElementById("average_rating").innerHTML = averageRatingHtml;
@@ -424,7 +424,7 @@
     })
       .then((response) => {
         if (response.redirected) {
-          alert("Please log in to add items to your wishlist.");
+          alert("Harap login untuk memasukkan barang ke wishlist.");
 
           // Redirect to login page with a `next`
           const currentUrl = window.location.pathname; // current product detail URL
@@ -438,11 +438,11 @@
         if (data) {
           const wishlistButton = document.getElementById("wishlist-button");
           if (data.status === "added") {
-            wishlistButton.innerText = "Remove from Wishlist";
+            wishlistButton.innerText = "Hapus dari Wishlist";
             wishlistButton.classList.remove("bg-[#01aae8]");
             wishlistButton.classList.add("bg-red-400");
           } else if (data.status === "removed") {
-            wishlistButton.innerText = "Add to Wishlist";
+            wishlistButton.innerText = "Tambah ke Wishlist";
             wishlistButton.classList.remove("bg-red-400");
             wishlistButton.classList.add("bg-[#01aae8]");
           }
