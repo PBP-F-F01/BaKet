@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-bl)+ea9&i9lp1$%n$2!tj-1dvktpkx73q2&apek-=609dmdry=
 # SECURITY WARNING: don't run with debug turned on in production!
 PRODUCTION = os.getenv("PRODUCTION", 'False')
 DEBUG = PRODUCTION == 'False'
-DEBUG = True
+# DEBUG = True
 
 # TODO: Add URL Deployment
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".vercel.app"]
