@@ -90,14 +90,14 @@ WSGI_APPLICATION = 'BaKet.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': f'django.db.backends.{"sqlite3" if (PRODUCTION == "False") else "postgresql"}',
-        'NAME': BASE_DIR / 'db.sqlite3' if (PRODUCTION == 'False') else 'postgres',
+        'ENGINE': f'django.db.backends.{"sqlite3" if DEBUG else "postgresql"}',
+        'NAME': BASE_DIR / 'db.sqlite3' if DEBUG else 'postgres',
         **({
             'USER': os.getenv('PSQL_USER'),
             'PASSWORD': os.getenv('PSQL_PW'),
             'HOST': os.getenv('PSQL_HOST'),
             'PORT': os.getenv('PSQL_PORT'),
-        } if not (PRODUCTION == 'False') else {}),
+        } if not DEBUG else {}),
     }
 }
 
