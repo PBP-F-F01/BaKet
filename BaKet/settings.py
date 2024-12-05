@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'apps.catalogue',
     'apps.wishlist',
     'apps.user',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'BaKet.urls'
@@ -156,3 +158,5 @@ MEDIA_URL = '/assets/'
 MEDIA_ROOT = BASE_DIR / 'assets'
 
 LOGIN_URL = '/login/'
+
+CORS_ALLOW_ALL_ORIGINS = True
