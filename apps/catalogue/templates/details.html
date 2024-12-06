@@ -3,10 +3,7 @@
 {% endblock meta %} {% block content %}
 
 <head>
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
   <link rel="stylesheet" href="{% static 'css/catalogue/details.css' %}" />
 </head>
@@ -15,16 +12,10 @@
   <div class="min-h-screen bg-gray-50 py-8">
     <!-- Back Button -->
     <div class="mx-[300px] mb-8">
-      <a
-        href="{% url 'catalogue:catalogue' %}"
-        class="inline-flex items-center px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold gap-2"
-      >
+      <a href="{% url 'catalogue:catalogue' %}"
+        class="inline-flex items-center px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold gap-2">
         <span>Kembali</span>
-        <img
-          src="{% static 'icon/icon_rchevron.svg' %}"
-          alt="Back"
-          class="w-5 h-5"
-        />
+        <img src="{% static 'icon/icon_rchevron.svg' %}" alt="Back" class="w-5 h-5" />
       </a>
     </div>
 
@@ -35,11 +26,8 @@
         <div class="flex flex-col md:flex-row gap-8 p-8">
           <!-- Product Image -->
           <div class="flex-shrink-0">
-            <img
-              src="{{ product.image.url }}"
-              alt="{{ product.name }}"
-              class="w-[360px] h-[360px] rounded-lg object-cover shadow-md"
-            />
+            <img src="{{ product.image.url }}" alt="{{ product.name }}"
+              class="w-[360px] h-[360px] rounded-lg object-cover shadow-md" />
           </div>
 
           <!-- Product Info -->
@@ -68,23 +56,14 @@
 
             <!-- Action Buttons -->
             <div class="flex gap-4 pt-4">
-              <button
-                onclick="addToCart('{{ product.id }}')"
-                class="inline-flex items-center px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold gap-2"
-              >
-                <img
-                  src="{% static 'images/icon_cart.png' %}"
-                  alt="Cart"
-                  class="w-5 h-5"
-                />
+              <button onclick="addToCart('{{ product.id }}')"
+                class="inline-flex items-center px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold gap-2">
+                <img src="{% static 'images/icon_cart.png' %}" alt="Cart" class="w-5 h-5" />
                 <span>Masukkan Keranjang</span>
               </button>
 
-              <button
-                onclick="toggleWishlist('{{ product.id }}')"
-                id="wishlist-button"
-                class="px-6 py-3 rounded-lg text-white font-bold transition-colors {% if is_in_wishlist %}bg-red-400 hover:bg-red-500{% else %}bg-[#01aae8] hover:bg-[#0081b1]{% endif %}"
-              >
+              <button onclick="toggleWishlist('{{ product.id }}')" id="wishlist-button"
+                class="px-6 py-3 rounded-lg text-white font-bold transition-colors {% if is_in_wishlist %}bg-red-400 hover:bg-red-500{% else %}bg-[#01aae8] hover:bg-[#0081b1]{% endif %}">
                 {% if is_in_wishlist %}Hapus dari Wishlist{% else %}Tambah ke
                 Wishlist{% endif %}
               </button>
@@ -109,48 +88,29 @@
             <div class="flex justify-center">
               <div class="rating-wrapper">
                 {% for i in '54321'|make_list %}
-                <input
-                  type="radio"
-                  id="star-{{ i }}"
-                  name="rate"
-                  value="{{ i }}"
-                  class="hidden"
-                />
-                <label
-                  for="star-{{ i }}"
-                  class="cursor-pointer text-3xl text-gray-400 hover:text-yellow-500 transition-colors"
-                  >★</label
-                >
+                <input type="radio" id="star-{{ i }}" name="rate" value="{{ i }}" class="hidden" />
+                <label for="star-{{ i }}"
+                  class="cursor-pointer text-3xl text-gray-400 hover:text-yellow-500 transition-colors">★</label>
                 {% endfor %}
               </div>
             </div>
 
             <!-- Review Text -->
-            <textarea
-              name="comment"
-              rows="4"
-              placeholder="Apa pendapat Anda tentang produk ini?"
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            ></textarea>
+            <textarea name="comment" rows="4" placeholder="Apa pendapat Anda tentang produk ini?"
+              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
 
             <!-- Submit Button -->
             {% if user.is_authenticated %}
             <div class="text-center">
-              <button
-                type="submit"
-                class="px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold"
-              >
+              <button type="submit"
+                class="px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold">
                 Kirim
               </button>
             </div>
             {% else %}
             <p class="text-center text-gray-500">
               Anda perlu
-              <a
-                href="{% url 'main:login' %}"
-                class="text-[#01aae8] hover:underline"
-                >login</a
-              >
+              <a href="{% url 'main:login' %}" class="text-[#01aae8] hover:underline">login</a>
               untuk mengirim ulasan.
             </p>
             {% endif %}
@@ -160,15 +120,9 @@
         <!-- Reviews Display -->
         <div class="space-y-4">
           <!-- Filter Button -->
-          <button
-            onclick="toggleFilter()"
-            class="w-full px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold flex items-center justify-center gap-2"
-          >
-            <img
-              src="{% static 'icon/icon_filter.svg' %}"
-              alt="Filter"
-              class="w-5 h-5"
-            />
+          <button onclick="toggleFilter()"
+            class="w-full px-6 py-3 bg-[#01aae8] hover:bg-[#0081b1] transition-colors rounded-lg text-white font-bold flex items-center justify-center gap-2">
+            <img src="{% static 'icon/icon_filter.svg' %}" alt="Filter" class="w-5 h-5" />
             <span>Filter Ulasan</span>
           </button>
 
@@ -185,10 +139,8 @@
                 <span>{{ i }} Star{% if i != '1' %}s{% endif %}</span>
               </label>
               {% endfor %}
-              <button
-                type="submit"
-                class="col-span-3 px-4 py-2 bg-white text-[#01aae8] rounded-lg hover:bg-gray-100 transition-colors"
-              >
+              <button type="submit"
+                class="col-span-3 px-4 py-2 bg-white text-[#01aae8] rounded-lg hover:bg-gray-100 transition-colors">
                 Cari
               </button>
             </form>
@@ -303,18 +255,27 @@
           <div class="flex justify-between items-center mb-2">
             <div class="flex items-center">
               <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture" class="w-10 h-10 rounded-full">
-              <span class="font-semibold text-gray-800 text-lg ml-2">${
-                item.fields.username
-              }</span>
+              <span class="font-semibold text-gray-800 text-lg ml-2">${item.fields.username
+          }</span>
               <span class="absolute top-4 right-4 text-gray-500 text-sm">
                 <span>${new Date(
-                  item.fields.created_at
-                ).toLocaleString()}</span>
+            item.fields.created_at
+          ).toLocaleString()}</span>
               </span>
             </div>
           </div>
-          <div class="flex mb-2">${starsHtml}</div>
-          <p class="text-gray-700 mt-2">${item.fields.comment}</p>
+          <div class="grid grid-cols-2 ml-4 mr-4 mt-4">
+            <div>
+              <div class="flex mb-2">${starsHtml}</div>
+              <p class="text-gray-700 mt-2">${item.fields.comment}</p>
+            </div>
+            <div class="flex items-end justify-end">
+              <svg class="w-6 h-6 text-gray-800 cursor-default hover:cursor-pointer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11c.889-.086 1.416-.543 2.156-1.057a22.323 22.323 0 0 0 3.958-5.084 1.6 1.6 0 0 1 .582-.628 1.549 1.549 0 0 1 1.466-.087c.205.095.388.233.537.406a1.64 1.64 0 0 1 .384 1.279l-1.388 4.114M7 11H4v6.5A1.5 1.5 0 0 0 5.5 19v0A1.5 1.5 0 0 0 7 17.5V11Zm6.5-1h4.915c.286 0 .372.014.626.15.254.135.472.332.637.572a1.874 1.874 0 0 1 .215 1.673l-2.098 6.4C17.538 19.52 17.368 20 16.12 20c-2.303 0-4.79-.943-6.67-1.475"/>
+              </svg>
+              <p class="text-gray-400 ml-4">Membantu?</p>
+            </div>
+          </div>
         </div>
         `;
       });

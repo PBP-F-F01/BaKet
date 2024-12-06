@@ -116,6 +116,28 @@ def add_review_ajax(request):
     else:
         messages.error(request, "You need to log in to submit a review.")
 
+def like_review(request, review_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required.'}, status=403)
+
+    review = get_object_or_404(Review, id=review_id)
+
+    # Check if the user has already liked this review
+    existing_like = LikeReview.objects.filter(user=request.user, review=review).first()
+
+    if existing_like:
+        # Unlike the review
+        existing_like.delete()
+        review.likeReview_count -= 1
+        review.save()
+        return HttpResponse(b"LIKED", status=201 )
+    else:
+        # Like the review
+        LikeReview.objects.create(user=request.user, review=review)
+        review.likeReview_count += 1
+        review.save()
+        return HttpResponse(b"UNLIKED", status=201)
+
 def show_json(request):
     prod_id = request.POST.get('prod_id')
     data = Review.objects.filter(product=prod_id).select_related('user') 
