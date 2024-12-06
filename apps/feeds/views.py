@@ -36,12 +36,19 @@ def detail_post(request, id):
 
     created_at = post.created_at.isoformat()
     updated_at = post.updated_at.isoformat()
+    
+    try:
+        is_user_post = request.user == post.user
+        is_liked = Like.objects.filter(user=request.user, post=post).exists()
+    except:
+        is_user_post = False
+        is_liked = False
 
     context = {
         'post': post,
         'anonymous': request.user.is_anonymous,
-        'is_user_post': request.user == post.user,
-        'is_liked': Like.objects.filter(user=request.user, post=post).exists(),
+        'is_user_post': is_user_post,
+        'is_liked': is_liked,
         'created_at': created_at,
         'updated_at': updated_at,
     }

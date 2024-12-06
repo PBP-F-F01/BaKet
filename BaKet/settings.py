@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-bl)+ea9&i9lp1$%n$2!tj-1dvktpkx73q2&apek-=609dmdry=
 # SECURITY WARNING: don't run with debug turned on in production!
 PRODUCTION = os.getenv("PRODUCTION", 'False')
 DEBUG = PRODUCTION == 'False'
-DEBUG = True
+# DEBUG = True
 
 # TODO: Add URL Deployment
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".vercel.app"]
@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'apps.catalogue',
     'apps.wishlist',
     'apps.user',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'BaKet.urls'
@@ -90,14 +92,14 @@ WSGI_APPLICATION = 'BaKet.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': f'django.db.backends.{"sqlite3" if (PRODUCTION == "False") else "postgresql"}',
-        'NAME': BASE_DIR / 'db.sqlite3' if (PRODUCTION == 'False') else 'postgres',
+        'ENGINE': f'django.db.backends.{"sqlite3" if DEBUG else "postgresql"}',
+        'NAME': BASE_DIR / 'db.sqlite3' if DEBUG else 'postgres',
         **({
             'USER': os.getenv('PSQL_USER'),
             'PASSWORD': os.getenv('PSQL_PW'),
             'HOST': os.getenv('PSQL_HOST'),
             'PORT': os.getenv('PSQL_PORT'),
-        } if not (PRODUCTION == 'False') else {}),
+        } if not DEBUG else {}),
     }
 }
 
@@ -156,3 +158,5 @@ MEDIA_URL = '/assets/'
 MEDIA_ROOT = BASE_DIR / 'assets'
 
 LOGIN_URL = '/login/'
+
+CORS_ALLOW_ALL_ORIGINS = True
