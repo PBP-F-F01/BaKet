@@ -11,6 +11,7 @@ from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 from django.core import serializers
 from django.db.models import Avg
+from django.core.paginator import Paginator
 
 from apps.wishlist.models import Wishlist
 
@@ -60,6 +61,25 @@ def create_product(request):
         form = ProductForm()
 
     return render(request, 'add-product.html', {'form': form})
+
+@csrf_exempt
+@login_required
+# @user_passes_test(is_staff_or_superuser)
+def add_product_api(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save()
+            return JsonResponse({
+                "id": str(product.id),
+                "name": product.name,
+                "price": product.price,
+                "image": request.build_absolute_uri(product.image.url),
+            }, status=201)
+        else:
+            return JsonResponse({"error": form.errors}, status=400)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -130,8 +150,6 @@ def show_json(request):
     count = data.count()
     average_rating = total_rating / count if count > 0 else 0.0
 
-    
-
     for review in data:
         reviews.append({
             "id": review.id,
@@ -149,6 +167,40 @@ def show_json(request):
     }
 
     return JsonResponse(response_data, safe=False)
+
+def product_list(request):
+    products = Product.objects.all()
+    query = request.GET.get('q')
+    categories = request.GET.get('category')  # Comma-separated categories
+    sort_option = request.GET.get('sort')
+
+    # Handle search
+    if query:
+        products = products.filter(name__icontains=query)
+
+    # Handle filtering by category
+    if categories:
+        category_list = categories.split(',')
+        products = products.filter(category__in=category_list)
+
+    # Handle sorting
+    if sort_option == 'price_asc':
+        products = products.order_by('price')
+    elif sort_option == 'price_desc':
+        products = products.order_by('-price')
+
+    # Serialize products
+    product_list = [
+        {
+            "id": str(product.id),
+            "name": product.name,
+            "price": product.price,
+            "image": request.build_absolute_uri(product.image.url),
+        }
+        for product in products
+    ]
+
+    return JsonResponse({"products": product_list}, safe=False)
 
 @login_required
 def add_to_cart(request, product_id):
@@ -213,3 +265,4 @@ def checkout(request):
 def order_confirmation(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     return render(request, 'order_confirmation.html', {'order': order, 'total': order.total})
+
