@@ -270,18 +270,41 @@
               <p class="text-gray-700 mt-2">${item.fields.comment}</p>
             </div>
             <div class="flex items-end justify-end">
-              <svg class="w-6 h-6 text-gray-800 cursor-default hover:cursor-pointer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11c.889-.086 1.416-.543 2.156-1.057a22.323 22.323 0 0 0 3.958-5.084 1.6 1.6 0 0 1 .582-.628 1.549 1.549 0 0 1 1.466-.087c.205.095.388.233.537.406a1.64 1.64 0 0 1 .384 1.279l-1.388 4.114M7 11H4v6.5A1.5 1.5 0 0 0 5.5 19v0A1.5 1.5 0 0 0 7 17.5V11Zm6.5-1h4.915c.286 0 .372.014.626.15.254.135.472.332.637.572a1.874 1.874 0 0 1 .215 1.673l-2.098 6.4C17.538 19.52 17.368 20 16.12 20c-2.303 0-4.79-.943-6.67-1.475"/>
+              <svg 
+                class="w-6 h-6 text-gray-800 cursor-pointer hover:text-blue-500 like-button"
+                aria-hidden="true" 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="24" 
+                height="24" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                data-id="${item.id}" 
+                onclick="likeReview(event)"
+              >
+                <path 
+                  stroke="currentColor" 
+                  stroke-linecap="round" 
+                  stroke-linejoin="round" 
+                  stroke-width="2" 
+                  d="M7 11c.889-.086 1.416-.543 2.156-1.057a22.323 22.323 0 0 0 3.958-5.084 1.6 1.6 0 0 1 .582-.628 1.549 1.549 0 0 1 1.466-.087c.205.095.388.233.537.406a1.64 1.64 0 0 1 .384 1.279l-1.388 4.114M7 11H4v6.5A1.5 1.5 0 0 0 5.5 19v0A1.5 1.5 0 0 0 7 17.5V11Zm6.5-1h4.915c.286 0 .372.014.626.15.254.135.472.332.637.572a1.874 1.874 0 0 1 .215 1.673l-2.098 6.4C17.538 19.52 17.368 20 16.12 20c-2.303 0-4.79-.943-6.67-1.475"
+                />
               </svg>
-              <p class="text-gray-400 ml-4">Membantu?</p>
+              <p class="text-gray-400 ml-4" iid="like-count-${item.id}">
+                ${item.fields.likeReview_count}
+              </p>
             </div>
           </div>
         </div>
         `;
+        console.log(item);
       });
     }
     document.getElementById("review_card").className = classNameString;
     document.getElementById("review_card").innerHTML = htmlString;
+
+    // reviews.forEach((item) => {
+    //   console.log(item); // Check the structure here
+    // });
   }
 
   refreshReviewForm();
@@ -306,6 +329,29 @@
     e.preventDefault();
     addReview();
   });
+
+  // Function to handle the like/unlike action
+  function likeReview(event) {
+    const button = event.currentTarget; // Get the clicked button
+    const reviewId = button.getAttribute('data-id'); // Get the review ID
+    const likeCountSpan = document.getElementById(`like-count-${reviewId}`); // Get the like count span
+
+    fetch("{% url 'catalogue:like_review' %}", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ review_id: reviewId })
+    })
+      .then(response => response.json())
+      .then(data => {
+        likeCountSpan.textContent = data.like_count; // Update the like count
+        button.classList.toggle('liked'); // Toggle a class to indicate liked state
+        button.textContent = data.liked ? 'Unlike' : 'Like'; // Update button text
+      })
+      .catch(error => console.error('Error:', error));
+  }
+
 </script>
 
 <script>

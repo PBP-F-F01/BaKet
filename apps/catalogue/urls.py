@@ -16,4 +16,6 @@ urlpatterns = [
     path('cart/remove/<int:cart_item_id>/', remove_from_cart, name='remove_from_cart'),
     path('checkout/', checkout, name='checkout'),
     path('order/<int:order_id>/confirmation/', order_confirmation, name='order_confirmation'),
+    path('like-review/', like_review, name='like_review'),
+    path('review-json/<uuid:product_id>/', show_review_json, name='show_review_json'),
 ]
