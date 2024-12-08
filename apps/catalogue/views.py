@@ -63,7 +63,7 @@ def create_product(request):
     return render(request, 'add-product.html', {'form': form})
 
 @csrf_exempt
-@login_required
+# @login_required
 # @user_passes_test(is_staff_or_superuser)
 def add_product_api(request):
     if request.method == 'POST':
@@ -75,11 +75,14 @@ def add_product_api(request):
                 "name": product.name,
                 "price": product.price,
                 "image": request.build_absolute_uri(product.image.url),
+                "specs": product.specs,
+                "category": product.category,
             }, status=201)
         else:
             return JsonResponse({"error": form.errors}, status=400)
     else:
         return JsonResponse({"error": "Invalid request method"}, status=405)
+
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -245,6 +248,8 @@ def product_list(request):
             "name": product.name,
             "price": product.price,
             "image": request.build_absolute_uri(product.image.url),
+            "specs": product.specs,
+            "category": product.category,
         }
         for product in products
     ]
