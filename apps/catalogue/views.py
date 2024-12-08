@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
 from datetime import datetime
 from django.http import HttpResponse, JsonResponse
-from apps.catalogue.models import Product, Review, Cart, CartItem,  Order
+from apps.catalogue.models import Product, Review, Cart, CartItem,  Order, LikeReview
 from apps.catalogue.forms import ProductForm, ReviewForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.csrf import csrf_exempt
@@ -139,6 +139,54 @@ def add_review_ajax(request):
     else:
         messages.error(request, "You need to log in to submit a review.")
 
+def show_review_json(request, product_id):
+    reviews = Review.objects.filter(product__id=product_id)
+
+    data = [
+        {
+            "id": review.id,
+            "user": review.user.id,
+            "username": review.user.username,
+            "product": str(review.product),
+            "rating": review.rating,
+            "comment": review.comment,
+            "created_at": review.created_at.isoformat(),
+            "likeReview_count": review.likeReview_count,
+        }
+        for review in reviews
+    ]
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+@require_POST
+@csrf_exempt
+def like_review(request):
+    review_id = request.POST.get('review_id')
+    review = Review.objects.get(id=review_id)
+    user = request.user
+
+    # Check if the user has already liked the review
+    like_review, created = LikeReview.objects.get_or_create(user=user, review=review)
+
+    if created:
+        # User liked the review
+        review.likeReview_count += 1
+        review.save()
+        liked = True
+    else:
+        # User unliked the review
+        like_review.delete()
+        review.likeReview_count -= 1
+        review.save()
+        liked = False
+
+    return JsonResponse({
+        'liked': liked,
+        'like_count': review.likeReview_count,
+    })
+
+
 def show_json(request):
     prod_id = request.POST.get('prod_id')
     data = Review.objects.filter(product=prod_id).select_related('user') 
@@ -161,6 +209,7 @@ def show_json(request):
                 "rating": review.rating,
                 "comment": review.comment,
                 "created_at": review.created_at,
+                "likeReview_count": review.likeReview_count,
             }
         })
 
