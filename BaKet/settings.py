@@ -32,7 +32,7 @@ DEBUG = PRODUCTION == 'False'
 # DEBUG = True
 
 # TODO: Add URL Deployment
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".vercel.app"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".vercel.app", "10.0.2.2"]
 
 
 # Application definition
@@ -160,3 +160,8 @@ MEDIA_ROOT = BASE_DIR / 'assets'
 LOGIN_URL = '/login/'
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'

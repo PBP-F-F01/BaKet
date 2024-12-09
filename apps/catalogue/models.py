@@ -34,9 +34,15 @@ class Review(models.Model):
     )
     comment = models.TextField(max_length=250)
     created_at = models.DateTimeField(auto_now=True)
+    likeReview_count = models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.id)
+    
+class LikeReview(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
     
 class Cart(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
