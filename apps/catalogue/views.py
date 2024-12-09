@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
 from datetime import datetime
 from django.http import HttpResponse, JsonResponse
-from apps.catalogue.models import Product, Review, Cart, CartItem,  Order
+from apps.catalogue.models import Product, Review, Cart, CartItem,  Order, LikeReview
 from apps.catalogue.forms import ProductForm, ReviewForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.csrf import csrf_exempt
@@ -11,6 +11,7 @@ from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 from django.core import serializers
 from django.db.models import Avg
+from django.core.paginator import Paginator
 
 from apps.wishlist.models import Wishlist
 
@@ -60,6 +61,28 @@ def create_product(request):
         form = ProductForm()
 
     return render(request, 'add-product.html', {'form': form})
+
+@csrf_exempt
+# @login_required
+# @user_passes_test(is_staff_or_superuser)
+def add_product_api(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save()
+            return JsonResponse({
+                "id": str(product.id),
+                "name": product.name,
+                "price": product.price,
+                "image": request.build_absolute_uri(product.image.url),
+                "specs": product.specs,
+                "category": product.category,
+            }, status=201)
+        else:
+            return JsonResponse({"error": form.errors}, status=400)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -116,6 +139,54 @@ def add_review_ajax(request):
     else:
         messages.error(request, "You need to log in to submit a review.")
 
+def show_review_json(request, product_id):
+    reviews = Review.objects.filter(product__id=product_id)
+
+    data = [
+        {
+            "id": review.id,
+            "user": review.user.id,
+            "username": review.user.username,
+            "product": str(review.product),
+            "rating": review.rating,
+            "comment": review.comment,
+            "created_at": review.created_at.isoformat(),
+            "likeReview_count": review.likeReview_count,
+        }
+        for review in reviews
+    ]
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+@require_POST
+@csrf_exempt
+def like_review(request):
+    review_id = request.POST.get('review_id')
+    review = Review.objects.get(id=review_id)
+    user = request.user
+
+    # Check if the user has already liked the review
+    like_review, created = LikeReview.objects.get_or_create(user=user, review=review)
+
+    if created:
+        # User liked the review
+        review.likeReview_count += 1
+        review.save()
+        liked = True
+    else:
+        # User unliked the review
+        like_review.delete()
+        review.likeReview_count -= 1
+        review.save()
+        liked = False
+
+    return JsonResponse({
+        'liked': liked,
+        'like_count': review.likeReview_count,
+    })
+
+
 def show_json(request):
     prod_id = request.POST.get('prod_id')
     data = Review.objects.filter(product=prod_id).select_related('user') 
@@ -130,8 +201,6 @@ def show_json(request):
     count = data.count()
     average_rating = total_rating / count if count > 0 else 0.0
 
-    
-
     for review in data:
         reviews.append({
             "id": review.id,
@@ -140,6 +209,7 @@ def show_json(request):
                 "rating": review.rating,
                 "comment": review.comment,
                 "created_at": review.created_at,
+                "likeReview_count": review.likeReview_count,
             }
         })
 
@@ -149,6 +219,42 @@ def show_json(request):
     }
 
     return JsonResponse(response_data, safe=False)
+
+def product_list(request):
+    products = Product.objects.all()
+    query = request.GET.get('q')
+    categories = request.GET.get('category')  # Comma-separated categories
+    sort_option = request.GET.get('sort')
+
+    # Handle search
+    if query:
+        products = products.filter(name__icontains=query)
+
+    # Handle filtering by category
+    if categories:
+        category_list = categories.split(',')
+        products = products.filter(category__in=category_list)
+
+    # Handle sorting
+    if sort_option == 'price_asc':
+        products = products.order_by('price')
+    elif sort_option == 'price_desc':
+        products = products.order_by('-price')
+
+    # Serialize products
+    product_list = [
+        {
+            "id": str(product.id),
+            "name": product.name,
+            "price": product.price,
+            "image": request.build_absolute_uri(product.image.url),
+            "specs": product.specs,
+            "category": product.category,
+        }
+        for product in products
+    ]
+
+    return JsonResponse({"products": product_list}, safe=False)
 
 @login_required
 def add_to_cart(request, product_id):
@@ -213,3 +319,4 @@ def checkout(request):
 def order_confirmation(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     return render(request, 'order_confirmation.html', {'order': order, 'total': order.total})
+

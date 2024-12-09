@@ -11,8 +11,8 @@ urlpatterns = [
     path('articles/', include('apps.articles.urls')),
     path('catalogue/', include('apps.catalogue.urls')),
     path('wishlist/', include('apps.wishlist.urls')),
-    path('user/', include('apps.user.urls'))
+    path('user/', include('apps.user.urls')),
+    path('auth/', include('apps.authentication.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
