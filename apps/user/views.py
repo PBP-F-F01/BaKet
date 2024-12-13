@@ -4,8 +4,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core import serializers
+
+from apps.wishlist.models import Wishlist
 from .models import UserProfile
 from django.contrib.auth.models import User
+import imghdr
 
 # Create your views here.
 def settings_view(request):
@@ -18,10 +21,25 @@ def settings_view(request):
 @csrf_exempt
 def upload_profile_picture(request):
     if request.method == 'POST' and request.FILES.get('profile_picture'):
-        user_profile = UserProfile.objects.get(user=request.user)
-        user_profile.profile_picture = request.FILES['profile_picture']
-        user_profile.save()
-        return JsonResponse({'profile_picture_url': user_profile.profile_picture.url}, status=200)
+        image = request.FILES['profile_picture']
+
+        # Validate file type
+        valid_mime_types = ['jpeg', 'png', 'gif']
+        file_type = imghdr.what(image)
+        if file_type not in valid_mime_types:
+            return JsonResponse({'error': 'Unsupported file type.'}, status=400)
+
+        # Validate file size (e.g., max 5MB)
+        if image.size > 5 * 1024 * 1024:
+            return JsonResponse({'error': 'File size exceeds limit (5MB).'}, status=400)
+
+        try:
+            user_profile = UserProfile.objects.get(user=request.user)
+            user_profile.profile_picture = image
+            user_profile.save()
+            return JsonResponse({'profile_picture_url': user_profile.profile_picture.url}, status=200)
+        except UserProfile.DoesNotExist:
+            return JsonResponse({'error': 'User profile not found.'}, status=404)
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @login_required
@@ -101,6 +119,7 @@ def show_json(request):
     user = User.objects.get(id=request.user.id)
     
     profile_picture = user_profile.profile_picture.url if user_profile.profile_picture else None
+    wishlist_count = Wishlist.objects.filter(user=request.user).count()
     user_json = {
         "username": user.username,
         "first_name": user.first_name,
@@ -112,6 +131,7 @@ def show_json(request):
         "is_staff": user.is_staff,
         "is_superuser": user.is_superuser,
         "profile_picture": profile_picture,
+        "wishlist_count": wishlist_count,
     }
     
     # return HttpResponse(serializers.serialize("json", user_json), content_type="application/json")
