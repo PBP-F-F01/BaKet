@@ -16,6 +16,7 @@ from django.core.paginator import Paginator
 from apps.wishlist.models import Wishlist
 
 from .models import *
+import json
 
 def is_staff_or_superuser(user):
     return user.is_authenticated and (user.is_staff or user.is_superuser)
@@ -67,21 +68,46 @@ def create_product(request):
 # @user_passes_test(is_staff_or_superuser)
 def add_product_api(request):
     if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            product = form.save()
-            return JsonResponse({
-                "id": str(product.id),
-                "name": product.name,
-                "price": product.price,
-                "image": request.build_absolute_uri(product.image.url),
-                "specs": product.specs,
-                "category": product.category,
-            }, status=201)
-        else:
-            return JsonResponse({"error": form.errors}, status=400)
+        data = json.loads(request.body)
+        user_id = request.user.id
+        name = data["name"]
+        price = data["price"]
+        image = data["image"]
+        specs = data["specs"]
+        category = data["category"]
+
+        if (
+            not name
+            or not price
+            or not image
+            or not specs
+            or not category
+        ):
+            return JsonResponse({"error": "All fields must be filled"}, status=400)
+        
+        product = Product(
+            user_id=user_id,
+            name=name,
+            price=price,
+            image=image,
+            specs=specs,
+            category=category,
+        )
+
+        product.save()
+
+        return JsonResponse({
+            "id": str(product.id),
+            "name": product.name,
+            "price": product.price,
+            "image": request.build_absolute_uri(product.image.url),
+            "specs": product.specs,
+            "category": product.category,
+        }, status=201)
+
     else:
         return JsonResponse({"error": "Invalid request method"}, status=405)
+
 
 
 def product_detail(request, product_id):
@@ -320,3 +346,8 @@ def order_confirmation(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     return render(request, 'order_confirmation.html', {'order': order, 'total': order.total})
 
+def view_cart_api(request):
+    cart = Cart.objects.get(user=request.user)
+    cart_items = cart.cartitem_set.all()
+    
+    return JsonResponse({'cart_items': cart_items}, safe=False)

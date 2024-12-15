@@ -18,4 +18,5 @@ urlpatterns = [
     path('order/<int:order_id>/confirmation/', order_confirmation, name='order_confirmation'),
     path('like-review/', like_review, name='like_review'),
     path('review-json/<uuid:product_id>/', show_review_json, name='show_review_json'),
+    path('cart-api/', view_cart_api, name='view_cart_api'),
 ]
