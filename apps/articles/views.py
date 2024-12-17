@@ -23,13 +23,10 @@ def dummy_article(request):
 def dummy_main(request):
     return render(request, 'dummy_main.html')
 
-all_articles = Article.objects.all()
-# Normalize the scores
-max_like_score = all_articles.aggregate(max_like=models.Max('like_count'))['max_like']
-max_comment_score = all_articles.aggregate(max_comment=models.Max('comment_count'))['max_comment']
 def calculate_article_rank(article):
-    global max_like_score
-    global max_comment_score
+    max_like_score = max_like_score()
+    max_comment_score = max_comment_score()
+    
     # Define weights for each factor
     like_weight = 20
     comment_weight = 15
@@ -52,11 +49,11 @@ def calculate_article_rank(article):
 
     return rank
 
-ranked_articles = sorted(all_articles, key=calculate_article_rank, reverse=True)
 def show_main(request):
-    global ranked_articles
-    global max_like_score
-    global max_comment_score
+    ranked_articles = ranked_articles()
+    max_like_score = max_like_score()
+    max_comment_score = max_comment_score()
+    
     articles = Article.objects.all()
     if articles.count() == 0:
         return render(request, 'article_main.html', {'page_obj': None})
@@ -88,7 +85,8 @@ def show_main(request):
     return render(request, 'article_main.html', {'page_obj': page_obj})
 
 def show_article(request, id):
-    global ranked_articles
+    ranked_articles = ranked_articles()
+    
     article = Article.objects.get(pk=id)
     other = []
     for a in ranked_articles:
@@ -230,3 +228,14 @@ def json_like(request):
 def json_by_id_like(request, id):
     data = Article.objects.get(pk=id)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+
+# Helper Functions (ijin ubah ya yasin)
+def max_like_score():
+    return Article.objects.all().aggregate(max_like=models.Max('like_count'))['max_like']
+    
+def max_comment_score():
+    return Article.objects.all().aggregate(max_comment=models.Max('comment_count'))['max_comment']
+    
+def ranked_articles():
+    return sorted(Article.objects.all(), key=calculate_article_rank, reverse=True)
