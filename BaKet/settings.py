@@ -32,7 +32,14 @@ DEBUG = PRODUCTION == 'False'
 # DEBUG = True
 
 # TODO: Add URL Deployment
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".vercel.app", "10.0.2.2"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".vercel.app",
+    "10.0.2.2",
+    "http://daniel-liman-baket.pbp.cs.ui.ac.id",
+    "https://daniel-liman-baket.pbp.cs.ui.ac.id",
+]
 
 
 # Application definition
