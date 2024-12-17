@@ -296,6 +296,31 @@
               <p class="text-gray-700 mt-2">${item.fields.comment}</p>
             </div>
             <div class="flex items-end justify-end">
+
+            ${item.fields.is_user_review ? `
+            <a href="/catalogue/delete/${item.id}">
+              <svg 
+                class="w-6 h-6 mr-2 cursor-pointer text-gray-800 delete-button" 
+                aria-hidden="true" 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="24" 
+                height="24" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                data-id="${item.id}" 
+                onclick="deleteReview(event)"
+              >
+                <path 
+                  stroke="currentColor" 
+                  stroke-linecap="round" 
+                  stroke-linejoin="round" 
+                  stroke-width="2" 
+                  d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"
+                />
+              </svg>
+            </a>
+            ` : ""}
+
               <svg 
                 class="w-6 h-6 text-gray-800 cursor-pointer hover:text-blue-500 like-button"
                 aria-hidden="true" 
@@ -355,6 +380,36 @@
     e.preventDefault();
     addReview();
   });
+
+  async function deleteReview(event) {
+    event.preventDefault();
+
+    const reviewId = event.target.closest("svg").getAttribute("data-id"); // Get review ID from data-id
+    const url = `/catalogue/delete/${reviewId}/`;
+
+    console.log("REVIEW ID: " + reviewId)
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        refreshReviewForm();
+        alert(data.message);
+        // Optionally, remove the review from the DOM or refresh the page
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting review:", error);
+    }
+  }
 
   // Function to handle the like/unlike action
   function likeReview(event) {

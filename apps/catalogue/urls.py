@@ -21,4 +21,5 @@ urlpatterns = [
     path('create-review/', create_review_flutter, name='create_review_flutter'),
     path('calculate-ratings/', calculate_ratings, name='calculate_ratings'),
     path('has-reviewed/', has_reviewed, name='has_reviewed'),
+    path('delete/<int:review_id>/', delete_review, name='delete_review'),
 ]
