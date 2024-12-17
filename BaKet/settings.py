@@ -37,8 +37,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     ".vercel.app",
     "10.0.2.2",
-    "http://daniel-liman-baket.pbp.cs.ui.ac.id",
-    "https://daniel-liman-baket.pbp.cs.ui.ac.id",
+    "daniel-liman-baket.pbp.cs.ui.ac.id",
 ]
 
 
@@ -165,6 +164,13 @@ MEDIA_URL = '/assets/'
 MEDIA_ROOT = BASE_DIR / 'assets'
 
 LOGIN_URL = '/login/'
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://daniel-liman-celestia.pbp.cs.ui.ac.id", 
+    "https://daniel-liman-celestia.pbp.cs.ui.ac.id",
+]
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
