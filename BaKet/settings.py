@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-bl)+ea9&i9lp1$%n$2!tj-1dvktpkx73q2&apek-=609dmdry=
 # SECURITY WARNING: don't run with debug turned on in production!
 PRODUCTION = os.getenv("PRODUCTION", 'False')
 DEBUG = PRODUCTION == 'False'
-# DEBUG = True
+DEBUG = True
 
 # TODO: Add URL Deployment
 ALLOWED_HOSTS = [
@@ -98,14 +98,14 @@ WSGI_APPLICATION = 'BaKet.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': f'django.db.backends.{"sqlite3" if DEBUG else "postgresql"}',
-        'NAME': BASE_DIR / 'db.sqlite3' if DEBUG else 'postgres',
+        'ENGINE': f'django.db.backends.{"sqlite3" if (PRODUCTION == "False") else "postgresql"}',
+        'NAME': BASE_DIR / 'db.sqlite3' if (PRODUCTION == "False") else 'postgres',
         **({
             'USER': os.getenv('PSQL_USER'),
             'PASSWORD': os.getenv('PSQL_PW'),
             'HOST': os.getenv('PSQL_HOST'),
             'PORT': os.getenv('PSQL_PORT'),
-        } if not DEBUG else {}),
+        } if not (PRODUCTION == "False") else {}),
     }
 }
 
