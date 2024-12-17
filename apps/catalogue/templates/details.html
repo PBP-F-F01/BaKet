@@ -177,12 +177,57 @@
     });
 
     if (response.ok) {
+      fetchAverageRating(productId);
       return await response.json();
     } else {
       console.error("Failed to fetch reviews:", response.statusText);
       throw new Error("Failed to fetch reviews");
     }
   }
+
+  async function fetchAverageRating(productId) {
+    try {
+      const response = await fetch("{% url 'catalogue:calculate_ratings' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prod_id: productId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch average rating");
+      }
+
+      const data = await response.json();
+      const averageRating = data.average_rating || 0;
+      const reviewCount = data.review_count || 0;
+
+      let starsString = "";
+      for (let i = 1; i <= 5; i++) {
+        if (i <= Math.round(averageRating)) {
+          starsString += '<i class="fa fa-star text-yellow-500"></i>\n';
+        } else {
+          starsString += '<i class="fa fa-star text-gray-400"></i>\n';
+        }
+      }
+
+      averageRatingHtml = ` 
+        <div class="font-bold text-lg">
+          ${starsString}
+          ${averageRating} | ${reviewCount} Ulasan
+        </div>
+    `;
+
+      document.getElementById("average_rating").innerHTML = averageRatingHtml;
+
+      // document.getElementById("averageRating").textContent = `Average Rating: ${averageRating.toFixed(1)}`;
+      // document.getElementById("reviewCount").textContent = `Total Reviews: ${reviewCount}`;
+    } catch (error) {
+      console.error("Error fetching average rating:", error);
+    }
+  }
+
 
   document
     .getElementById("filterForm")
@@ -204,29 +249,10 @@
     document.getElementById("review_card").innerHTML = "";
     document.getElementById("review_card").className = "";
     const jsonResponse = await getReviews();
-    const reviews = jsonResponse.reviews || [];
-    const averageRating = jsonResponse.average_rating || 0.0;
-    console.log(averageRating);
+    const reviews = jsonResponse;
     let htmlString = "";
     let classNameString = "";
     let averageRatingHtml = "";
-
-    let starsString = "";
-    for (let i = 1; i <= 5; i++) {
-      if (i <= Math.round(averageRating)) {
-        starsString += '<i class="fa fa-star text-yellow-500"></i>\n';
-      } else {
-        starsString += '<i class="fa fa-star text-gray-400"></i>\n';
-      }
-    }
-
-    averageRatingHtml = ` 
-        <div class="font-bold text-lg">
-          ${starsString}
-          ${averageRating} | ${reviews.length} Ulasan
-        </div>
-    `;
-    document.getElementById("average_rating").innerHTML = averageRatingHtml;
 
     // If there is no reviews yet
     if (reviews.length === 0) {
