@@ -1,3 +1,4 @@
+import json
 from django.contrib import messages
 
 from django.shortcuts import get_object_or_404, render, redirect
@@ -16,6 +17,7 @@ from django.core.paginator import Paginator
 from apps.wishlist.models import Wishlist
 
 from .models import *
+import json
 
 def is_staff_or_superuser(user):
     return user.is_authenticated and (user.is_staff or user.is_superuser)
@@ -67,21 +69,46 @@ def create_product(request):
 # @user_passes_test(is_staff_or_superuser)
 def add_product_api(request):
     if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            product = form.save()
-            return JsonResponse({
-                "id": str(product.id),
-                "name": product.name,
-                "price": product.price,
-                "image": request.build_absolute_uri(product.image.url),
-                "specs": product.specs,
-                "category": product.category,
-            }, status=201)
-        else:
-            return JsonResponse({"error": form.errors}, status=400)
+        data = json.loads(request.body)
+        user_id = request.user.id
+        name = data["name"]
+        price = data["price"]
+        image = data["image"]
+        specs = data["specs"]
+        category = data["category"]
+
+        if (
+            not name
+            or not price
+            or not image
+            or not specs
+            or not category
+        ):
+            return JsonResponse({"error": "All fields must be filled"}, status=400)
+        
+        product = Product(
+            user_id=user_id,
+            name=name,
+            price=price,
+            image=image,
+            specs=specs,
+            category=category,
+        )
+
+        product.save()
+
+        return JsonResponse({
+            "id": str(product.id),
+            "name": product.name,
+            "price": product.price,
+            "image": request.build_absolute_uri(product.image.url),
+            "specs": product.specs,
+            "category": product.category,
+        }, status=201)
+
     else:
         return JsonResponse({"error": "Invalid request method"}, status=405)
+
 
 
 def product_detail(request, product_id):
@@ -186,20 +213,68 @@ def like_review(request):
         'like_count': review.likeReview_count,
     })
 
+@csrf_exempt
+def create_review_flutter(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            product_id = data.get("product_id")
+            if not product_id:
+                return JsonResponse({"status": "error", "message": "Product ID is required"}, status=400)
+
+            # Fetch the product object
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                return JsonResponse({"status": "error", "message": "Product not found"}, status=404)
+
+            # Create the review
+            new_review = Review.objects.create(
+                user=request.user,
+                product=product,
+                rating=data.get("rating", 0),
+                comment=data.get("comment", ""),
+            )
+
+            return JsonResponse({"status": "success"}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Invalid JSON format"}, status=400)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+    return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)
+
+@csrf_exempt
+def has_reviewed(request):
+    if request.method == 'GET':
+        user = request.user
+        product_id = request.GET.get("product_id")
+
+        if not product_id:
+            return JsonResponse({"status": "error", "message": "Product ID is required"}, status=400)
+
+        # Check if the review exists
+        has_review = Review.objects.filter(user=user, product_id=product_id).exists()
+
+        return JsonResponse({"has_reviewed": has_review}, status=200)
+
+    return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)
+
 
 def show_json(request):
     prod_id = request.POST.get('prod_id')
     data = Review.objects.filter(product=prod_id).select_related('user') 
     reviews = []
 
+    if not data:
+        return JsonResponse({"message": "No reviews found for this product"}, status=404)
+
     # Filter reviews based on the selected rating if it exists
     selected_rating = request.POST.get('star_rating')
     if selected_rating and selected_rating.isdigit():  # Ensure it's a digit
         data = data.filter(rating=int(selected_rating))
-    # Calculate the average rating
-    total_rating = sum(review.rating for review in data)
-    count = data.count()
-    average_rating = total_rating / count if count > 0 else 0.0
 
     for review in data:
         reviews.append({
@@ -213,12 +288,29 @@ def show_json(request):
             }
         })
 
-    response_data = {
-        "reviews": reviews,
-        "average_rating": average_rating,
-    }
+    print(f"Found {len(data)} reviews")  
 
-    return JsonResponse(response_data, safe=False)
+    return JsonResponse(reviews, safe=False)
+
+@csrf_exempt
+def calculate_ratings(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        prod_id = data.get('prod_id')
+        print(f"Product ID received: {prod_id}")  # Debugging output
+
+        reviews = Review.objects.filter(product=prod_id)
+
+        total_rating = sum(review.rating for review in reviews)
+        count = reviews.count()
+        average_rating = total_rating / count if count > 0 else 0.0
+
+        response_data = {
+            "average_rating": average_rating,
+            "review_count": count,
+        }
+
+        return JsonResponse(response_data)
 
 def product_list(request):
     products = Product.objects.all()
@@ -320,3 +412,8 @@ def order_confirmation(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     return render(request, 'order_confirmation.html', {'order': order, 'total': order.total})
 
+def view_cart_api(request):
+    cart = Cart.objects.get(user=request.user)
+    cart_items = cart.cartitem_set.all()
+    
+    return JsonResponse({'cart_items': cart_items}, safe=False)

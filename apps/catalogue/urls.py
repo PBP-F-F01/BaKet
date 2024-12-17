@@ -18,4 +18,8 @@ urlpatterns = [
     path('order/<int:order_id>/confirmation/', order_confirmation, name='order_confirmation'),
     path('like-review/', like_review, name='like_review'),
     path('review-json/<uuid:product_id>/', show_review_json, name='show_review_json'),
+    path('create-review/', create_review_flutter, name='create_review_flutter'),
+    path('calculate-ratings/', calculate_ratings, name='calculate_ratings'),
+    path('has-reviewed/', has_reviewed, name='has_reviewed'),
+    path('cart-api/', view_cart_api, name='view_cart_api'),
 ]
