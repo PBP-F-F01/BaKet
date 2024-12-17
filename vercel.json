@@ -20,10 +20,5 @@
             "src": "/assets/(.*)",
             "dest": "/assets/$1"
         }
-    ],
-    "functions": {
-        "*.py": {
-            "maxDuration": 60
-        }
-    }
+    ]
 }
