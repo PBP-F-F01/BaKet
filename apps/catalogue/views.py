@@ -65,8 +65,8 @@ def create_product(request):
     return render(request, 'add-product.html', {'form': form})
 
 @csrf_exempt
-# @login_required
-# @user_passes_test(is_staff_or_superuser)
+@login_required
+@user_passes_test(is_staff_or_superuser)
 def add_product_api(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -385,12 +385,14 @@ def view_cart(request):
         'cart_count': cart_count
     })
 
+@csrf_exempt
 @login_required
 def remove_from_cart(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id)
     cart_item.delete()
     return redirect('catalogue:view_cart')
 
+@csrf_exempt
 @login_required
 def checkout(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
@@ -413,7 +415,55 @@ def order_confirmation(request, order_id):
     return render(request, 'order_confirmation.html', {'order': order, 'total': order.total})
 
 def view_cart_api(request):
-    cart = Cart.objects.get(user=request.user)
-    cart_items = cart.cartitem_set.all()
+    try:
+        cart = Cart.objects.get(user=request.user)
+    except Cart.DoesNotExist:
+        return JsonResponse({'cart_items': [], 'total': 0}, status=200)
     
-    return JsonResponse({'cart_items': cart_items}, safe=False)
+    cart_items = cart.cartitem_set.all()
+    data = [
+        {
+            'id': str(item.id),
+            'product': {
+                'id': str(item.product.id),
+                'name': item.product.name,
+                'price': item.product.price,
+                'image': request.build_absolute_uri(item.product.image.url),
+                'specs': item.product.specs,
+                'category': item.product.category,
+            },
+            'quantity': item.quantity,
+            'total_price': item.get_total_price(),
+        }
+        for item in cart_items
+    ]
+    total = cart.get_total_price()
+    return JsonResponse({'cart_items': data, 'total': total}, status=200)
+
+def cart_count_api(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'cart_count': 0}, status=200)
+    
+    try:
+        cart = Cart.objects.get(user=request.user)
+        cart_count = cart.cartitem_set.count()
+    except Cart.DoesNotExist:
+        cart_count = 0
+    return JsonResponse({'cart_count': cart_count}, status=200)
+
+@csrf_exempt
+@login_required
+@require_POST
+def checkout_api(request):
+    try:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        total = cart.get_total_price()
+        if cart.cartitem_set.exists():
+            # Create an order
+            order = Order.objects.create(user=request.user, cart=cart, total=total)
+            cart.cartitem_set.all().delete()
+            return JsonResponse({"status": "success", "order_id": str(order.id)}, status=201)
+        else:
+            return JsonResponse({"status": "error", "message": "Cart is empty."}, status=400)
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
