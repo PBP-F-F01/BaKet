@@ -25,5 +25,8 @@ urlpatterns = [
     path('json/like/', json_like, name="json_like"),
     path('json/isLikeArticle/<str:article_id>/', is_like_article_view, name='is_like_article_view'),
     path('json/isLikeComment/<str:comment_id>/', is_like_comment_view, name='is_like_comment_view'),
-    path('json/user/', current_user, name="current_user")
+    path('json/user/', current_user, name="current_user"),
+
+    # JSON FOR FLUTTER
+    path('json/flutter/main/', json_article_flutter, name="json_article_flutter"),
 ]
