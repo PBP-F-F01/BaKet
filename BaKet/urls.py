@@ -13,6 +13,4 @@ urlpatterns = [
     path('wishlist/', include('apps.wishlist.urls')),
     path('user/', include('apps.user.urls')),
     path('auth/', include('apps.authentication.urls')),
-]
-
-urlpatterns += staticfiles_urlpatterns()
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
