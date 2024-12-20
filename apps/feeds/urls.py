@@ -16,9 +16,9 @@ urlpatterns = [
     path('post-edit/<uuid:id>', edit_post, name='edit_post'),
     path('post-like/<uuid:id>', like_post, name='like_post'),
     path('post-unlike/<uuid:id>', unlike_post, name='unlike_post'),
-    path('json/post/', post_json, name='post_json'),
+    path('json/post', post_json, name='post_json'),
     path('json/post/user/<int:user>', post_json_by_user, name='post_json_by_user'),
-    path('json/post/id/<uuid:id>/', post_json_by_id, name='post_json_by_id'),
+    path('json/post/id/<uuid:id>', post_json_by_id, name='post_json_by_id'),
     
     # Replies
     path('create/reply/', create_reply, name='create_reply'),
@@ -32,4 +32,28 @@ urlpatterns = [
     # Reports
     path('report/', report, name='report'),
     path('json/report/', report_json, name='report_json'),
+    
+    
+    ####  Mobile  ####
+    
+    # Posts
+    path('api/create/post/', create_post_mobile, name='create_post_mobile'),
+    path('api/post-edit/<uuid:id>', edit_post_mobile, name='edit_post_mobile'),
+    path('api/post-delete/<uuid:id>', delete_post_mobile, name='delete_post_mobile'),
+    path('api/post-like/<uuid:id>', like_post_mobile, name='like_post_mobile'),
+    path('api/post-unlike/<uuid:id>', unlike_post_mobile, name='unlike_post_mobile'),
+    
+    # Replies
+    path('api/create/reply/', create_reply_mobile, name='create_reply_mobile'),
+    path('api/reply-delete/<uuid:id>', delete_reply_mobile, name='delete_reply_mobile'),
+    path('api/reply-like/<uuid:id>', like_reply_mobile, name='like_reply_mobile'),
+    path('api/reply-unlike/<uuid:id>', unlike_reply_mobile, name='unlike_reply_mobile'),
+    
+    # Reports
+    path('api/report/', report_mobile, name='report_mobile'),
+    
+    # Pagination Data
+    path('api/json/post', api_post_json, name='api_post_json'),
+    path('api/json/post/user', api_post_json_by_user, name='post_json_by_user'),
+    path('api/json/reply/<uuid:post_id>', api_reply_json, name='api_reply_json'),
 ]
