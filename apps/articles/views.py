@@ -111,6 +111,8 @@ def add_comment(request, article_id):
         )
 
         new_comment.save()
+        article.comment_count += 1
+        article.save()
         return JsonResponse({
             'id': new_comment.id,
             'text': new_comment.content,
@@ -129,7 +131,10 @@ def update_comment(request, comment_id):
 def delete_comment(request, comment_id):
     if request.method == "DELETE":
         comment = Comment.objects.get(pk=comment_id)
+        article = comment.article
         comment.delete()
+        article.comment_count -= 1
+        article.save()
         return HttpResponse(b"DELETED", status=201)
     return HttpResponse(b"FORBIDDEN", status=403)
 
@@ -138,6 +143,8 @@ def like_article(request, article_id):
         article = Article.objects.get(pk=article_id)
         if not is_like_article(request, article):
             Like.objects.create(user=request.user, article=article)
+            article.like_count += 1
+            article.save()
         return HttpResponse(b"LIKED", status=201)
     return HttpResponse(b"not authenticated", status=401)
 
@@ -146,6 +153,8 @@ def unlike_article(request, article_id):
         article = Article.objects.get(pk=article_id)
         if is_like_article(request, article):
             Like.objects.filter(user=request.user, article=article).delete()
+            article.like_count -= 1
+            article.save()
         return HttpResponse(b"UNLIKED", status=201)
     return HttpResponse(b"not authenticated", status=401)
 
@@ -154,6 +163,8 @@ def like_comment(request, comment_id):
         comment = Comment.objects.get(pk=comment_id)
         if not is_like_comment(request, comment):
             Like.objects.create(user=request.user, comment=comment)
+            comment.like_count += 1
+            comment.save()
         return HttpResponse(b"LIKED", status=201)
     return HttpResponse(b"not authenticated", status=401)
 
@@ -162,6 +173,8 @@ def unlike_comment(request, comment_id):
         comment = Comment.objects.get(pk=comment_id)
         if is_like_comment(request, comment):
             Like.objects.filter(user=request.user, comment=comment).delete()
+            comment.like_count -= 1
+            comment.save()
         return HttpResponse(b"UNLIKED", status=201)
     return HttpResponse(b"not authenticated", status=401)
 
@@ -261,3 +274,35 @@ def json_article_flutter(request):
             "is_comment": is_comment_article(request, a.id),
         })
     return JsonResponse(data, safe=False)
+
+def json_article_page_flutter(request, id):
+    articles = ranked_articles()
+    
+    article = Article.objects.get(pk=id)
+    other = []
+    for a in articles:
+        if a != article:
+            other.append({
+                "id": a.id,
+                "title": a.title,
+                "posted_by": a.posted_by,
+                "like_count": a.like_count,
+                "comment_count": a.comment_count,
+                "is_like": is_like_article(request, a.id),
+                "is_comment": is_comment_article(request, a.id),
+            })
+        if len(other) >= 3:
+            break
+
+    article = {
+        "title": article.title,
+        "posted_by": article.posted_by,
+        "content": article.content,
+        "created_at": article.created_at,
+        "source": article.source,
+        "like_count": article.like_count,
+        "comment_count": article.comment_count,
+        "is_like": is_like_article(request, a.id),
+        "is_comment": is_comment_article(request, a.id),
+    }
+    return JsonResponse({"article": article, "other": other}, safe=False)

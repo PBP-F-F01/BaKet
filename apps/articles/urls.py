@@ -29,4 +29,5 @@ urlpatterns = [
 
     # JSON FOR FLUTTER
     path('json/flutter/main/', json_article_flutter, name="json_article_flutter"),
+    path('json/flutter/article/<str:id>/', json_article_page_flutter, name="json_article_page_flutter"),
 ]
