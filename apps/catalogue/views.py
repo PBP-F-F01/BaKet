@@ -166,6 +166,16 @@ def add_review_ajax(request):
     else:
         messages.error(request, "You need to log in to submit a review.")
 
+
+@csrf_exempt
+def delete_review(request, review_id):
+    if request.method == "POST":
+        review = Review.objects.get(pk=review_id)
+        review.delete()
+        return JsonResponse({"success": True, "message": "Review deleted successfully."})
+    return JsonResponse({"success": False, "message": "Invalid request method."}, status=400)
+
+
 def show_review_json(request, product_id):
     reviews = Review.objects.filter(product__id=product_id)
 
@@ -173,6 +183,7 @@ def show_review_json(request, product_id):
         {
             "id": review.id,
             "user": review.user.id,
+            "is_user_review": request.user == review.user,
             "username": review.user.username,
             "product": str(review.product),
             "rating": review.rating,
@@ -281,6 +292,7 @@ def show_json(request):
             "id": review.id,
             "fields": {
                 "username": review.user.username, 
+                "is_user_review": request.user == review.user,
                 "rating": review.rating,
                 "comment": review.comment,
                 "created_at": review.created_at,
