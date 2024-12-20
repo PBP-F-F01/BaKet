@@ -327,7 +327,7 @@
                 xmlns="http://www.w3.org/2000/svg" 
                 width="24" 
                 height="24" 
-                fill="none" 
+                fill="${item.isLiked ? 'blue' : 'none'}" 
                 viewBox="0 0 24 24" 
                 data-id="${item.id}" 
                 onclick="likeReview(event)"
@@ -353,9 +353,6 @@
     document.getElementById("review_card").className = classNameString;
     document.getElementById("review_card").innerHTML = htmlString;
 
-    // reviews.forEach((item) => {
-    //   console.log(item); // Check the structure here
-    // });
   }
 
   refreshReviewForm();
@@ -411,26 +408,50 @@
     }
   }
 
-  // Function to handle the like/unlike action
-  function likeReview(event) {
-    const button = event.currentTarget; // Get the clicked button
-    const reviewId = button.getAttribute('data-id'); // Get the review ID
-    const likeCountSpan = document.getElementById(`like-count-${reviewId}`); // Get the like count span
+  async function likeReview(event) {
+    const reviewId = event.target.getAttribute('data-id');
 
-    fetch("{% url 'catalogue:like_review' %}", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ review_id: reviewId })
-    })
-      .then(response => response.json())
-      .then(data => {
-        likeCountSpan.textContent = data.like_count; // Update the like count
-        button.classList.toggle('liked'); // Toggle a class to indicate liked state
-        button.textContent = data.liked ? 'Unlike' : 'Like'; // Update button text
-      })
-      .catch(error => console.error('Error:', error));
+    try {
+      const response = await fetch('/catalogue/like-review/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken'), // If using CSRF protection
+        },
+        body: JSON.stringify({ review_id: reviewId }),
+      });
+
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        // Update the like count in the UI
+        const likeCountElement = document.getElementById(`like-count-${reviewId}`);
+        likeCountElement.textContent = data.like_count; // Update the like count
+
+        const likeButton = event.target;
+        likeButton.setAttribute('fill', data.like_count > 0 ? 'blue' : 'none'); // Change fill based on like count
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error('Error liking review:', error);
+    }
+    await refreshReviewForm();
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
   }
 
 </script>
