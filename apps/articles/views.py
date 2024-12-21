@@ -141,17 +141,21 @@ def delete_comment(request, comment_id):
 def like_article(request, article_id):
     if request.user.is_authenticated:
         article = Article.objects.get(pk=article_id)
-        if not is_like_article(request, article):
+        if not is_like_article(request, article_id):
             Like.objects.create(user=request.user, article=article)
             article.like_count += 1
             article.save()
-        return HttpResponse(b"LIKED", status=201)
+        else:
+            Like.objects.filter(user=request.user, article=article).delete()
+            article.like_count -= 1
+            article.save()
+        return HttpResponse(b"SUCCESS", status=201)
     return HttpResponse(b"not authenticated", status=401)
 
 def unlike_article(request, article_id):
     if request.user.is_authenticated:
         article = Article.objects.get(pk=article_id)
-        if is_like_article(request, article):
+        if is_like_article(request, article_id):
             Like.objects.filter(user=request.user, article=article).delete()
             article.like_count -= 1
             article.save()
@@ -161,17 +165,21 @@ def unlike_article(request, article_id):
 def like_comment(request, comment_id):
     if request.user.is_authenticated:
         comment = Comment.objects.get(pk=comment_id)
-        if not is_like_comment(request, comment):
+        if not is_like_comment(request, comment_id):
             Like.objects.create(user=request.user, comment=comment)
             comment.like_count += 1
             comment.save()
-        return HttpResponse(b"LIKED", status=201)
+        else:
+            Like.objects.filter(user=request.user, comment=comment).delete()
+            comment.like_count -= 1
+            comment.save()
+        return HttpResponse(b"SUCCESS", status=201)
     return HttpResponse(b"not authenticated", status=401)
 
 def unlike_comment(request, comment_id):
     if request.user.is_authenticated:
         comment = Comment.objects.get(pk=comment_id)
-        if is_like_comment(request, comment):
+        if is_like_comment(request, comment_id):
             Like.objects.filter(user=request.user, comment=comment).delete()
             comment.like_count -= 1
             comment.save()
@@ -218,9 +226,22 @@ def json_by_id_comment(request, id):
 
 def json_comment_by_article(request, article_id):
     comments = Comment.objects.filter(article=Article.objects.get(pk=article_id))
-    data = comments
+    data = []
 
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+    for comment in comments:
+        data.append({
+            "id": comment.id,
+            "author": comment.user.username,
+            "content": comment.content,
+            "time": comment.updated_at,
+            "has_edited": comment.has_edited,
+            "like_count": comment.like_count,
+            "is_like": is_like_comment(request, comment.id),
+            "can_edit": comment.user == request.user,
+        })
+
+    return JsonResponse(data, safe=False)
+    # return HttpResponse(serializers.serialize("json", comments), content_type="application/json")
 
 def json_like(request):
     data = Like.objects.all()

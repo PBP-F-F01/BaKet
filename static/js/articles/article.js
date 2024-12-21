@@ -25,12 +25,12 @@ async function refreshComments(article_id) {
     }
     else {
         comments.forEach(c => {
-            const content = parseContent(c.fields.content);
-            html += `<div class="mt-4 comment" comment-id="${c.pk}">
+            const content = parseContent(c.content);
+            html += `<div class="mt-4 comment" comment-id="${c.id}">
                     <p class="text-left mb-2 break-words">
-                        <span class="font-bold">${c.fields.user.username}</span> - <span class="text-gray-500">${c.fields.created_at}`;
+                        <span class="font-bold">${c.author}</span> - <span class="text-gray-500">${c.time}`;
             
-            if (c.fields.has_edited) {
+            if (c.has_edited) {
                 html += `<span class="text-gray-500"> (edited)</span>`;
             }
             
@@ -39,13 +39,20 @@ async function refreshComments(article_id) {
                     <p class="text-left break-words leading-7 content">
                         ${content}
                     </p>
-                    <div class="flex items-center cursor-default flex-wrap like">
-                        <span comment-like-id="${c.pk}" class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
-                        <span class="like-count">${c.fields.like_count}</span>`;
+                    <div class="flex items-center cursor-default flex-wrap like">`;
+            
+            if (c.is_like) {
+                html += `<span comment-like-id="${c.id}" class="material-icons m-1 text-[#01aae8] hover:text-[#15a1d4] like-button">thumb_up</span>`;
+            }
+            else {
+                html += `<span comment-like-id="${c.id}" class="material-icons m-1 text-[#c8c8c8] hover:text-[#01aae8] like-button">thumb_up</span>`;
+            }
+            
+            html += ` <span class="like-count">${c.like_count}</span>`;
 
-            if (!user.is_anonymous && c.fields.user === user.id) {
-                html += `<span edit-id="${c.pk}" class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
-                        <span delete-id="${c.pk}" class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>`;
+            if (c.can_edit) {
+                html += `<span edit-id="${c.id}" class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
+                        <span delete-id="${c.id}" class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>`;
             }
 
             html += `</div>
@@ -62,12 +69,12 @@ async function refreshComments(article_id) {
     }
     else {
         comments.forEach(c => {
-            const content = parseContent(c.fields.content);
-            html += `<div class="mt-4 comment" comment-id="${c.pk}">
+            const content = parseContent(c.content);
+            html += `<div class="mt-4 comment" comment-id="${c.id}">
                     <p class="text-left mb-2 break-words">
-                        <span class="font-bold">${c.fields.user.name}</span> - <span class="text-gray-500">${c.fields.created_at}`;
+                        <span class="font-bold">${c.author}</span> - <span class="text-gray-500">${c.time}`;
             
-            if (c.fields.has_edited) {
+            if (c.has_edited) {
                 html += `<span class="text-gray-500"> (edited)</span>`;
             }
             
@@ -76,13 +83,20 @@ async function refreshComments(article_id) {
                     <p class="text-left break-words leading-7 content">
                         ${content}
                     </p>
-                    <div class="flex items-center cursor-default flex-wrap like">
-                        <span comment-like-id="${c.pk}" class="mr-3 cursor-pointer text-[#c8c8c8] hover:text-[#01aae8] material-icons like-button">thumb_up</span>
-                        <span class="like-count">${c.fields.like_count}</span>`;
+                    <div class="flex items-center cursor-default flex-wrap like">`;
 
-            if (c.fields.user.id === user.id) {
-                html += `<span edit-id="${c.pk}" class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
-                        <span delete-id="${c.pk}" class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>`;
+            if (c.is_like) {
+                html += `<span comment-like-id="${c.id}" class="material-icons m-1 text-[#01aae8] hover:text-[#15a1d4] like-button">thumb_up</span>`;
+            }
+            else {
+                html += `<span comment-like-id="${c.id}" class="material-icons m-1 text-[#c8c8c8] hover:text-[#01aae8] like-button">thumb_up</span>`;
+            }
+
+            html += ` <span class="like-count">${c.like_count}</span>`;
+
+            if (c.can_edit) {
+                html += `<span edit-id="${c.id}" class="material-icons ml-5 m-1 text-[#01aae8] hover:text-[#15a1d4] edit-button">edit</span>
+                        <span delete-id="${c.id}" class="material-icons m-1 text-[#ff0000] hover:text-[#ff3737] delete-button">delete</span>`;
             }
 
             html += `</div>
@@ -307,8 +321,8 @@ function addLikeListener() {
         likeArticleDesktop.querySelector(".like-button").addEventListener("click", async e => {
             e.preventDefault();
             const has_like = await fetch(`/articles/json/isLikeArticle/${article_id}/`).then(res => res.json());
+            await fetch(`/articles/likeArticle/${article_id}/`);
             if (has_like.is_like) {
-                await fetch(`/articles/unlikeArticle/${article_id}/`);
                 const button = likeArticleDesktop.querySelector(".like-button");
                 const count = likeArticleDesktop.querySelector(".like-count");
                 button.classList.remove("selected");
@@ -319,7 +333,6 @@ function addLikeListener() {
                 likeArticleMobile.querySelector(".like-count").innerHTML = parseInt(likeArticleMobile.querySelector(".like-count").innerHTML) - 1;
             }
             else {
-                await fetch(`/articles/likeArticle/${article_id}/`);
                 const count = likeArticleDesktop.querySelector(".like-count");
                 const button = likeArticleDesktop.querySelector(".like-button");
                 button.classList.add("selected");
@@ -334,8 +347,8 @@ function addLikeListener() {
         likeArticleMobile.querySelector(".like-button").addEventListener("touchend", async e => {
             e.preventDefault();
             const has_like = await fetch(`/articles/json/isLikeArticle/${article_id}/`).then(res => res.json());
+            await fetch(`/articles/likeArticle/${article_id}/`);
             if (has_like.is_like) {
-                await fetch(`/articles/unlikeArticle/${article_id}/`);
                 const button = likeArticleMobile.querySelector(".like-button");
                 const count = likeArticleMobile.querySelector(".like-count");
                 button.classList.remove("selected");
@@ -346,7 +359,6 @@ function addLikeListener() {
                 likeArticleDesktop.querySelector(".like-count").innerHTML = parseInt(likeArticleDesktop.querySelector(".like-count").innerHTML) - 1;
             }
             else {
-                await fetch(`/articles/likeArticle/${article_id}/`);
                 const count = likeArticleMobile.querySelector(".like-count");
                 const button = likeArticleMobile.querySelector(".like-button");
                 button.classList.add("selected");
@@ -364,8 +376,8 @@ function addLikeListener() {
                 element.querySelector(".like-button").addEventListener("click", async e => {
                     e.preventDefault();
                     const has_like = await fetch(`/articles/json/isLikeComment/${commentId}/`).then(res => res.json());
+                    await fetch(`/articles/likeComment/${commentId}/`);
                     if (has_like.is_like) {
-                        await fetch(`/articles/unlikeComment/${commentId}/`);
                         const button = element.querySelector(".like-button");
                         const count = element.querySelector(".like-count");
                         button.classList.remove("selected");
@@ -375,7 +387,6 @@ function addLikeListener() {
                         count.innerHTML = parseInt(count.innerHTML) - 1;
                     }
                     else {
-                        await fetch(`/articles/likeComment/${commentId}/`);
                         const count = element.querySelector(".like-count");
                         const button = element.querySelector(".like-button");
                         button.classList.add("selected");
@@ -394,8 +405,8 @@ function addLikeListener() {
                 element.querySelector(".like-button").addEventListener("touchend", async e => {
                     e.preventDefault();
                     const has_like = await fetch(`/articles/json/isLikeComment/${commentId}/`).then(res => res.json());
+                    await fetch(`/articles/likeComment/${commentId}/`);
                     if (has_like.is_like) {
-                        await fetch(`/articles/unlikeComment/${commentId}/`);
                         const button = element.querySelector(".like-button");
                         const count = element.querySelector(".like-count");
                         button.classList.remove("selected");
@@ -405,7 +416,6 @@ function addLikeListener() {
                         count.innerHTML = parseInt(count.innerHTML) - 1;
                     }
                     else {
-                        await fetch(`/articles/likeComment/${commentId}/`);
                         const count = element.querySelector(".like-count");
                         const button = element.querySelector(".like-button");
                         button.classList.add("selected");
@@ -420,6 +430,8 @@ function addLikeListener() {
     }
 }
 
-function start() {
-    refreshComments(article_id);
+async function start() {
+    await refreshComments(article_id);
+    addLikeListener();
+    colorLike();
 }
