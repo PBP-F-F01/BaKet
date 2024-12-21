@@ -111,7 +111,7 @@ async function refreshComments(article_id) {
             const commentId = button.getAttribute('edit-id');
             const commentElement = button.parentElement.parentElement;
             const contentElement = commentElement.querySelector('.content');
-            const originalContent = contentElement.textContent;
+            const originalContent = contentElement.textContent.trim();
 
             // Create a textarea to edit the comment
             const textarea = document.createElement('textarea');
@@ -143,7 +143,7 @@ async function refreshComments(article_id) {
             saveButton.addEventListener('click', async () => {
                 const newContent = textarea.value;
                 const response = await fetch(`/articles/update_comment/${commentId}/`, {
-                    method: 'PATCH',
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': csrf_token,

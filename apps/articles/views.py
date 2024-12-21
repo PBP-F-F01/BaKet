@@ -117,16 +117,20 @@ def add_comment(request, article_id):
             'id': new_comment.id,
             'text': new_comment.content,
             'author': new_comment.user.username,
-            'created_at': new_comment.created_at.isoformat()
+            'created_at': new_comment.created_at.isoformat(),
+            "status": "success",
         }, status=201)
     return JsonResponse({}, status=401)
 
 def update_comment(request, comment_id):
-    comment = Comment.objects.get(pk=comment_id)
-    comment.content = strip_tags(request.PATCH.get("content"))
-    comment.has_edited = True
-    comment.save()
-    return HttpResponse(b"UPDATED", status=201)
+    if request.method == 'POST':
+        comment = Comment.objects.get(pk=comment_id)
+        data = json.loads(request.body)
+        comment.content = strip_tags(data.get("content"))
+        comment.has_edited = True
+        comment.save()
+        return HttpResponse(b"UPDATED", status=201)
+    return HttpResponse(b"FORBIDDEN", status=403)
 
 def delete_comment(request, comment_id):
     if request.method == "DELETE":
@@ -149,7 +153,7 @@ def like_article(request, article_id):
             Like.objects.filter(user=request.user, article=article).delete()
             article.like_count -= 1
             article.save()
-        return HttpResponse(b"SUCCESS", status=201)
+        return JsonResponse({}, status=201)
     return HttpResponse(b"not authenticated", status=401)
 
 def unlike_article(request, article_id):
@@ -173,7 +177,7 @@ def like_comment(request, comment_id):
             Like.objects.filter(user=request.user, comment=comment).delete()
             comment.like_count -= 1
             comment.save()
-        return HttpResponse(b"SUCCESS", status=201)
+        return JsonResponse({}, status=201)
     return HttpResponse(b"not authenticated", status=401)
 
 def unlike_comment(request, comment_id):
@@ -231,7 +235,7 @@ def json_comment_by_article(request, article_id):
     for comment in comments:
         data.append({
             "id": comment.id,
-            "author": comment.user.username,
+            "author": comment.user.first_name + " " + comment.user.last_name,
             "content": comment.content,
             "time": comment.updated_at,
             "has_edited": comment.has_edited,
@@ -323,7 +327,7 @@ def json_article_page_flutter(request, id):
         "source": article.source,
         "like_count": article.like_count,
         "comment_count": article.comment_count,
-        "is_like": is_like_article(request, a.id),
-        "is_comment": is_comment_article(request, a.id),
+        "is_like": is_like_article(request, article.id),
+        "is_comment": is_comment_article(request, article.id),
     }
     return JsonResponse({"article": article, "other": other}, safe=False)
