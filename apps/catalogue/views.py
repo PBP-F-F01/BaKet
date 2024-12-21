@@ -1,4 +1,5 @@
 import json
+from venv import logger
 from django.contrib import messages
 
 from django.shortcuts import get_object_or_404, render, redirect
@@ -13,11 +14,19 @@ from django.utils.html import strip_tags
 from django.core import serializers
 from django.db.models import Avg
 from django.core.paginator import Paginator
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 
 from apps.wishlist.models import Wishlist
 
 from .models import *
 import json
+from django.middleware.csrf import get_token
+
+def csrf_token_view(request):
+    return JsonResponse({'csrf_token': get_token(request)})
 
 def is_staff_or_superuser(user):
     return user.is_authenticated and (user.is_staff or user.is_superuser)
@@ -184,6 +193,7 @@ def show_review_json(request, product_id):
             "id": review.id,
             "user": review.user.id,
             "is_user_review": request.user == review.user,
+            'isLiked': LikeReview.objects.filter(user=request.user, review=review).exists(),
             "username": review.user.username,
             "product": str(review.product),
             "rating": review.rating,
@@ -195,34 +205,35 @@ def show_review_json(request, product_id):
     ]
     return JsonResponse(data, safe=False)
 
-
 @login_required
-@require_POST
+@api_view(['POST'])
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def like_review(request):
-    review_id = request.POST.get('review_id')
-    review = Review.objects.get(id=review_id)
-    user = request.user
+    review_id = request.data.get('review_id')
+    user = request.user 
 
-    # Check if the user has already liked the review
-    like_review, created = LikeReview.objects.get_or_create(user=user, review=review)
+    if not review_id:
+        return Response({'status': 'error', 'message': 'Review ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if created:
-        # User liked the review
-        review.likeReview_count += 1
-        review.save()
-        liked = True
-    else:
-        # User unliked the review
-        like_review.delete()
-        review.likeReview_count -= 1
-        review.save()
-        liked = False
+    try:
+        review = Review.objects.get(id=review_id)
+        # Check if the user has already liked the review
+        like_instance = LikeReview.objects.filter(user=user, review=review).first()
 
-    return JsonResponse({
-        'liked': liked,
-        'like_count': review.likeReview_count,
-    })
+        if like_instance:
+            like_instance.delete()
+            review.likeReview_count -= 1
+            review.save()
+            return Response({'status': 'success', 'like_count': review.likeReview_count}, status=status.HTTP_200_OK)
+        else:
+            LikeReview.objects.create(user=user, review=review)
+            review.likeReview_count += 1
+            review.save()
+            return Response({'status': 'success', 'like_count': review.likeReview_count}, status=status.HTTP_201_CREATED)
+
+    except Review.DoesNotExist:
+        return Response({'status': 'error', 'message': 'Review not found.'}, status=status.HTTP_404_NOT_FOUND)
 
 @csrf_exempt
 def create_review_flutter(request):
@@ -293,6 +304,7 @@ def show_json(request):
             "fields": {
                 "username": review.user.username, 
                 "is_user_review": request.user == review.user,
+                'isLiked': LikeReview.objects.filter(user=request.user, review=review).exists(),
                 "rating": review.rating,
                 "comment": review.comment,
                 "created_at": review.created_at,
@@ -309,7 +321,6 @@ def calculate_ratings(request):
     if request.method == "POST":
         data = json.loads(request.body)
         prod_id = data.get('prod_id')
-        print(f"Product ID received: {prod_id}")  # Debugging output
 
         reviews = Review.objects.filter(product=prod_id)
 
