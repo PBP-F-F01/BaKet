@@ -15,13 +15,18 @@ from django.core import serializers
 from django.db.models import Avg
 from django.core.paginator import Paginator
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 
 from apps.wishlist.models import Wishlist
 
 from .models import *
 import json
+from django.middleware.csrf import get_token
+
+def csrf_token_view(request):
+    return JsonResponse({'csrf_token': get_token(request)})
 
 def is_staff_or_superuser(user):
     return user.is_authenticated and (user.is_staff or user.is_superuser)
@@ -188,6 +193,7 @@ def show_review_json(request, product_id):
             "id": review.id,
             "user": review.user.id,
             "is_user_review": request.user == review.user,
+            'isLiked': LikeReview.objects.filter(user=request.user, review=review).exists(),
             "username": review.user.username,
             "product": str(review.product),
             "rating": review.rating,
@@ -201,6 +207,8 @@ def show_review_json(request, product_id):
 
 @login_required
 @api_view(['POST'])
+@csrf_exempt
+@permission_classes([IsAuthenticated])
 def like_review(request):
     review_id = request.data.get('review_id')
     user = request.user 

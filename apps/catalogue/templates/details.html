@@ -156,6 +156,7 @@
 </body>
 
 <script>
+  document.cookie = "csrftoken={{ csrf_token }}";
   async function getReviews() {
     const productId = document.querySelector('input[name="prod_id"]').value;
     const selectedRating =
