@@ -10,13 +10,18 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from rest_framework.generics import ListAPIView
+from rest_framework.decorators import api_view, authentication_classes
+from rest_framework.authentication import SessionAuthentication
 
 from apps.feeds.models import *
 from apps.feeds.pagination import PostPagination, ReplyPagination
 from apps.feeds.serializer import *
 from pytz import timezone
+
+# csrf_exempt for mobile integration
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return
 
 
 # Get all the posts
@@ -346,6 +351,7 @@ def report_json(request):
 # Create a new post for mobile app
 @csrf_exempt
 @api_view(['POST'])
+@authentication_classes([CsrfExemptSessionAuthentication])
 def create_post_mobile(request):
     if not request.user.is_authenticated:
         return JsonResponse({"status": "User not authenticated"}, status=401)
@@ -367,6 +373,7 @@ def create_post_mobile(request):
 # Update a post for mobile app
 @csrf_exempt
 @api_view(['POST'])
+@authentication_classes([CsrfExemptSessionAuthentication])
 def edit_post_mobile(request, id):
     if not request.user.is_authenticated:
         return JsonResponse({"status": "User not authenticated"}, status=401)
@@ -388,6 +395,7 @@ def edit_post_mobile(request, id):
 # Delete a post for mobile app
 @csrf_exempt
 @api_view(['POST'])
+@authentication_classes([CsrfExemptSessionAuthentication])
 def delete_post_mobile(request, id):
     if not request.user.is_authenticated:
         return JsonResponse({"status": "User not authenticated"}, status=401)
@@ -408,6 +416,7 @@ def delete_post_mobile(request, id):
 # Like a post from mobile app
 @csrf_exempt
 @api_view(['POST'])
+@authentication_classes([CsrfExemptSessionAuthentication])
 def like_post_mobile(request, id):
     if not request.user.is_authenticated:
         return JsonResponse({"status": "User not authenticated"}, status=401)
@@ -432,6 +441,7 @@ def like_post_mobile(request, id):
 # Unlike a post from mobile app
 @csrf_exempt
 @api_view(['POST'])
+@authentication_classes([CsrfExemptSessionAuthentication])
 def unlike_post_mobile(request, id):
     if not request.user.is_authenticated:
         return JsonResponse({"status": "User not authenticated"}, status=401)
@@ -455,6 +465,7 @@ def unlike_post_mobile(request, id):
 # Create reply from mobile app
 @csrf_exempt
 @api_view(['POST'])
+@authentication_classes([CsrfExemptSessionAuthentication])
 def create_reply_mobile(request):
     if not request.user.is_authenticated:
         return JsonResponse({"status": "User not authenticated"}, status=401)
@@ -485,6 +496,7 @@ def create_reply_mobile(request):
 # Delete a reply from mobile
 @csrf_exempt
 @api_view(['POST'])
+@authentication_classes([CsrfExemptSessionAuthentication])
 def delete_reply_mobile(request):
     if not request.user.is_authenticated:
         return JsonResponse({"status": "User not authenticated"}, status=401)
@@ -513,7 +525,8 @@ def delete_reply_mobile(request):
 # Like a reply from mobile
 @csrf_exempt
 @api_view(['POST'])
-def like_reply_mobile(request):
+@authentication_classes([CsrfExemptSessionAuthentication])
+def like_reply_mobile(request, id):
     if not request.user.is_authenticated:
         return JsonResponse({"status": "User not authenticated"}, status=401)
     
@@ -533,13 +546,14 @@ def like_reply_mobile(request):
     reply.like_count = Like.objects.filter(reply=reply).count()
     reply.save()
 
-    return JsonResponse({"status": "Successfully liked the reply"}, status=201)
+    return JsonResponse({"status": "Successfully liked"}, status=201)
 
 
 # Unlike a reply from mobile
 @csrf_exempt
 @api_view(['POST'])
-def unlike_reply_mobile(request):
+@authentication_classes([CsrfExemptSessionAuthentication])
+def unlike_reply_mobile(request, id):
     if not request.user.is_authenticated:
         return JsonResponse({"status": "User not authenticated"}, status=401)
     
@@ -556,12 +570,13 @@ def unlike_reply_mobile(request):
     reply.like_count = Like.objects.filter(reply=reply).count()
     reply.save()
 
-    return JsonResponse({"status": "Successfully unliked the reply"}, status=201)
+    return JsonResponse({"status": "Successfully unliked"}, status=201)
 
 
 # Report a post from mobile
 @csrf_exempt
 @api_view(['POST'])
+@authentication_classes([CsrfExemptSessionAuthentication])
 def report_mobile(request):
     try:
         data = json.loads(request.body)
